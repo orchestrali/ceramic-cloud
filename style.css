@@ -1,0 +1,246 @@
+/* styles */
+/* called by your view template */
+
+/* You might want to try something fancier: */
+/* less: http://lesscss.org/ */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: helvetica, arial, sans-serif;
+  margin: 25px;
+}
+
+div.container {
+  width: 500px;
+  height: 500px;
+}
+
+h1 {
+  font-weight: bold;
+  color: pink;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+p {
+  max-width: 600px;
+  margin-top: 0;
+}
+
+form {
+  margin-bottom: 25px;
+  padding: 15px;
+  background-color: cyan;
+  display: inline-block;
+  width: 100%;
+  max-width: 578px;
+  border-radius: 3px;
+}
+
+input {
+  /*margin-bottom: 10px;*/
+  padding: 5px;
+  border: 1px solid lightgrey;
+  border-radius: 3px;
+  font-size: 16px;
+}
+  
+input:disabled {
+  background-color: #e9e9e9;
+}
+input#custom {
+  display: inline;
+  vertical-align: top;
+}
+
+div.category {
+  display: flex;
+  flex-flow: column;
+}
+
+div.input, ul.row {
+  display: flex;
+  flex-flow: row wrap;
+  margin-bottom: 7px;
+  align-items: center;
+}
+
+div.fieldset {
+  border: 2px groove threedface;
+  width: 100%;
+  min-height: 40px;
+}
+
+span.legend {
+  position: absolute;
+  margin: -10px 10px;
+  background: cyan;
+  padding: 0 2px;
+}
+
+button {
+  font-size: 16px;
+  border-radius: 3px;
+  background-color: lightgrey;
+  border: 1px solid grey;
+  box-shadow: 2px 2px teal;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: yellow;
+  cursor: pointer;
+}
+
+button:active {
+  box-shadow: none;
+}
+
+li {
+  margin-bottom: 5px;
+  list-style-type: none;
+}
+
+.square {
+  background: #ffffff;
+  border: 1px solid #999999;
+  float: left;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 34px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 34px;
+}
+
+.hidden {
+  display: none;
+}
+
+p.tab {
+  margin-left: 5px;
+}
+
+#courseorders {
+  border-collapse: separate;
+  display: inline-block;
+  margin: 15px;
+}
+
+th, td {
+  padding: 7px 7px;
+  text-align: right;
+}
+
+table.list td, table.borders td {
+  border: 1px solid black;
+}
+table.borders tr {
+  border-right: 2px solid black;
+}
+table.borders thead tr {
+  border: 2px solid black;
+}
+table.borders tbody > tr.first {
+  border-left: 2px solid black;
+}
+table.borders tbody > tr > th, table.borders tbody > tr.last {
+  border-bottom: 3px double black;
+}
+table.borders tbody > tr.final, table.borders tbody > tr > th.final {
+  border-bottom: 2px solid black;
+}
+
+tr.rowrow {
+  display: none;
+}
+
+#courseorders td {
+  padding: 7px;
+  border: 2px solid white;
+}
+
+#courseorders td:hover {
+  cursor: pointer;
+}
+
+#courseorders td.selected {
+  border: 2px solid black;
+}
+
+#courseorders td.close {
+  border: 2px solid blue;
+}
+
+#courseorders td.false {
+  border: 2px solid red;
+}
+
+#courseorders td.hasrow {
+  border: 2px solid purple;
+}
+
+#composition {
+  display: flex;
+  flex-flow: row;
+}
+
+#rowcolumn li:nth-child(odd) {
+  border-bottom: 1px solid gray;
+}
+
+#catcolumn li:nth-child(odd) {
+  border-bottom: 1px solid white;
+}
+
+.fade {
+  color: gray;
+}
+
+.highlightgreen {
+  background-color: rgb(199, 255, 199);
+}
+
+.highlightblue {
+  background-color: rgb(176, 234, 255);
+}
+
+.highlightred {
+  background-color: rgb(252, 196, 204);
+}
+
+.highlightpurple {
+  background-color: rgb(223, 196, 252);
+}
+
+
+footer {
+  margin-top: 50px;
+  padding-top: 25px;
+  border-top: 1px solid lightgrey;
+}
+
+footer > a {
+  color: #BBBBBB;
+}
+
+.nicejob {
+  text-decoration: line-through;
+}
+
+
+
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
