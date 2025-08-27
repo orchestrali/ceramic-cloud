@@ -12,7 +12,7 @@ var methodinfo = {};
 var leadlength;
 
 $(function() {
-  
+  $("#submit").on("click", subcomplib);
 });
 
 //clear any previous stuff and figure out the current search
