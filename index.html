@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Method Measurements</title>
+    <meta name="description" content="A cool thing made with Glitch">
+    <link id="favicon" rel="icon" href="https://sallyandbobminor.wordpress.com/wp-content/uploads/2025/07/bristol-major-short.png" type="image/png">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body>
+    <header>
+      <h1>
+        Musical features
+      </h1>
+    </header>
+
+    <main>
+      <form action="/" id="form" name="form" method="get">
+        <div class="input">
+          <label for="complibid">
+            Enter a complib.org ID:
+          </label>
+          <input type="number" id="complibid" name="complibid" />
+          
+        </div>
+        <div class="input">
+          <label for="complibcomp">
+            <input type="radio" id="complibcomp" name="complibwhat" value="composition" checked />
+            Composition
+          </label>
+          <label for="complibcompexp">
+            <input type="radio" id="complibcompexp" name="complibwhat" value="compexperiment" />
+            Composition (experiment)
+          </label>
+          <label for="complibmethod">
+            <input type="radio" id="complibmethod" name="complibwhat" value="method"  />
+            Method (plain course)
+          </label>
+          <label for="complibexp">
+            <input type="radio" id="complibexp" name="complibwhat" value="experiment"  />
+            Method (experiment)
+          </label>
+        </div>
+        <div class="input">
+          <label for="addtenor">
+            <input type="checkbox" id="addtenor" name="addtenor" />
+            Add tenor
+          </label>
+        </div>
+        
+        
+        <button type="button" id="submit" >Submit</button>
+      </form>
+      
+      <div id="container">
+        <p>
+          
+        </p>
+        
+      </div>
+      <table id="summary" class="hidden">
+        <thead>
+          <th>Feature(s)</th>
+          <th>Number of highlighted rows</th>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="displayoptions">
+        
+      </div>
+      <div id="searchbar" class="hidden">
+        <input type="text" id="search" />
+        <button type="button" id="searchbutton">
+          Go
+        </button>
+      </div>
+      <table id="courseorders" class="hidden">
+        
+      </table>
+      <div id="courseinfo">
+        
+      </div>
+      <table id="table">
+        <!--<thead>
+          <th>Category</th>
+          <th>Number of rows</th>
+          <th>Total in category</th>
+        </thead>-->
+        <tbody></tbody>
+      </table>
+      <div id="composition">
+        <div class="column" >
+          <ul id="rowcolumn">
+            
+          </ul>
+        </div>
+        <div class="column" >
+          <ul id="catcolumn">
+            
+          </ul>
+        </div>
+      </div>
+      <div id="svgcontainer">
+        
+      </div>
+      
+    </main>
+
+    
+
+    <!-- Your web-app is https, so your scripts need to be too -->
+    <script src="https://code.jquery.com/jquery-2.2.1.min.js"
+            integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="
+            crossorigin="anonymous"></script>
+    <script src="jquery.svg.js"></script>
+    <script src="jquery.svganim.js"></script>
+    <script src="jquery.svgdom.js"></script>
+    <script src="/public.js"></script>
+  </body>
+</html>
