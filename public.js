@@ -106,12 +106,15 @@ function analyzesteps() {
   let cathtml = [];
   rowarr.forEach(r => {
     let runs = findsteps(r);
+    
     if (runs.length === 0) {
       let html = `<li>${rowstring(r)} </li>`;
       let cat = `<li class="fade">none</li>`;
       rowhtml.push(html);
       cathtml.push(cat);
     } else {
+      console.log(rowstring(r));
+      console.log(runs);
       let html = `<li>`;
       let prev;
       let dir = 1;
