@@ -12,6 +12,7 @@ var methodinfo = {};
 var leadlength;
 
 $(function() {
+  console.log("hello");
   $("#submit").on("click", subcomplib);
 });
 
