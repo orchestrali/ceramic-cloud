@@ -12,7 +12,7 @@ var methodinfo = {};
 var leadlength;
 
 $(function() {
-  console.log("hello");
+  console.log("??");
   $("#submit").on("click", subcomplib);
 });
 
@@ -114,8 +114,8 @@ function analyzesteps() {
       rowhtml.push(html);
       cathtml.push(cat);
     } else {
-      console.log(rowstring(r));
-      console.log(runs);
+      //console.log(rowstring(r));
+      //console.log(runs);
       let html = `<li>`;
       let prev;
       let dir = 1;
@@ -124,6 +124,8 @@ function analyzesteps() {
         let b = bellnum(r[p-1]);
         if (i === -1) {
           if (prev) html += `</span>`;
+          console.log(rowstring(r));
+          console.log(html);
           html += b;
           prev = null;
         } else {
