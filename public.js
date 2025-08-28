@@ -123,7 +123,7 @@ function analyzesteps() {
       for (let p = 1; p <= numbells; p++) {
         //if (t) console.log(p, prev);
         let i = runs.findIndex(a => a.includes(p));
-        let b = bellnum(r[p-1]);
+        let b = rowstring(r)[p-1];
         if (i === -1) {
           if (prev > -1) {
             html += `</span>`;
