@@ -232,6 +232,16 @@ function bellnum(c) {
   return places.indexOf(c)+1;
 }
 
+//given array of places (may contain duplicates) and number of bells
+//check exactly which places are represented
+function checkused(pp, n) {
+  let used = [];
+  for (let p = 1; p <= n; p++) {
+    if (pp.includes(p)) used.push(p);
+  }
+  return used;
+}
+
 function collectdata(r) {
   
   //hmmm how do I deal with consecutive chunks vs consecutive intervals...
@@ -240,8 +250,7 @@ function collectdata(r) {
   let data = {
     steps: findinterval(r, 1),
     thirds: findinterval(r, 2),
-    oct: r.length > 8 ? findinterval(r, 7) : [],
-    tonic: r.length > 7 ? findtonic(r) : []
+    oct: r.length > 8 ? findinterval(r, 7) : []
   };
 
   let combined = [];
@@ -251,10 +260,19 @@ function collectdata(r) {
     });
   }
   //combined.sort((a,b) => a-b);
-  let used = [];
-  for (let p = 1; p <= r.length; p++) {
-    if (combined.includes(p)) used.push(p);
+  let used = checkused(combined, r.length);
+  if (used.length < r.length && r.length > 7) {
+    let tonic = findtonic(r);
+    tonic.forEach(a => {
+      if (a.length > 1) {
+        a.forEach(p => {
+          if (!used.includes(p)) used.push(p);
+        });
+      }
+    });
   }
+  
+  //tonic: r.length > 7 ? findtonic(r) : []
   data.used = used;
   if (used.length === r.length) {
     data.good = true;
