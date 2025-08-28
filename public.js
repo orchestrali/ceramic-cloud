@@ -1,4 +1,21 @@
 const places = "1234567890ET";
+var tonictriad = [
+  {stage: 8, bells: [1,4,6,8], tonic: [1,8]},
+  {stage: 10, bells: [1,3,6,8,10], tonic: [3,10]},
+  {stage: 12, bells: [1,3,5,8,10,12], tonic: [5,12]}
+];
+//specifically "root position" only one octave
+var arpeggios = [
+  {bells: [2,5,7,9], minstage: 10},
+  {bells: [1,4,6,8], minstage: 10},
+  {bells: [3,6,8,10], minstage: 12}, //tonic on ten, but that's separate???
+  {bells: [4,7,9,11], minstage: 12}
+];
+var tritone = {
+  stage8: [2,5],
+  stage10: [4,7],
+  stage12: [2,6,9]
+};
 var url = "https://api.complib.org/";
 //holder for rows from complib
 var rowarr = [];
@@ -170,7 +187,7 @@ function bellnum(c) {
 //r is array
 function rowints(r, abs) {
   let ii = [];
-  for (let i = 1; i <= r.length; i++) {
+  for (let i = 1; i < r.length; i++) {
     let d = r[i]-r[i-1];
     abs ? ii.push(Math.abs(d)) : ii.push(d);
   }
@@ -196,5 +213,52 @@ function findsteps(r) {
       current = [];
     }
   }
+  if (current.length) runs.push(current);
   return runs;
+}
+
+//find instances of an interval, if consecutive group them together
+//result is array of arrays with row places connected by the interval
+function findinterval(r,int) {
+  let dd = rowints(r, true);
+  let runs = [];
+  let current = [];
+  for (let i = 0; i < dd.length; i++) {
+    let d = dd[i];
+    if (d === int) {
+      if (current.length === 0) {
+        current.push(i+1,i+2);
+      } else {
+        current.push(i+2);
+      }
+    } else {
+      if (current.length) runs.push(current);
+      current = [];
+    }
+  }
+  if (current.length) runs.push(current);
+  return runs;
+}
+
+//find tonic triad bells
+//result is array of arrays with places in row of tonic triad bells
+//any consecutive places will be in an array together
+//on a given number of bells, all rows will have same total number of places in the result
+//but different number of arrays depending on grouping
+function findtonic(r) {
+  //r.length needs to be 8, 10, or 12
+  let tt = tonictriad.find(o => o.stage === r.length).bells;
+  let tonic = [];
+  let current = [];
+  for (let i = 0; i < r.length; i++) {
+    let b = r[i];
+    if (tt.includes(b)) {
+      current.push(i+1);
+    } else {
+      if (current.length) tonic.push(current);
+      current = [];
+    }
+  }
+  if (current.length) tonic.push(current);
+  return tonic;
 }
