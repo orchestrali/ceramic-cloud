@@ -48,16 +48,17 @@ function subcomplib() {
   if (num.length > 4 && /^\d+$/.test(num)) {
     tenor = $("#addtenor").prop("checked");
     what = $('input[name="complibwhat"]:checked').val();
+    let access = $("#accesskey").val() || "";
     console.log(what);
-    getcomplib(num, ["composition","compexperiment"].includes(what) ? "composition" : "method");
+    getcomplib(num, access, ["composition","compexperiment"].includes(what) ? "composition" : "method");
   }
 }
 
 //get rows
-function getcomplib(compid, w) {
+function getcomplib(compid, access, w) {
   var xhr = new XMLHttpRequest();
-  
-  xhr.open('GET', url+w+"/"+compid+"/rows", true);
+  let q = access.length ? "?accessKey="+access : "";
+  xhr.open('GET', url+w+"/"+compid+"/rows"+q, true);
   xhr.send();
 
   xhr.onload = function() {
