@@ -367,6 +367,7 @@ function checkcompound(r) {
       }
     }
   }
+  if (compound) console.log(rowstring(r));
   return compound ? [one,two] : null;
 }
 
