@@ -12,7 +12,7 @@ var methodinfo = {};
 var leadlength;
 
 $(function() {
-  console.log("what???");
+  console.log("ohhh argh");
   $("#submit").on("click", subcomplib);
 });
 
@@ -114,29 +114,29 @@ function analyzesteps() {
       rowhtml.push(html);
       cathtml.push(cat);
     } else {
-      let t = rowstring(r) === "12346857";
+      //let t = rowstring(r) === "12346857";
       //console.log(rowstring(r));
       //console.log(runs);
       let html = `<li>`;
-      let prev;
+      let prev = -1;
       let dir = 1;
       for (let p = 1; p <= numbells; p++) {
-        if (t) console.log(p, prev);
+        //if (t) console.log(p, prev);
         let i = runs.findIndex(a => a.includes(p));
         let b = bellnum(r[p-1]);
         if (i === -1) {
-          if (prev) {
+          if (prev > -1) {
             html += `</span>`;
           }
           //console.log(rowstring(r));
           //console.log(html);
           html += b;
-          prev = null;
+          prev = -1;
         } else {
           if (i === prev) {
             html += b;
           } else {
-            if (prev) {
+            if (prev > -1) {
               html += `</span>`;
               dir*=-1;
             }
@@ -146,7 +146,7 @@ function analyzesteps() {
           }
         }
       }
-      if (prev) html += `</span>`;
+      if (prev > -1) html += `</span>`;
       html += `</li>`;
       let cat = `<li>${runs.length} step chunk(s)</li>`;
       rowhtml.push(html);
