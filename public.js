@@ -12,7 +12,7 @@ var methodinfo = {};
 var leadlength;
 
 $(function() {
-  console.log("??");
+  console.log("what???");
   $("#submit").on("click", subcomplib);
 });
 
@@ -114,20 +114,22 @@ function analyzesteps() {
       rowhtml.push(html);
       cathtml.push(cat);
     } else {
+      let t = rowstring(r) === "12346857";
       //console.log(rowstring(r));
       //console.log(runs);
       let html = `<li>`;
       let prev;
       let dir = 1;
       for (let p = 1; p <= numbells; p++) {
+        if (t) console.log(p, prev);
         let i = runs.findIndex(a => a.includes(p));
         let b = bellnum(r[p-1]);
         if (i === -1) {
           if (prev) {
             html += `</span>`;
           }
-          console.log(rowstring(r));
-          console.log(html);
+          //console.log(rowstring(r));
+          //console.log(html);
           html += b;
           prev = null;
         } else {
