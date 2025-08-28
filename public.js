@@ -123,8 +123,13 @@ function displayanalysis(rows, cats) {
 function analyzesteps() {
   let rowhtml = [];
   let cathtml = [];
+  let goodcount = 0;
+  let compound = 0;
   rowarr.forEach(r => {
-    let runs = findsteps(r);
+    let data = collectdata(r);
+    let runs = data.steps;
+    if (data.good) goodcount++;
+    if (data.compound) compound++;
     
     if (runs.length === 0) {
       let html = `<li>${rowstring(r)} </li>`;
@@ -172,6 +177,8 @@ function analyzesteps() {
     }
   });
   displayanalysis(rowhtml, cathtml);
+  console.log("goodcount: "+goodcount);
+  console.log("compound: "+compound);
 }
 
 // ************* BELLRINGING FUNCTIONS *************
@@ -182,6 +189,56 @@ function rowstring(r) {
 
 function bellnum(c) {
   return places.indexOf(c)+1;
+}
+
+function collectdata(r) {
+  
+  //hmmm how do I deal with consecutive chunks vs consecutive intervals...
+  
+
+  let data = {
+    steps: findinterval(r, 1),
+    thirds: findinterval(r, 2),
+    oct: r.length > 8 ? findinterval(r, 7) : [],
+    tonic: r.length > 7 ? findtonic(r) : []
+  };
+
+  let combined = [];
+  for (let key in data) {
+    data[key].forEach(a => {
+      combined.push(...a);
+    });
+  }
+  //combined.sort((a,b) => a-b);
+  let used = [];
+  for (let p = 1; p <= r.length; p++) {
+    if (combined.includes(p)) used.push(p);
+  }
+  if (used.length === r.length) {
+    data.good = true;
+  } else {
+    data.compound = checkcompound(r);
+  }
+  return data;
+}
+
+//arr is an array of arrays of places
+function tallysizes(arr) {
+  let sizes = [];
+  arr.forEach(a => {
+    let size = a.length;
+    let o = sizes.find(e => e.size === size);
+    if (o) {
+      o.count++;
+    } else {
+      o = {
+        size: size,
+        count: 1
+      };
+      sizes.push(o);
+    }
+  });
+  return sizes;
 }
 
 //calculate bell intervals
@@ -263,3 +320,54 @@ function findtonic(r) {
   if (current.length) tonic.push(current);
   return tonic;
 }
+
+//this is a wide category of vaguely tittumsy things
+//compound melody, each one is stepwise
+//no consistency of alternation needed
+//I think rows don't need to be sent here though if they're all steps
+function checkcompound(r) {
+  let one = {
+    places: [1],
+    bells: [r[0]]
+  };
+  let two = {
+    places: [],
+    bells: []
+  };
+  let prev = 1;
+  let compound = true;
+  for (let i = 1; i < r.length; i++) {
+    let d = r[i]-r[i-1];
+    if (Math.abs(d) === 1) {
+      let o = prev === 1 ? one : two;
+      o.places.push(i+1);
+      o.bells.push(r[i]);
+      o.dir = d;
+    } else {
+      let o = prev === 1 ? two : one;
+      if (o.bells.length === 0) {
+        o.places.push(i+1);
+        o.bells.push(r[i]);
+        prev *= -1;
+      } else {
+        let last = o.bells[o.bells.length-1];
+        let ld = r[i]-last;
+        if (Math.abs(ld) === 1) {
+          if (o.bells.length === 1 || ld === o.dir) {
+            o.places.push(i+1);
+            o.bells.push(r[i]);
+            o.dir = ld;
+            prev *= -1;
+          } else {
+            compound = false;
+          }
+        } else {
+          compound = false;
+        }
+      }
+    }
+  }
+  return compound ? [one,two] : null;
+}
+
+
