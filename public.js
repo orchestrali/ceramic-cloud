@@ -89,7 +89,7 @@ function getcomplib(compid, access, w) {
       } else if (what === "compexperiment") {
         
       } else {
-        analyzesteps();
+        highlightgood();
       }
       
     }
@@ -117,6 +117,47 @@ function displayanalysis(rows, cats) {
   cats.forEach(h => {
     $("#catcolumn").append(h);
   });
+}
+
+function highlightgood() {
+  let rowhtml = [];
+  let cathtml = [];
+  rowarr.forEach(r => {
+    let data = collectdata(r);
+
+    if (data.compound) {
+      let html = `<li><span class="highlightgreen">${rowstring(r)}</span> </li>`;
+      let cat = `<li>Alison's favorite: compound melody!</li>`;
+      rowhtml.push(html);
+      cathtml.push(cat);
+    } else {
+      let html = `<li>`;
+      let prev;
+      for (let p = 1; p <= numbells; p++) {
+        if (data.used.includes(p)) {
+          if (!prev) {
+            html += `<span class="highlightblue">`;
+          }
+          html += rowstring(r)[p-1];
+          prev = true;
+        } else {
+          if (prev) {
+            html += `</span>`;
+          }
+          html += rowstring(r)[p-1];
+          prev = false;
+        }
+      }
+      if (prev) {
+        html += `</span>`;
+      }
+      html += `</li>`;
+      let cat = `<li>${data.used.length} places</li>`;
+      rowhtml.push(html);
+      cathtml.push(cat);
+    }
+  });
+  displayanalysis(rowhtml, cathtml);
 }
 
 //examine each row for steps and highlight them
@@ -214,6 +255,7 @@ function collectdata(r) {
   for (let p = 1; p <= r.length; p++) {
     if (combined.includes(p)) used.push(p);
   }
+  data.used = used;
   if (used.length === r.length) {
     data.good = true;
   } else {
@@ -325,6 +367,7 @@ function findtonic(r) {
 //compound melody, each one is stepwise
 //no consistency of alternation needed
 //I think rows don't need to be sent here though if they're all steps
+//do I care about a tenor behind?
 function checkcompound(r) {
   let one = {
     places: [1],
