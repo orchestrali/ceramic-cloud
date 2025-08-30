@@ -201,6 +201,10 @@ tr.rowrow {
   border-bottom: 1px solid white;
 }
 
+#thirdcolumn li:nth-child(odd) {
+  border-bottom: 1px solid gray;
+}
+
 .fade {
   color: gray;
 }
