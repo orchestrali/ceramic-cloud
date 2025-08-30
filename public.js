@@ -89,7 +89,8 @@ function getcomplib(compid, access, w) {
       } else if (what === "compexperiment") {
         
       } else {
-        highlightwhole();
+        //highlightwhole();
+        analyzesteps();
       }
       
     }
@@ -195,6 +196,7 @@ function analyzesteps() {
   rowarr.forEach(r => {
     let data = collectdata(r);
     let runs = data.steps;
+    let runcombos;
     if (data.good) goodcount++;
     if (data.compound) compound++;
     
@@ -204,6 +206,8 @@ function analyzesteps() {
       rowhtml.push(html);
       cathtml.push(cat);
     } else {
+      runcombos = groupchunks(runs);
+      if (runcombos.length < runs.length) console.log(rowstring(r));
       //let t = rowstring(r) === "12346857";
       //console.log(rowstring(r));
       //console.log(runs);
@@ -307,6 +311,28 @@ function collectdata(r) {
     data.compound = checkcompound(r);
   }
   return data;
+}
+
+//arr is an array of arrays of places
+//if two chunks are consecutive, combine them into one chunk
+function groupchunks(arr) {
+  let res = [];
+  let current = [];
+  arr[0].forEach(n => current.push(n));
+  let last = current[current.length-1];
+  for (let i = 1; i < arr.length; i++) {
+    let c = arr[i];
+    if (c[0] === last+1) {
+      current.push(...c);
+    } else {
+      res.push(current);
+      current = [];
+      current.push(...c);
+    }
+    last = current[current.length-1];
+  }
+  res.push(current);
+  return res;
 }
 
 //arr is an array of arrays of places
