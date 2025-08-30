@@ -140,7 +140,7 @@ function highlightlarge() {
       rowhtml.push(html);
       cathtml.push(cat);
     } else if (maxes.largest > 3) {
-      let key = largekey;
+      let key = maxes.largekey;
       let pp = data[key];
       let html = `<li>`;
       let prev = -1;
