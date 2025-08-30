@@ -29,7 +29,7 @@ var methodinfo = {};
 var leadlength;
 
 $(function() {
-  console.log("ohhh argh");
+  //console.log("ohhh argh");
   $("#submit").on("click", subcomplib);
 });
 
@@ -89,7 +89,7 @@ function getcomplib(compid, access, w) {
       } else if (what === "compexperiment") {
         
       } else {
-        highlightgood();
+        highlightwhole();
       }
       
     }
@@ -117,6 +117,32 @@ function displayanalysis(rows, cats) {
   cats.forEach(h => {
     $("#catcolumn").append(h);
   });
+}
+
+function highlightwhole() {
+  let rowhtml = [];
+  let cathtml = [];
+  rowarr.forEach(r => {
+    let data = collectdata(r);
+
+    if (data.compound) {
+      let html = `<li><span class="highlightgreen">${rowstring(r)}</span> </li>`;
+      let cat = `<li>Alison's favorite: compound melody!</li>`;
+      rowhtml.push(html);
+      cathtml.push(cat);
+    } else if (data.good) {
+      let html = `<li><span class="highlightblue">${rowstring(r)}</span> </li>`;
+      let cat = `<li>whole row</li>`;
+      rowhtml.push(html);
+      cathtml.push(cat);
+    } else {
+      let html = `<li>${rowstring(r)} </li>`;
+      let cat = `<li class="fade">none</li>`;
+      rowhtml.push(html);
+      cathtml.push(cat);
+    }
+  });
+  displayanalysis(rowhtml, cathtml);
 }
 
 function highlightgood() {
@@ -261,6 +287,7 @@ function collectdata(r) {
   }
   //combined.sort((a,b) => a-b);
   let used = checkused(combined, r.length);
+  /*
   if (used.length < r.length && r.length > 7) {
     let tonic = findtonic(r);
     tonic.forEach(a => {
@@ -271,7 +298,7 @@ function collectdata(r) {
       }
     });
   }
-  
+  */
   //tonic: r.length > 7 ? findtonic(r) : []
   data.used = used;
   if (used.length === r.length) {
