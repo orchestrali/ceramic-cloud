@@ -140,7 +140,7 @@ function highlightlarge() {
       rowhtml.push(html);
       cathtml.push(cat);
     } else if (maxes.largest > 3) {
-      let key = maxes.largekey;
+      let key = maxes.maxkey;
       let pp = data[key];
       let html = `<li>`;
       let prev = -1;
@@ -330,7 +330,7 @@ function collectdata(r) {
   let used = checkused(combined, r.length);
   ///*
   if (used.length < r.length && r.length > 7) {
-    let tonic = findtonic(r);
+    let tonic = findtonicgroups(r);
     tonic.forEach(a => {
       if (a.length > 1) {
         a.forEach(p => {
@@ -471,6 +471,38 @@ function findinterval(r,int) {
   }
   if (current.length) runs.push(current);
   return runs;
+}
+
+//like the one below, but only keeps tonic bells that are consecutive
+function findtonicgroups(r) {
+  //r.length needs to be 8, 10, or 12
+  let tt = tonictriad.find(o => o.stage === r.length).bells;
+  let tonic = [];
+  let current = [];
+  let bells = [];
+  for (let i = 0; i < r.length; i++) {
+    let b = r[i];
+    if (tt.includes(b)) {
+      current.push(i+1);
+      bells.push(b);
+    } else {
+      if (current.length === 2) {
+        let d = Math.abs(bells[1] - bells[0]);
+        if (d != 2) tonic.push(current);
+      } else if (current.length > 1) {
+        tonic.push(current);
+      }
+      current = [];
+      bells = [];
+    }
+  }
+  if (current.length === 2) {
+    let d = Math.abs(bells[1] - bells[0]);
+    if (d != 2) tonic.push(current);
+  } else if (current.length > 1) {
+    tonic.push(current);
+  }
+  return tonic;
 }
 
 //find tonic triad bells
