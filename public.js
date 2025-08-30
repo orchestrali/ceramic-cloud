@@ -89,8 +89,8 @@ function getcomplib(compid, access, w) {
       } else if (what === "compexperiment") {
         
       } else {
-        //highlightwhole();
-        analyzesteps();
+        highlightlarge();
+        //analyzesteps();
       }
       
     }
@@ -120,11 +120,14 @@ function displayanalysis(rows, cats) {
   });
 }
 
-function highlightwhole() {
+function highlightlarge() {
   let rowhtml = [];
   let cathtml = [];
+  let diffcount = 0;
   rowarr.forEach(r => {
     let data = collectdata(r);
+    let maxes = comparesizes(data);
+    if (maxes.maxkey != maxes.largekey) diffcount++;
 
     if (data.compound) {
       let html = `<li><span class="highlightgreen">${rowstring(r)}</span> </li>`;
@@ -136,6 +139,40 @@ function highlightwhole() {
       let cat = `<li>whole row</li>`;
       rowhtml.push(html);
       cathtml.push(cat);
+    } else if (maxes.largest > 3) {
+      let key = largekey;
+      let pp = data[key];
+      let html = `<li>`;
+      let prev = -1;
+      let dir = 1;
+      for (let p = 1; p <= r.length; p++) {
+        let i = pp.findIndex(a => a.includes(i));
+        if (i === -1) {
+          //place not included in run or whatever
+          if (prev > -1) {
+            html += `</span>`;
+          }
+          html += rowstring(r)[p-1];
+        } else {
+          let c = dir === 1 ? "highlightblue" : "highlightgreen";
+          if (prev === -1) {
+            html += `<span class="${c}">`;
+            dir *= -1;
+          } else if (prev != i) {
+            html += `</span><span class="${c}">`;
+            dir *= -1;
+          }
+          html += rowstring(r)[p-1];
+        }
+        prev = i;
+      }
+      if (prev > -1) {
+        html += `</span>`;
+      }
+      html += `</li>`;
+      let cat = `<li>${key}</li>`;
+      rowhtml.push(html);
+      cathtml.push(cat);
     } else {
       let html = `<li>${rowstring(r)} </li>`;
       let cat = `<li class="fade">none</li>`;
@@ -143,6 +180,7 @@ function highlightwhole() {
       cathtml.push(cat);
     }
   });
+  console.log("diffcount: "+diffcount);
   displayanalysis(rowhtml, cathtml);
 }
 
@@ -291,7 +329,7 @@ function collectdata(r) {
   }
   //combined.sort((a,b) => a-b);
   let used = checkused(combined, r.length);
-  /*
+  ///*
   if (used.length < r.length && r.length > 7) {
     let tonic = findtonic(r);
     tonic.forEach(a => {
@@ -302,7 +340,7 @@ function collectdata(r) {
       }
     });
   }
-  */
+  //*/
   //tonic: r.length > 7 ? findtonic(r) : []
   data.used = used;
   if (used.length === r.length) {
@@ -333,6 +371,29 @@ function groupchunks(arr) {
   }
   res.push(current);
   return res;
+}
+
+//take the results of collectdata, compare largest chunk and most places used
+function comparesizes(o) {
+  let maxused = 0;
+  let maxkey;
+  let largest = 0;
+  let largekey;
+  for (let key in o) {
+    let sizes = o[key].map(a => a.length);
+    let large = Math.max(...sizes);
+    if (large > largest) {
+      largest = large;
+      largekey = key;
+    }
+    let sum = 0;
+    sizes.forEach(n => sum += n);
+    if (sum > maxused) {
+      maxused = sum;
+      maxkey = key;
+    }
+  }
+  return {maxused: maxused, maxkey: maxkey, largest: largest, largekey: largekey};
 }
 
 //arr is an array of arrays of places
