@@ -146,7 +146,7 @@ function highlightlarge() {
       let prev = -1;
       let dir = 1;
       for (let p = 1; p <= r.length; p++) {
-        let i = pp.findIndex(a => a.includes(i));
+        let i = pp.findIndex(a => a.includes(p));
         if (i === -1) {
           //place not included in run or whatever
           if (prev > -1) {
