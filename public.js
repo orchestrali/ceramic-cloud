@@ -314,7 +314,6 @@ function collectdata(r) {
   
   //hmmm how do I deal with consecutive chunks vs consecutive intervals...
   
-
   let data = {
     steps: findinterval(r, 1),
     thirds: findinterval(r, 2),
@@ -379,20 +378,22 @@ function comparesizes(o) {
   let maxkey;
   let largest = 0;
   let largekey;
-  for (let key in o) {
-    let sizes = o[key].map(a => a.length);
-    let large = Math.max(...sizes);
-    if (large > largest) {
-      largest = large;
-      largekey = key;
+  ["steps","thirds","oct","tonic"].forEach(key => {
+    if (o[key]) {
+      let sizes = o[key].map(a => a.length);
+      let large = Math.max(...sizes);
+      if (large > largest) {
+        largest = large;
+        largekey = key;
+      }
+      let sum = 0;
+      sizes.forEach(n => sum += n);
+      if (sum > maxused) {
+        maxused = sum;
+        maxkey = key;
+      }
     }
-    let sum = 0;
-    sizes.forEach(n => sum += n);
-    if (sum > maxused) {
-      maxused = sum;
-      maxkey = key;
-    }
-  }
+  });
   return {maxused: maxused, maxkey: maxkey, largest: largest, largekey: largekey};
 }
 
