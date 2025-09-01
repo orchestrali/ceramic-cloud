@@ -139,7 +139,7 @@ function threecolumnexperiment() {
   
   keys.forEach((key,i) => {
     let target = "#composition div:nth-child("+(i+1)+") ul";
-    $(target).append(`<li class="fade">${places.slice(0,numbells)}</li>`);
+    $(target).append(`<li>${key}</li>`); //used to be rounds, now header, both would mess up backstroke indications
     lists[key].forEach(h => $(target).append(h));
   });
 }
