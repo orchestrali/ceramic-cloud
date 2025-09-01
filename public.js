@@ -132,7 +132,8 @@ function threecolumnexperiment() {
   rowarr.forEach(r => {
     let data = collectdata(r);
     keys.forEach(w => {
-      lists[w].push(buildhighlighting(r, data[w]));
+      let pp = data[w] || [];
+      lists[w].push(buildhighlighting(r, pp));
     });
     
   });
@@ -366,6 +367,7 @@ function collectdata(r) {
   ///*
   if (used.length < r.length && r.length > 7) {
     let tonic = findtonicgroups(r);
+    data.tonic = tonic;
     tonic.forEach(a => {
       if (a.length > 1) {
         a.forEach(p => {
