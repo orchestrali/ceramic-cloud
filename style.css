@@ -193,17 +193,14 @@ tr.rowrow {
   flex-flow: row;
 }
 
-#rowcolumn li:nth-child(odd) {
+#composition li:nth-child(odd) {
   border-bottom: 1px solid gray;
 }
 
-#catcolumn li:nth-child(odd) {
+#composition ul.notrows li:nth-child(odd) {
   border-bottom: 1px solid white;
 }
 
-#thirdcolumn li:nth-child(odd) {
-  border-bottom: 1px solid gray;
-}
 
 .fade {
   color: gray;
