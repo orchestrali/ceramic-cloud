@@ -131,9 +131,10 @@ function threecolumnexperiment() {
   keys.forEach(k => lists[k] = []);
   rowarr.forEach(r => {
     let data = collectdata(r);
-    keys.forEach(w => {
+    keys.forEach((w,i) => {
+      let colors = i === 0 ? ["highlightblue", "highlightgreen"] : ["highlightred", "highlightpurple"];
       let pp = data[w] || [];
-      lists[w].push(buildhighlighting(r, pp));
+      lists[w].push(buildhighlighting(r, pp, colors));
     });
     
   });
@@ -146,7 +147,8 @@ function threecolumnexperiment() {
 }
 
 //given a row and places to highlight, build the html
-function buildhighlighting(r,pp) {
+function buildhighlighting(r,pp,colors) {
+  if (!colors) colors = ["highlightblue", "highlightgreen"];
   let html = `<li>`;
   if (pp.length === 0) {
     html += rowstring(r) + `</li>`;
@@ -162,7 +164,7 @@ function buildhighlighting(r,pp) {
         }
         html += rowstring(r)[p-1];
       } else {
-        let c = dir === 1 ? "highlightblue" : "highlightgreen";
+        let c = dir === 1 ? colors[0] : colors[1];
         if (prev === -1) {
           html += `<span class="${c}">`;
           dir *= -1;
