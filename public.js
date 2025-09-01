@@ -87,10 +87,10 @@ function getcomplib(compid, access, w) {
         //method experiment, showing musical traits of many courses
         
       } else if (what === "compexperiment") {
-        
-      } else {
         highlightlarge();
         //analyzesteps();
+      } else {
+        threecolumnexperiment();
       }
       
     }
@@ -110,6 +110,7 @@ function checkbit(value, bit) {
 function displayanalysis(rows, cats) {
   $("#rowcolumn").append(`<li class="fade">${places.slice(0,numbells)}</li>`); //
   $("#catcolumn").append(`<li class="fade">(starting rounds)</li>`); //
+  $("#catcolumn").addClass("notrows");
   
   rows.forEach(h => {
     $("#rowcolumn").append(h);
@@ -118,6 +119,66 @@ function displayanalysis(rows, cats) {
   cats.forEach(h => {
     $("#catcolumn").append(h);
   });
+}
+
+function threecolumnexperiment() {
+  //steps, thirds, tonic
+  //#thirdcolumn
+  let keys = ["steps","thirds","oct","tonic"];
+  if (numbells < 8) keys.splice(3, 1);
+  if (numbells < 10) keys.splice(2, 1);
+  let lists = {};
+  keys.forEach(k => lists[k] = []);
+  rowarr.forEach(r => {
+    let data = collectdata(r);
+    keys.forEach(w => {
+      lists[w].push(buildhighlighting(r, data[w]));
+    });
+    
+  });
+  
+  keys.forEach((key,i) => {
+    let target = "#composition div:nth-child("+(i+1)+") ul";
+    $(target).append(`<li class="fade">${places.slice(0,numbells)}</li>`);
+    lists[key].forEach(h => $(target).append(h));
+  });
+}
+
+//given a row and places to highlight, build the html
+function buildhighlighting(r,pp) {
+  let html = `<li>`;
+  if (pp.length === 0) {
+    html += rowstring(r) + `</li>`;
+  } else {
+    let prev = -1;
+    let dir = 1;
+    for (let p = 1; p <= r.length; p++) {
+      let i = pp.findIndex(a => a.includes(p));
+      if (i === -1) {
+        //place not included in run or whatever
+        if (prev > -1) {
+          html += `</span>`;
+        }
+        html += rowstring(r)[p-1];
+      } else {
+        let c = dir === 1 ? "highlightblue" : "highlightgreen";
+        if (prev === -1) {
+          html += `<span class="${c}">`;
+          dir *= -1;
+        } else if (prev != i) {
+          html += `</span><span class="${c}">`;
+          dir *= -1;
+        }
+        html += rowstring(r)[p-1];
+      }
+      prev = i;
+    }
+    if (prev > -1) {
+      html += `</span>`;
+    }
+    html += `</li>`;
+  }
+  return html;
 }
 
 function highlightlarge() {
@@ -142,34 +203,8 @@ function highlightlarge() {
     } else if (maxes.largest > 3) {
       let key = maxes.maxkey;
       let pp = data[key];
-      let html = `<li>`;
-      let prev = -1;
-      let dir = 1;
-      for (let p = 1; p <= r.length; p++) {
-        let i = pp.findIndex(a => a.includes(p));
-        if (i === -1) {
-          //place not included in run or whatever
-          if (prev > -1) {
-            html += `</span>`;
-          }
-          html += rowstring(r)[p-1];
-        } else {
-          let c = dir === 1 ? "highlightblue" : "highlightgreen";
-          if (prev === -1) {
-            html += `<span class="${c}">`;
-            dir *= -1;
-          } else if (prev != i) {
-            html += `</span><span class="${c}">`;
-            dir *= -1;
-          }
-          html += rowstring(r)[p-1];
-        }
-        prev = i;
-      }
-      if (prev > -1) {
-        html += `</span>`;
-      }
-      html += `</li>`;
+      let html = buildhighlighting(r,pp);
+      
       let cat = `<li>${key}</li>`;
       rowhtml.push(html);
       cathtml.push(cat);
@@ -245,7 +280,7 @@ function analyzesteps() {
       cathtml.push(cat);
     } else {
       runcombos = groupchunks(runs);
-      if (runcombos.length < runs.length) console.log(rowstring(r));
+      //if (runcombos.length < runs.length) console.log(rowstring(r));
       //let t = rowstring(r) === "12346857";
       //console.log(rowstring(r));
       //console.log(runs);
