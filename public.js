@@ -19,6 +19,7 @@ var tritone = {
 var url = "https://api.complib.org/";
 //holder for rows from complib
 var rowarr = [];
+var compcalls = [];
 //features of current search
 var stage;
 var numbells;
@@ -74,6 +75,9 @@ function getcomplib(compid, access, w) {
         let row = results.rows[i][0].split("").map(bellnum);
         if (tenor) row.push(stage+1);
         rowarr.push(row);
+        if (results.rows[i][1].length) {
+          compcalls.push([i+2,results.rows[i][1]]);
+        }
         if (!leadlength && checkbit(results.rows[i][2],4)) {
           //at the first row that has the leadhead flag set, get this info
           leadlength = i-1;
@@ -125,7 +129,7 @@ function threecolumnexperiment() {
   //steps, thirds, tonic
   //#thirdcolumn
   let keys = ["steps","thirds","oct","tonic"];
-  if (numbells < 8) keys.splice(3, 1);
+  if (numbells < 8 || numbells%2 === 1) keys.splice(3, 1);
   if (numbells < 10) keys.splice(2, 1);
   let lists = {};
   keys.forEach(k => lists[k] = []);
