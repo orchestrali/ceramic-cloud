@@ -38,7 +38,7 @@ function subcomplib() {
   $("tbody").contents().detach();
   $("h3").detach();
   $("#container").contents().detach();
-  $("#rowcolumn,#catcolumn").contents().detach();
+  $("#composition div ul").contents().detach();
   methodinfo = {};
   leadlength = null;
   if (!$("#summary").hasClass("hidden")) {
