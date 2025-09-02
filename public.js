@@ -151,7 +151,7 @@ function buildhighlighting(r,pp,colors) {
   if (!colors) colors = ["highlightblue", "highlightgreen"];
   let html = `<li>`;
   if (pp.length === 0) {
-    html += rowstring(r) + `</li>`;
+    html = `<li class="fade">` + rowstring(r) + `</li>`;
   } else {
     let prev = -1;
     let dir = 1;
