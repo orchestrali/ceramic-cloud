@@ -402,6 +402,16 @@ function homecourseorder(stage) {
   return home;
 }
 
+//rotate a coursing order to put the tenor first, and remove the tenor
+function rotateco(co,n) {
+  let i = co.indexOf(n);
+  let rot = co.slice(i+1);
+  if (i > 0) {
+    rot.push(...co.slice(0,i));
+  }
+  return rot;
+}
+
 //build plain bob leadheads for stage n
 //does not include rounds??
 function plainleadheads(n) {
