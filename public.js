@@ -25,13 +25,15 @@ var stage;
 var numbells;
 var tenor;
 var what;
-
+//holder for method information: leadhead
 var methodinfo = {};
 var leadlength;
 
 $(function() {
   //console.log("ohhh argh");
   $("#submit").on("click", subcomplib);
+  $("#cosearch").on("keyup", cosearchkeyup);
+  $("#cosearchbutton").on("click", cosearch);
 });
 
 //clear any previous stuff and figure out the current search
@@ -45,6 +47,7 @@ function subcomplib() {
   if (!$("#summary").hasClass("hidden")) {
     $("#summary").addClass("hidden");
   }
+  $("#cosearchbar").addClass("hidden");
   let num = $("#complibid").val();
   if (num.length > 4 && /^\d+$/.test(num)) {
     tenor = $("#addtenor").prop("checked");
@@ -82,7 +85,9 @@ function getcomplib(compid, access, w) {
           //at the first row that has the leadhead flag set, get this info
           leadlength = i-1;
           //console.log(leadlength);
-          methodinfo.leadhead = rowstring(row);
+          //this will be incorrect if I've gotten a composition and there's a call at the first leadend...
+          //taking from complib results so tenor behind isn't included
+          methodinfo.leadhead = results.rows[i][0];
         }
       }
 
@@ -94,7 +99,14 @@ function getcomplib(compid, access, w) {
         highlightlarge();
         //analyzesteps();
       } else {
-        threecolumnexperiment();
+        if (what === "method") {
+          let plainlhs = plainleadheads(stage).map(a => rowstring(a));
+          if (plainlhs.includes(methodinfo.leadhead)) {
+            //show coursing order search field
+            $("#cosearchbar").removeClass("hidden");
+          }
+        }
+        threecolumnexperiment(rowarr);
       }
       
     }
@@ -125,7 +137,34 @@ function displayanalysis(rows, cats) {
   });
 }
 
-function threecolumnexperiment() {
+
+function cosearchkeyup() {
+  $("#cosearchbar p").text("");
+  let search = $("#cosearch").val().toUpperCase();
+  let chararr = search.split("");
+  let goodchars = chararr.every(c => places.slice(0, stage).includes(c));
+  let length = search.length === stage-1;
+  if (goodchars && length) {
+    $("#cosearchbutton").removeClass("disabled");
+  }
+  if (!goodchars) {
+    $("#cosearchbar p").text("invalid character in search");
+  }
+}
+
+function cosearch() {
+  if (!$("#cosearchbutton").hasClass("disabled")) {
+    $("#cosearchbutton").addClass("disabled");
+    let search = $("#cosearch").val().toUpperCase();
+    let coarr = search.split("").map(bellnum);
+    let rotated = rotateco(coarr, stage);
+    let course = buildcourse(rotated);
+    $("#composition div ul").contents().detach();
+    threecolumnexperiment(course);
+  }
+}
+
+function threecolumnexperiment(rowarr) {
   //steps, thirds, tonic
   //#thirdcolumn
   let keys = ["steps","thirds","oct","tonic"];
@@ -350,6 +389,59 @@ function checkused(pp, n) {
     if (pp.includes(p)) used.push(p);
   }
   return used;
+}
+
+//build plain bob course order
+//does not include tenor
+function homecourseorder(stage) {
+  let home = [];
+  for (let b = 2; b < stage; b+=2) {
+    home.push(b);
+    if (b < stage-1) home.unshift(b+1);
+  }
+  return home;
+}
+
+//build plain bob leadheads for stage n
+//does not include rounds??
+function plainleadheads(n) {
+  let lhs = [];
+  let co = homecourseorder(n);
+  co.unshift(n);
+  for (let i = 0; i < n-2; i++) {
+    let row = [1];
+    for (let b = 2; b <= n; b++) {
+      let j = co.indexOf(b);
+      let k = j - i - 1;
+      if (k < 0) k = co.length + k;
+      row.push(co[k]);
+    }
+    lhs.push(row);
+  }
+  return lhs;
+}
+
+//co should be an array that does not include the tenor!!!
+//expectation is rowarr holds plain course, not including starting rounds
+function buildcourse(co) {
+  let home = homecourseorder(stage);
+  let course = [];
+  for (let i = 0; i < rowarr.length; i++) {
+    let old = rowarr[i];
+    let row = [];
+    for (let p = 0; p < stage; p++) {
+      if ([1,stage].includes(old[p])) {
+        row.push(old[p])
+      } else {
+        let b = old[p];
+        let j = home.indexOf(b);
+        row.push(co[j]);
+      }
+    }
+    if (tenor) row.push(stage+1);
+    course.push(row);
+  }
+  return course;
 }
 
 function collectdata(r) {
