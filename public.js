@@ -146,6 +146,8 @@ function cosearchkeyup() {
   let length = search.length === stage-1;
   if (goodchars && length) {
     $("#cosearchbutton").removeClass("disabled");
+  } else {
+    $("#cosearchbutton").addClass("disabled");
   }
   if (!goodchars) {
     $("#cosearchbar p").text("invalid character in search");
