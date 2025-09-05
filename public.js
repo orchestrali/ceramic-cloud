@@ -376,6 +376,8 @@ function analyzesteps() {
 
 function methodexperiment() {
   $("#table").append(`<tr><th>row num</th><th>row</th><th>info</th></tr>`);
+  let homeco = homecourseorder(stage);
+  homeco.unshift(stage);
   for (let i = 0; i < leadlength; i++) {
     let r = rowarr[i];
     let obj = analyzecoursing(r);
@@ -385,6 +387,10 @@ function methodexperiment() {
     let rstr = rowstring(r);
     let winc = 68/(r.length-1);
     let binc = 45/(r.length-1);
+    let previ = homeco.indexOf(r[stage-1]);
+    let last = homeco.length-1;
+    //if (previ === homeco.length-1) previ = -1;
+    let color = 1;
     for (let j = 0; j < r.length; j++) {
       let n = r[j];
       if (n === 1) {
@@ -393,7 +399,19 @@ function methodexperiment() {
         let h = (n === stage || n%2 === 1) ? 91 : 248;
         let w = 15 + winc*(stage-n);
         let b = 52 - binc*(stage-n);
-        html += `<span style="background-color: hwb(${h} ${w}% ${b}%)">${rstr[j]}</span>`;
+        //html += `<span style="background-color: hwb(${h} ${w}% ${b}%)">${rstr[j]}</span>`;
+        let homei = homeco.indexOf(n);
+        let di = Math.abs(homei-previ);
+        
+        if (di === 1 || ([0,last].includes(homei) && [0,last].includes(previ))) {
+          
+        } else {
+          color *= 1;
+          
+        }
+        let c = color === 1 ? "lightblue" : "lightgreen";
+        html += `<span style="background-color: ${c}">${rstr[j]}</span>`;
+        previ = homei;
       }
     }
     html += `</td><td></td></tr>`;
