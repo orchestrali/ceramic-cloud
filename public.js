@@ -40,7 +40,7 @@ $(function() {
 function subcomplib() {
   $("tbody").contents().detach();
   $("h3").detach();
-  $("#container").contents().detach();
+  $("#container,#table").contents().detach();
   $("#composition div ul").contents().detach();
   methodinfo = {};
   leadlength = null;
@@ -93,8 +93,8 @@ function getcomplib(compid, access, w) {
 
       //not sure I actually need any of this
       if (what === "experiment") {
-        //method experiment, showing musical traits of many courses
-        
+        //new method experiment
+        methodexperiment();
       } else if (what === "compexperiment") {
         highlightlarge();
         //analyzesteps();
@@ -373,6 +373,22 @@ function analyzesteps() {
   console.log("compound: "+compound);
 }
 
+
+function methodexperiment() {
+  $("#table").append(`<tr><th>row num</th><th>row</th><th>info</th></tr>`);
+  for (let i = 0; i < leadlength; i++) {
+    let r = rowarr[i];
+    let obj = analyzecoursing(r);
+    let data = analyzedistribution(obj);
+    let t = data.regular ? "regular" : "";
+    let html = `<tr><td>${i+1}</td><td>${rowstring(r)}</td><td>${t}</td></tr>`;
+    $("#table").append(html);
+  }
+}
+
+
+
+
 // ************* BELLRINGING FUNCTIONS *************
 
 function rowstring(r) {
@@ -454,6 +470,54 @@ function buildcourse(co) {
     course.push(row);
   }
   return course;
+}
+
+//assuming plain course, list places in coursing order
+function analyzecoursing(row) {
+  let co = homecourseorder(stage);
+  co.unshift(stage);
+  let pp = [];
+  for (let i = 0; i < co.length; i++) {
+    let p = row.indexOf(co[i])+1;
+    pp.push(p);
+  }
+  let res = {
+    treble: row.indexOf(1)+1,
+    order: pp
+  };
+  return res;
+}
+
+function analyzedistribution(o) {
+  let pp = o.order;
+  let one = 0;
+  let two = 0;
+  let other = 0;
+  let counts = [];
+  let d = Math.abs(pp[0]-pp[pp.length-1]);
+  counts.push({diff: d, count: 1});
+  d === 1 ? one++ : d === 2 ? two++ : other++;
+  for (let i = 1; i < pp.length; i++) {
+    let diff = Math.abs(pp[i]-pp[i-1]);
+    switch (diff) {
+      case 1:
+        one++;
+        break;
+      case 2:
+        two++;
+        break;
+      default:
+        other++;
+    }
+    let c = counts.find(obj => obj.diff === diff);
+    if (c) {
+      c.count++;
+    } else {
+      counts.push({diff: diff, count: 1});
+    }
+  }
+  let regular = [1,2].includes(one) && [0,1].includes(other);
+  return {one: one, two: two, other: other, regular: regular, counts: counts};
 }
 
 function collectdata(r) {
