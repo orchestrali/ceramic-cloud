@@ -633,20 +633,14 @@ function findtonicgroups(r) {
       current.push(i+1);
       bells.push(b);
     } else {
-      if (current.length === 2) {
-        let d = Math.abs(bells[1] - bells[0]);
-        if (d != 2) tonic.push(current);
-      } else if (current.length > 1) {
+      if (current.length > 1) {
         tonic.push(current);
       }
       current = [];
       bells = [];
     }
   }
-  if (current.length === 2) {
-    let d = Math.abs(bells[1] - bells[0]);
-    if (d != 2) tonic.push(current);
-  } else if (current.length > 1) {
+  if (current.length > 1) {
     tonic.push(current);
   }
   return tonic;
