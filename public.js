@@ -390,7 +390,7 @@ function methodexperiment() {
       if (n === 1) {
         html += "1";
       } else {
-        let h = (n === stage || n%2 === 1) ? 91 : 54;
+        let h = (n === stage || n%2 === 1) ? 91 : 248;
         let w = 15 + winc*(stage-n);
         let b = 52 - binc*(stage-n);
         html += `<span style="background-color: hwb(${h} ${w}% ${b}%)">${rstr[j]}</span>`;
