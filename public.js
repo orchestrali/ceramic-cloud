@@ -381,7 +381,22 @@ function methodexperiment() {
     let obj = analyzecoursing(r);
     let data = analyzedistribution(obj);
     let t = data.regular ? "regular" : "";
-    let html = `<tr><td>${i+1}</td><td>${rowstring(r)}</td><td>${t}</td></tr>`;
+    let html = `<tr><td>${i+1}</td><td>`;
+    let rstr = rowstring(r);
+    let winc = 68/(r.length-1);
+    let binc = 45/(r.length-1);
+    for (let j = 0; j < r.length; j++) {
+      let n = r[j];
+      if (n === 1) {
+        html += "1";
+      } else {
+        let h = (n === stage || n%2 === 1) ? 91 : 54;
+        let w = 15 + winc*(stage-n);
+        let b = 52 - binc*(stage-n);
+        html += `<span style="background-color: hwb(${h} ${w}% ${b}%)">${rstr[j]}</span>`;
+      }
+    }
+    html += `</td><td></td></tr>`;
     $("#table").append(html);
   }
 }
