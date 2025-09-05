@@ -391,10 +391,14 @@ function methodexperiment() {
     let last = homeco.length-1;
     //if (previ === homeco.length-1) previ = -1;
     let color = 1;
+    let consecutive = 0;
+    let maxconsec = 0;
     for (let j = 0; j < r.length; j++) {
       let n = r[j];
       if (n === 1) {
         html += "1";
+        maxconsec = Math.max(maxconsec, consecutive);
+        consecutive = 0;
       } else {
         let h = (n === stage || n%2 === 1) ? 91 : 248;
         let w = 15 + winc*(stage-n);
@@ -404,17 +408,20 @@ function methodexperiment() {
         let di = Math.abs(homei-previ);
         
         if (di === 1 || ([0,last].includes(homei) && [0,last].includes(previ))) {
-          
+          consecutive++;
         } else {
           color *= -1;
-          
+          maxconsec = Math.max(maxconsec, consecutive);
+          consecutive = 1;
         }
         let c = color === 1 ? "lightblue" : "lightgreen";
         html += `<span style="background-color: ${c}">${rstr[j]}</span>`;
         previ = homei;
       }
     }
-    html += `</td><td></td></tr>`;
+    maxconsec = Math.max(maxconsec, consecutive);
+    let cc = maxconsec > 2 ? maxconsec : "";
+    html += `</td><td>${cc}</td></tr>`;
     $("#table").append(html);
   }
 }
