@@ -375,13 +375,15 @@ function analyzesteps() {
 
 
 function methodexperiment() {
-  $("#table").append(`<tr><th>row num</th><th>row</th><th>info</th></tr>`);
+  $("#table").append(`<tr><th>row num</th><th>row</th><th>apart</th><th>consec</th></tr>`);
   let homeco = homecourseorder(stage);
   homeco.unshift(stage);
   for (let i = 0; i < leadlength; i++) {
     let r = rowarr[i];
     let obj = analyzecoursing(r);
     let data = analyzedistribution(obj);
+    let maxdiff = Math.max(...data.counts.map(o => o.diff));
+    let farthest = data.counts.find(o => o.diff === maxdiff).pp[0];
     let t = data.regular ? "regular" : "";
     let html = `<tr><td>${i+1}</td><td>`;
     let rstr = rowstring(r);
@@ -421,7 +423,7 @@ function methodexperiment() {
     }
     maxconsec = Math.max(maxconsec, consecutive);
     let cc = maxconsec > 2 ? maxconsec : "";
-    html += `</td><td>${cc}</td></tr>`;
+    html += `</td><td>${farthest.join("&")}</td><td>${cc}</td></tr>`;
     $("#table").append(html);
   }
 }
@@ -535,7 +537,7 @@ function analyzedistribution(o) {
   let other = 0;
   let counts = [];
   let d = Math.abs(pp[0]-pp[pp.length-1]);
-  counts.push({diff: d, count: 1});
+  counts.push({diff: d, count: 1, pp: [[pp[0],pp[pp.length-1]]]});
   d === 1 ? one++ : d === 2 ? two++ : other++;
   for (let i = 1; i < pp.length; i++) {
     let diff = Math.abs(pp[i]-pp[i-1]);
@@ -552,8 +554,9 @@ function analyzedistribution(o) {
     let c = counts.find(obj => obj.diff === diff);
     if (c) {
       c.count++;
+      c.pp.push([pp[i],pp[i-1]]);
     } else {
-      counts.push({diff: diff, count: 1});
+      counts.push({diff: diff, count: 1, pp: [[pp[i],pp[i-1]]]});
     }
   }
   let regular = [1,2].includes(one) && [0,1].includes(other);
