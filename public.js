@@ -475,7 +475,7 @@ function collectdata(r) {
   //combined.sort((a,b) => a-b);
   let used = checkused(combined, r.length);
   ///*
-  if (used.length < r.length && r.length > 7) {
+  if (r.length > 7 && r.length%2 === 0) { //used.length < r.length && 
     let tonic = findtonicgroups(r);
     data.tonic = tonic;
     tonic.forEach(a => {
