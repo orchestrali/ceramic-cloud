@@ -383,7 +383,7 @@ function methodexperiment() {
     let obj = analyzecoursing(r);
     let data = analyzedistribution(obj);
     let maxdiff = Math.max(...data.counts.map(o => o.diff));
-    let farthest = data.counts.find(o => o.diff === maxdiff).pp[0];
+    let farthest = data.counts.find(o => o.diff === maxdiff).pp[0].sort((a,b) => a-b);
     let t = data.regular ? "regular" : "";
     let html = `<tr><td>${i+1}</td><td>`;
     let rstr = rowstring(r);
@@ -423,7 +423,8 @@ function methodexperiment() {
     }
     maxconsec = Math.max(maxconsec, consecutive);
     let cc = maxconsec > 2 ? maxconsec : "";
-    html += `</td><td>${farthest.join("&")}</td><td>${cc}</td></tr>`;
+    let f = maxdiff > 4 ? farthest.join("&") : "";
+    html += `</td><td>${f}</td><td>${cc}</td></tr>`;
     $("#table").append(html);
   }
 }
