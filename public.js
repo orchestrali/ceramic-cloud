@@ -406,7 +406,7 @@ function methodexperiment() {
         if (di === 1 || ([0,last].includes(homei) && [0,last].includes(previ))) {
           
         } else {
-          color *= 1;
+          color *= -1;
           
         }
         let c = color === 1 ? "lightblue" : "lightgreen";
