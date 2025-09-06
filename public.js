@@ -1,4 +1,4 @@
-const places = "1234567890ET";
+const places = "1234567890ETABCDFGHJKLMN";
 var tonictriad = [
   {stage: 8, bells: [1,4,6,8], tonic: [1,8]},
   {stage: 10, bells: [1,3,6,8,10], tonic: [3,10]},
