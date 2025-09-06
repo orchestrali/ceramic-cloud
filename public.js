@@ -16,6 +16,7 @@ var tritone = {
   stage10: [4,7],
   stage12: [2,6,9]
 };
+var svg;
 var url = "https://api.complib.org/";
 //holder for rows from complib
 var rowarr = [];
@@ -31,6 +32,10 @@ var leadlength;
 
 $(function() {
   //console.log("ohhh argh");
+  $("#svgcontainer").svg({onLoad: (o) => {
+    svg = o;
+    svg.configure({xmlns: "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", width: 0, height: 0});
+  }});
   $("#submit").on("click", subcomplib);
   $("#cosearch").on("keyup", cosearchkeyup);
   $("#cosearchbutton").on("click", cosearch);
@@ -373,8 +378,31 @@ function analyzesteps() {
   console.log("compound: "+compound);
 }
 
+function coursingdiagrams() {
+  $("#svgcontainer").contents().remove();
+  let parent = svg.svg($("#svgcontainer"), null, null, 200, 1000, {xmlns: "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink"});
+  let dotgroup = svg.group(parent, {style: "stroke: none; fill: black;"});
+  let trebleg = svg.group(parent, {style: "stroke: red; stroke-width: 1px; fill: none;"});
+  let arcgroup = svg.group(parent, {style: "stroke: blue; stroke-width: 2px; fill: none;"}});
+  let homeco = homecourseorder(stage);
+  homeco.unshift(stage);
+  let y = 30;
+  for (let i = 0; i < leadlength; i++) {
+    let row = rowarr[i];
+    for (let p = 0; p < stage; p++) {
+      svg.circle(dotgroup, 30+p*30, y, 3);
+    }
+    let treblei = row.indexOf(1);
+    svg.circle(trebleg, 30+treblei*30, y, 5);
+
+
+
+    y += 40;
+  }
+}
 
 function methodexperiment() {
+  coursingdiagrams();
   $("#table").append(`<tr><th>row num</th><th>row</th><th>apart</th><th>consec</th></tr>`);
   let homeco = homecourseorder(stage);
   homeco.unshift(stage);
