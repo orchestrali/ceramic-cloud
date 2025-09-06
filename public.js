@@ -380,7 +380,7 @@ function analyzesteps() {
 
 function coursingdiagrams() {
   $("#svgcontainer").contents().remove();
-  let parent = svg.svg($("#svgcontainer"), null, null, 200, 1000, {xmlns: "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink"});
+  let parent = svg.svg($("#svgcontainer"), null, null, 500, 1000, {xmlns: "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink"});
   let dotgroup = svg.group(parent, {style: "stroke: none; fill: black;"});
   let trebleg = svg.group(parent, {style: "stroke: red; stroke-width: 1px; fill: none;"});
   let arcgroup = svg.group(parent, {style: "stroke: blue; stroke-width: 2px; fill: none;"});
@@ -394,8 +394,20 @@ function coursingdiagrams() {
     }
     let treblei = row.indexOf(1);
     svg.circle(trebleg, 30+treblei*30, y, 5);
-
-
+    let swaps = [0,stage-1];
+    if (treblei === 0) swaps.push(1);
+    if (treblei === stage-1) swaps.push(stage-2);
+    //start on top if tenor is in last place, on bottom otherwise
+    let side = row.indexOf(stage) === stage-1 ? -1 : 1;
+    for (let j = 1; j < homeco.length; j++) {
+      let startp = row.indexOf(homeco[j-1]);
+      let endp = row.indexOf(homeco[j]);
+      let controly = y + side*10;
+      let xadd = endp > startp ? [35,25] : [25,35];
+      let coords = ["M", 30+startp*30, y, "C", xadd[0]+startp*30, controly, xadd[1]+endp*30, controly, 30+endp*30, y];
+      svg.path(arcgroup, coords.join(" "));
+      if (swaps.includes(endp)) side *= -1;
+    }
 
     y += 40;
   }
