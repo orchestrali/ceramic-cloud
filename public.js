@@ -387,7 +387,7 @@ function coursingdiagrams() {
   let homeco = homecourseorder(stage);
   homeco.unshift(stage);
   let y = 30;
-  for (let i = 0; i < leadlength; i++) {
+  for (let i = 0; i < leadlength/2; i++) {
     let row = rowarr[i];
     for (let p = 0; p < stage; p++) {
       svg.circle(dotgroup, 30+p*30, y, 3);
