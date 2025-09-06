@@ -398,7 +398,7 @@ function coursingdiagrams() {
     if (treblei === 0) swaps.push(1);
     if (treblei === stage-1) swaps.push(stage-2);
     //start on top if tenor is in last place, on bottom otherwise
-    let side = (row.indexOf(stage) === stage-1 || (treblei === stage-1 && row.indexOf(stage) === stage-2) ? -1 : 1;
+    let side = (row.indexOf(stage) === stage-1 || (treblei === stage-1 && row.indexOf(stage) === stage-2)) ? -1 : 1;
     for (let j = 1; j < homeco.length; j++) {
       let startp = row.indexOf(homeco[j-1]);
       let endp = row.indexOf(homeco[j]);
