@@ -383,7 +383,7 @@ function coursingdiagrams() {
   let parent = svg.svg($("#svgcontainer"), null, null, 200, 1000, {xmlns: "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink"});
   let dotgroup = svg.group(parent, {style: "stroke: none; fill: black;"});
   let trebleg = svg.group(parent, {style: "stroke: red; stroke-width: 1px; fill: none;"});
-  let arcgroup = svg.group(parent, {style: "stroke: blue; stroke-width: 2px; fill: none;"}});
+  let arcgroup = svg.group(parent, {style: "stroke: blue; stroke-width: 2px; fill: none;"});
   let homeco = homecourseorder(stage);
   homeco.unshift(stage);
   let y = 30;
