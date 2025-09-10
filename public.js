@@ -101,8 +101,9 @@ function getcomplib(compid, access, w) {
         //new method experiment
         methodexperiment();
       } else if (what === "compexperiment") {
-        highlightlarge();
+        //highlightlarge();
         //analyzesteps();
+        temporarycompound();
       } else {
         if (what === "method") {
           let plainlhs = plainleadheads(stage).map(a => rowstring(a));
@@ -232,6 +233,17 @@ function buildhighlighting(r,pp,colors) {
     html += `</li>`;
   }
   return html;
+}
+
+function temporarycompound() {
+  
+  rowarr.forEach(r => {
+    let data = collectdata(r);
+    if (data.compound) {
+      $("#rowcolumn").append(`<li>${rowstring(r)}</li>`);
+    }
+  });
+  
 }
 
 function highlightlarge() {
