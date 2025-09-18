@@ -414,7 +414,8 @@ function coursingdiagrams() {
     for (let j = 1; j < homeco.length; j++) {
       let startp = row.indexOf(homeco[j-1]);
       let endp = row.indexOf(homeco[j]);
-      let controly = y + side*10;
+      let diff = Math.abs(endp-startp);
+      let controly = y + side*12*diff/(stage-1);
       let xadd = endp > startp ? [35,25] : [25,35];
       let coords = ["M", 30+startp*30, y, "C", xadd[0]+startp*30, controly, xadd[1]+endp*30, controly, 30+endp*30, y];
       svg.path(arcgroup, coords.join(" "));
