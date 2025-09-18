@@ -433,7 +433,7 @@ function repetitiontable() {
   for (let string in stringrepetition) {
     let count = stringrepetition[string].length;
     let rows = stringrepetition[string];
-    let trow = `<tr><td rowspan="${count}">${string}</td><td rowspan="${count}">`;
+    let trow = `<tr class="border"><td rowspan="${count}">${string}</td><td rowspan="${count}">`;
     let order = string.split("").map(bellnum).sort((a,b) => a-b);
     trow += rowstring(order) + "</td><td>";
     for (let i = 0; i < count; i++) {
