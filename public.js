@@ -29,6 +29,8 @@ var what;
 //holder for method information: leadhead
 var methodinfo = {};
 var leadlength;
+//holder for experiment so I can study it
+var stringrepetition;
 
 $(function() {
   //console.log("ohhh argh");
@@ -431,7 +433,7 @@ function methodexperiment() {
   let rows = rowarr.map(r => rowstring(r));
   rows.pop();
   rows.unshift(places.slice(0,stage));
-  let stringtest = findrepetition(rows);
+  stringrepetition = findrepetition(rows);
   
   $("#table").append(`<tr><th>row num</th><th>row</th><th>apart</th><th>consec</th></tr>`);
   let homeco = homecourseorder(stage);
