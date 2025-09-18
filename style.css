@@ -140,6 +140,10 @@ th, td {
   text-align: right;
 }
 
+tr.border {
+  border: 1px solid black;
+}
+
 table.list td, table.borders td {
   border: 1px solid black;
 }
