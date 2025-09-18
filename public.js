@@ -428,6 +428,11 @@ function coursingdiagrams() {
 
 function methodexperiment() {
   coursingdiagrams();
+  let rows = rowarr.map(r => rowstring(r));
+  rows.pop();
+  rows.unshift(places.slice(0,stage));
+  let stringtest = findrepetition(rows);
+  
   $("#table").append(`<tr><th>row num</th><th>row</th><th>apart</th><th>consec</th></tr>`);
   let homeco = homecourseorder(stage);
   homeco.unshift(stage);
@@ -881,4 +886,26 @@ function checkcompound(r) {
   return compound ? [one,two] : null;
 }
 
-
+//good to have arr as strings
+function findrepetition(arr) {
+  let res = {};
+  for (let i = 0; i < arr.length-2; i++) {
+    for (let j = stage-1; j >= 4; j--) {
+      for (let start = 0; start <= stage-j; start++) {
+        let string = arr[i].slice(start, start+j);
+        let contains = Object.keys(res).find(key => key.includes(string));
+        if (!contains) {
+          let copies = [];
+          for (let r = i+1; r < arr.length; r++) {
+            if (arr[r].includes(string)) {
+              copies.push({row: arr[r], rownum: r});
+            }
+          }
+          if (copies.length) res[string] = copies;
+        }
+      }
+    }
+  }
+  console.log(Object.keys(res).length + " repeated strings found");
+  return res;
+}
