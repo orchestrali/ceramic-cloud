@@ -428,13 +428,34 @@ function coursingdiagrams() {
   }
 }
 
+function repetitiontable() {
+
+  for (let string in stringrepetition) {
+    let count = stringrepetition[string].length;
+    let rows = stringrepetition[string];
+    let trow = `<tr><td rowspan="${count}">${string}</td><td rowspan="${count}">`;
+    let order = string.split("").map(bellnum).sort((a,b) => a-b);
+    trow += rowstring(order) + "</td><td>";
+    for (let i = 0; i < count; i++) {
+      if (i > 0) {
+        trow += `<tr><td>`;
+      }
+      let elems = [rows[i].row, rows[i].rownum, rows[i].rownum%leadlength];
+      trow += elems.join(`</td><td>`);
+      trow += `</td></tr>`;
+    }
+    $("#reptable").append(trow);
+  }
+}
+
 function methodexperiment() {
   coursingdiagrams();
   let rows = rowarr.map(r => rowstring(r));
   rows.pop();
   rows.unshift(places.slice(0,stage));
   stringrepetition = findrepetition(rows);
-  
+  $("#container").append(`<table id="reptable"><tr><th>segment</th><th>contents</th><th>row</th><th>rownum</th><th>row in lead</th></tr></table>`);
+  repetitiontable();
   $("#table").append(`<tr><th>row num</th><th>row</th><th>apart</th><th>consec</th></tr>`);
   let homeco = homecourseorder(stage);
   homeco.unshift(stage);
