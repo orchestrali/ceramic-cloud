@@ -140,6 +140,10 @@ th, td {
   text-align: right;
 }
 
+#reptable {
+  border-collapse: collapse;
+}
+
 tr.border {
   border: 1px solid black;
 }
