@@ -891,23 +891,27 @@ function checkcompound(r) {
 //good to have arr as strings
 function findrepetition(arr) {
   let res = {};
-  for (let i = 0; i <= leadlength; i++) {
-    for (let j = stage-1; j >= 4; j--) {
+  
+  for (let j = stage-1; j >= 4; j--) {
+    for (let i = 0; i <= leadlength; i++) {
       for (let start = 0; start <= stage-j; start++) {
         let string = arr[i].slice(start, start+j);
-        let contains = Object.keys(res).find(key => key.includes(string));
-        if (!contains) {
+        let contains = Object.keys(res).filter(key => key.includes(string));
+        
           let copies = [];
           for (let r = i+1; r < arr.length; r++) {
             if (arr[r].includes(string)) {
-              copies.push({row: arr[r], rownum: r});
+              if (!contains.some(s => arr[r].includes(s))) {
+                copies.push({row: arr[r], rownum: r});
+              }
+              
             }
           }
           if (copies.length) {
             copies.unshift({row: arr[i], rownum: i});
             res[string] = copies;
           }
-        }
+        
       }
     }
   }
