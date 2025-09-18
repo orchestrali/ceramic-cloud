@@ -891,7 +891,7 @@ function checkcompound(r) {
 //good to have arr as strings
 function findrepetition(arr) {
   let res = {};
-  for (let i = 0; i < arr.length-2; i++) {
+  for (let i = 0; i <= leadlength; i++) {
     for (let j = stage-1; j >= 4; j--) {
       for (let start = 0; start <= stage-j; start++) {
         let string = arr[i].slice(start, start+j);
@@ -903,7 +903,10 @@ function findrepetition(arr) {
               copies.push({row: arr[r], rownum: r});
             }
           }
-          if (copies.length) res[string] = copies;
+          if (copies.length) {
+            copies.unshift({row: arr[i], rownum: i});
+            res[string] = copies;
+          }
         }
       }
     }
