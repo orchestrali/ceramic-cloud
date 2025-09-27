@@ -980,7 +980,8 @@ function findcopies(row, arr) {
         if (r.includes(string)) {
           if (!others.includes(i) && orig != i) {
             others.push(i);
-            details.push({rownum: i, start: start, length: j});
+            let f = r.indexOf(string);
+            details.push({rownum: i, start: f, length: j});
           }
         }
       });
