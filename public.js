@@ -449,17 +449,25 @@ function repetitiontable() {
 }
 
 function reprowclick(e) {
-  $("#reptable li").removeClass("highlightgreen");
+  $("#reptable span").removeClass("highlightgreen");
   $("#reptable li").removeClass("highlightblue");
 
   let row = $(this).text();
   let rows = rowarr.map(r => rowstring(r));
   let rownums = findcopies(row, rows);
   $(this).addClass("highlightblue");
-  rownums.forEach(n => {
+  rownums.forEach(o => {
+    let n = o.rownum;
     let col = Math.floor(n/leadlength) + 1;
     let li = n%leadlength + 1;
-    $("#reptable td:nth-child("+col+") li:nth-child("+li+")").addClass("highlightgreen");
+    let elem = $("#reptable td:nth-child("+col+") li:nth-child("+li+")");
+    //$("#reptable td:nth-child("+col+") li:nth-child("+li+")").addClass("highlightgreen");
+    let text = elem.text();
+    let version = text.split("");
+    version.splice(o.start+o.length, 0, "</span>");
+    version.splice(o.start, 0, `<span class="highlightgreen">`);
+    elem.contents().remove();
+    elem.append(version.join(""));
   });
 }
 
@@ -964,6 +972,7 @@ function checkcompound(r) {
 function findcopies(row, arr) {
   let orig = arr.indexOf(row);
   let others = [];
+  let details = [];
   for (let j = stage-1; j >= 4; j--) {
     for (let start = 0; start <= stage-j; start++) {
       let string = row.slice(start, start+j);
@@ -971,12 +980,13 @@ function findcopies(row, arr) {
         if (r.includes(string)) {
           if (!others.includes(i) && orig != i) {
             others.push(i);
+            details.push({rownum: i, start: start, length: j});
           }
         }
       });
     }
   }
-  return others;
+  return details;
 }
 
 //good to have arr as strings
