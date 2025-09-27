@@ -459,8 +459,14 @@ function methodexperiment() {
       return diff;
     }
   });
-  $("#container").append(`<table id="configs"></table>`);
-  $("#configs").append(`<tr><td>${configs.join("</td></tr><tr><td>")}</td></tr>`);
+  $("#container").append(`<table id="configs"><tr></tr></table>`);
+  //$("#configs").append(`<tr><td>${configs.join("</td></tr><tr><td>")}</td></tr>`);
+  for (let i = 0; i < stage; i++) {
+    let filter = configs.filter(r => r.indexOf("1") === i);
+    if (filter.length) {
+      $("#configs tr").append(`<td><ul><li>${filter.join("</li><li>")}</li></ul></td>`);
+    }
+  }
   let rows = rowarr.map(r => rowstring(r));
   rows.pop();
   rows.unshift(places.slice(0,stage));
