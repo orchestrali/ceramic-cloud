@@ -463,8 +463,17 @@ function methodexperiment() {
   //$("#configs").append(`<tr><td>${configs.join("</td></tr><tr><td>")}</td></tr>`);
   for (let i = 0; i < stage; i++) {
     let filter = configs.filter(r => r.indexOf("1") === i);
+    
+    let html = `<td><ul>`;
+    let rstring = places.slice(6,stage);
+    let bstring = rstring.split("").reverse().join("");
+    filter.forEach(r => {
+      let c = (r.includes(rstring) || r.includes(bstring)) ? ` class="highlightgreen"` : "";
+      html += `<li${c}>${r}</li>`;
+    });
+    html += `</ul></td>`;
     if (filter.length) {
-      $("#configs tr").append(`<td><ul><li>${filter.join("</li><li>")}</li></ul></td>`);
+      $("#configs tr").append(html);
     }
   }
   let rows = rowarr.map(r => rowstring(r));
