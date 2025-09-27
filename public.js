@@ -46,7 +46,7 @@ $(function() {
 //clear any previous stuff and figure out the current search
 function subcomplib() {
   $("tbody").contents().detach();
-  $("h3").detach();
+  $("h3,#reptable").detach();
   $("#container,#table").contents().detach();
   $("#composition div ul").contents().detach();
   methodinfo = {};
@@ -448,6 +448,21 @@ function repetitiontable() {
   }
 }
 
+function reprowclick(e) {
+  $("#reptable li").removeClass("highlightgreen");
+  $("#reptable li").removeClass("highlightblue");
+
+  let row = $(this).text();
+  let rows = rowarr.map(r => rowstring(r));
+  let rownums = findcopies(row, rows);
+  $(this).addClass("highlightblue");
+  rownums.forEach(n => {
+    let col = Math.floor(n/leadlength) + 1;
+    let li = n%leadlength + 1;
+    $("#reptable td:nth-child("+col+") li:nth-child("+li+")").addClass("highlightgreen");
+  });
+}
+
 function methodexperiment() {
   coursingdiagrams();
   let configs = rowarr.map(r => rowstring(r).replace(/[23456]/g, "x")).sort((a,b) => {
@@ -477,11 +492,22 @@ function methodexperiment() {
     }
   }
   let rows = rowarr.map(r => rowstring(r));
-  rows.pop();
-  rows.unshift(places.slice(0,stage));
+  //rows.pop();
+  //rows.unshift(places.slice(0,stage));
   stringrepetition = findrepetition(rows);
-  $("main").append(`<table id="reptable"><tr><th>segment</th><th>contents</th><th>row</th><th>rownum</th><th>row in lead</th></tr></table>`);
-  repetitiontable();
+  //<th>segment</th><th>contents</th><th>row</th><th>rownum</th><th>row in lead</th>
+  $("main").append(`<table id="reptable"><tr></tr></table>`);
+  //repetitiontable();
+  for (let i = 0; i < Math.ceil(rows.length/leadlength); i++) {
+    let html = `<td><ul><li>`;
+    let chunk = rows.slice(i*leadlength, (i+1)*leadlength);
+    html += chunk.join(`</li><li>`);
+    html += `</li></ul></td>`;
+    $("#reptable tr").append(html);
+  }
+  $("#reptable").on("click", "li", reprowclick);
+
+  
   $("#table").append(`<tr><th>row num</th><th>row</th><th>apart</th><th>consec</th></tr>`);
   let homeco = homecourseorder(stage);
   homeco.unshift(stage);
@@ -933,6 +959,24 @@ function checkcompound(r) {
   }
   if (compound) console.log(rowstring(r));
   return compound ? [one,two] : null;
+}
+
+function findcopies(row, arr) {
+  let orig = arr.indexOf(row);
+  let others = [];
+  for (let j = stage-1; j >= 4; j--) {
+    for (let start = 0; start <= stage-j; start++) {
+      let string = row.slice(start, start+j);
+      arr.forEach((r,i) => {
+        if (r.includes(string)) {
+          if (!others.includes(i) && orig != i) {
+            others.push(i);
+          }
+        }
+      });
+    }
+  }
+  return others;
 }
 
 //good to have arr as strings
