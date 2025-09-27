@@ -450,11 +450,22 @@ function repetitiontable() {
 
 function methodexperiment() {
   coursingdiagrams();
+  let configs = rowarr.map(r => rowstring(r).replace(/[23456]/g, "x")).sort((a,b) => {
+    let diff = a.indexOf("1") - b.indexOf("1");
+    if (diff === 0) {
+      let t = places[stage-1];
+      return a.indexOf(t)-b.indexOf(t);
+    } else {
+      return diff;
+    }
+  });
+  $("#container").append(`<table id="configs"></table>`);
+  $("#configs").append(`<tr><td>${configs.join("</td></tr><tr><td>")}</td></tr>`);
   let rows = rowarr.map(r => rowstring(r));
   rows.pop();
   rows.unshift(places.slice(0,stage));
   stringrepetition = findrepetition(rows);
-  $("#container").append(`<table id="reptable"><tr><th>segment</th><th>contents</th><th>row</th><th>rownum</th><th>row in lead</th></tr></table>`);
+  $("main").append(`<table id="reptable"><tr><th>segment</th><th>contents</th><th>row</th><th>rownum</th><th>row in lead</th></tr></table>`);
   repetitiontable();
   $("#table").append(`<tr><th>row num</th><th>row</th><th>apart</th><th>consec</th></tr>`);
   let homeco = homecourseorder(stage);
