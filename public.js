@@ -638,7 +638,7 @@ function buildplainbob(stage) {
       let pn = [];
       if (j%2 === 1) {
         pn.push(1);
-        if (stage%2 === 0) pn.push(stage);
+        if (stage%2 === 0 && j < stage*2-1) pn.push(stage);
       } else if (stage%2 === 1) {
         pn.push(stage);
       }
