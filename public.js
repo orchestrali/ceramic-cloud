@@ -673,7 +673,7 @@ function checkzigzag(chunk) {
   let dir = dirs[0];
   let i = 1;
   while (i < dirs.length && zigzag) {
-    let next = dirs[1];
+    let next = dirs[i];
     zigzag = next === dir*-1;
     dir = next;
     i++;
