@@ -32,7 +32,7 @@ sorttable = {
     sorttable.DATE_RE = /^(\d\d?)[\/\.-](\d\d?)[\/\.-]((\d\d)?\d\d)$/;
     
     forEach(document.getElementsByTagName('table'), function(table) {
-      if (table.className.search(/\bsortable\b/) != -1) {
+      if (table.className.search(/\bsortable\b/) != -1 && table.rows.length > 0) {
         sorttable.makeSortable(table);
       }
     });
@@ -40,7 +40,7 @@ sorttable = {
   },
   
   makeSortable: function(table) {
-    if (table.getElementsByTagName('thead').length == 0 && table.rows.length > 0) {
+    if (table.getElementsByTagName('thead').length == 0) {
       // table doesn't have a tHead. Since it should have, create one and
       // put the first table row in it.
       the = document.createElement('thead');
