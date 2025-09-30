@@ -490,8 +490,21 @@ function methodexperiment() {
     let html = `<td><ul>`;
     let rstring = places.slice(6,stage);
     let bstring = rstring.split("").reverse().join("");
+    let tittumsp = places.slice(stage-4,stage).split("").join("[1x]");
+    let tittums = new RegExp(tittumsp);
+    
     filter.forEach(r => {
-      let c = (r.includes(rstring) || r.includes(bstring)) ? ` class="highlightgreen"` : "";
+      let queens, kings;
+      if (stage === 8) {
+        queens = r.indexOf("7") === 3 && r.indexOf("8") === 7;
+        kings = r.indexOf("7") === 0 && r.indexOf("8") === 7;
+      }
+      let c = "";
+      if (r.includes(rstring) || r.includes(bstring)) {
+        c = ` class="highlightgreen"`;
+      } else if (tittums.test(r) || queens || kings) {
+        c = ` class="highlightblue"`;
+      }
       html += `<li${c}>${r}</li>`;
     });
     html += `</ul></td>`;
