@@ -473,6 +473,40 @@ function reprowclick(e) {
 
 function methodexperiment() {
   coursingdiagrams();
+  //check plain bob patterns??
+  $("#container").append(`<table id="plainbob"></table>`);
+  let plainbobrows = buildplainbob(stage).map(r => rowstring(r));
+  for (let i = 0; i < leadlength; i++) {
+    let r = rowstring(rowarr[i]);
+    let pb = plainbobrows.includes(r);
+    let treblei = rowarr[i].indexOf(1);
+    let chunks = [];
+    if (treblei > 0) chunks.push(rowarr[i].slice(0,treblei));
+    if (treblei < stage-1) chunks.push(rowarr[i].slice(treblei+1));
+    let zigzag = pb ? true : chunks.map(c => checkzigzag(c));
+
+    let html = `<tr><td>`;
+    if (pb) {
+      html += `<span class="fade">${r}</span>`;
+    } else if (zigzag.includes(true)) {
+      if (chunks.length === 1) {
+        html += `<span class="highlightgreen">${r}</span>`;
+      } else {
+        [0,1].forEach(n => {
+          if (zigzag[n]) html += `<span class="highlightgreen">`;
+          html += rowstring(chunks[n]);
+          if (zigzag[n]) html += `</span>`;
+          if (n === 0) html += "1";
+        });
+      }
+    } else {
+      html += r;
+    }
+    html += `</td></tr>`;
+    $("#plainbob").append(html);
+  }
+
+  
   let configs = rowarr.map(r => rowstring(r).replace(/[23456]/g, "x")).sort((a,b) => {
     let diff = a.indexOf("1") - b.indexOf("1");
     if (diff === 0) {
@@ -594,6 +628,71 @@ function rowstring(r) {
 
 function bellnum(c) {
   return places.indexOf(c)+1;
+}
+
+function buildplainbob(stage) {
+  let rows = [];
+  let prev = places.slice(0, stage).split("").map(bellnum);
+  for (let i = 0; i < stage-1; i++) {
+    for (let j = 0; j < stage*2; j++) {
+      let pn = [];
+      if (j%2 === 1) {
+        pn.push(1);
+        if (stage%2 === 0) pn.push(stage);
+      } else if (stage%2 === 1) {
+        pn.push(stage);
+      }
+      if (j === stage*2-1) {
+        pn.push(2);
+        if (stage%2 === 1) pn.push(stage);
+      }
+      let next = applypn(prev, pn);
+      rows.push(next);
+      prev = next;
+    }
+  }
+  return rows;
+}
+
+//check if a chunk is a zigzag OR all run
+function checkzigzag(chunk) {
+  if (chunk.length < 3) {
+    return true;
+  }
+  let diffs = [];
+  let dirs = [];
+  for (let i = 1; i < chunk.length; i++) {
+    let d = chunk[i]-chunk[i-1];
+    diffs.push(d);
+    dirs.push(d > 0 ? 1 : -1);
+  }
+  if (diffs.every(d => [1,-1].includes(d))) {
+    return true;
+  }
+  let zigzag = true;
+  let dir = dirs[0];
+  let i = 1;
+  while (i < dirs.length && zigzag) {
+    let next = dirs[1];
+    zigzag = next === dir*-1;
+    dir = next;
+    i++;
+  }
+  return zigzag;
+}
+
+function applypn(row, pn) {
+  let next = [];
+  let dir = 1;
+  for (let p = 1; p <= row.length; p++) {
+    if (pn.includes(p)) {
+      next.push(row[p-1]);
+    } else {
+      next.push(row[p-1+dir]);
+      dir*=-1;
+    }
+  }
+  return next;
 }
 
 //given array of places (may contain duplicates) and number of bells
@@ -981,6 +1080,7 @@ function checkcompound(r) {
   if (compound) console.log(rowstring(r));
   return compound ? [one,two] : null;
 }
+
 
 function findcopies(row, arr) {
   let orig = arr.indexOf(row);
