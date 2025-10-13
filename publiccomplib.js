@@ -36,6 +36,7 @@ function getschemes() {
 
 function router(e) {
   $("h3").text("");
+  $("#totals").text("");
   $("tbody").contents().remove();
   $("table").hide();
   let scheme = $(`input[name="scheme"]:checked`).val();
@@ -67,15 +68,18 @@ function schemerowsclick(scheme, stage) {
   scheme === "complib" ? buildcomplibrows(stage) : buildschemerows(stage);
   
   let count = 0;
+  let totalpoints = 0;
   for (let row in schemerows) {
     let tr = buildtablerow(row);
     $("#schemetable tbody").append(tr);
     count++;
+    totalpoints += schemerows[row].points;
   }
   console.log(count);
   let num = (stage-6)/2;
   let text = stagenames[num] + " rows with points";
   $("h3").text(text);
+  $("#totals").text(`${count} rows, ${totalpoints} points possible`);
   $("#schemetable").show();
 }
 
@@ -222,12 +226,18 @@ function getcomplib(id, type, scheme) {
       let stage = results.stage;
       if ([6,8].includes(stage) || (scheme === "complib" && [6,8,10,12].includes(stage))) {
         scheme === "complib" ? buildcomplibrows(stage) : buildschemerows(stage);
-        
+        let count = 0;
+        let totalpoints = 0;
         for (let i = 2; i < results.rows.length; i++) {
           let row = results.rows[i][0];
           let tr = buildtablerow(row, i-1);
+          if (schemerows[row]) {
+            count++;
+            totalpoints += schemerows[row].points;
+          }
           $("#comptable tbody").append(tr);
         }
+        $("#totals").text(`${count} rows with points, ${totalpoints} points in total`);
         $("#comptable").show();
       } else {
         console.log("stage: "+stage);
