@@ -266,9 +266,19 @@ sorttable = {
     return aa-bb;
   },
   sort_bellrow: function(a,b) {
-    var places = "1234567890ETABCD";
-    aa = places.indexOf(a[0]);
-    bb = places.indexOf(b[0]);
+    var base = 10;
+    aa = a[0];
+    bb = b[0];
+    if (a[0].length > 9) base = a[0].length+1;
+    var places = "0ETABCD";
+    var subs = "ABCDEFG";
+    for (let i = aa.length-1; i > 8; i--) {
+      let j = i-9;
+      aa = aa.replace(places[j], subs[j]);
+      bb = bb.replace(places[j], subs[j]);
+    }
+    aa = parseInt(aa, base);
+    bb = parseInt(bb, base);
     return aa-bb;
   },
   sort_alpha: function(a,b) {
