@@ -35,12 +35,14 @@ function getschemes() {
 }
 
 function router(e) {
+  $("#loading").show();
   $("h3").text("");
   $("#totals").text("");
   $("tbody").contents().remove();
-  $("table").hide();
+  $("table,button").hide();
   let scheme = $(`input[name="scheme"]:checked`).val();
   let id = e.currentTarget.id;
+  let okay;
   if (scheme) {
     switch (id) {
       case "schemerows":
@@ -49,6 +51,7 @@ function router(e) {
         if (stage > 0) {
           //myscheme isn't finished yet...
           if (scheme === "complib" || [6,8].includes(stage)) {
+            okay = true;
             schemerowsclick(scheme, stage);
           }
         }
@@ -57,10 +60,15 @@ function router(e) {
         let complibid = $("#complibid").val();
         let comptype = $('input[name="idtype"]:checked').val();
         if (comptype && complibid.length) {
+          okay = true;
           getcomplib(complibid, comptype, scheme);
         }
         break;
     }
+  }
+  if (!okay) {
+    $("#loading").hide();
+    $("button").show();
   }
 }
 
@@ -80,7 +88,8 @@ function schemerowsclick(scheme, stage) {
   let text = stagenames[num] + " rows with points";
   $("h3").text(text);
   $("#totals").text(`${count} rows, ${totalpoints} points possible`);
-  $("#schemetable").show();
+  $("#loading").hide();
+  $("#schemetable,button").show();
 }
 
 //different from complib because shorter patterns can be anywhere in the row
@@ -238,7 +247,8 @@ function getcomplib(id, type, scheme) {
           $("#comptable tbody").append(tr);
         }
         $("#totals").text(`${count} rows with points, ${totalpoints} points in total`);
-        $("#comptable").show();
+        $("#loading").hide();
+        $("#comptable,button").show();
       } else {
         console.log("stage: "+stage);
       }
