@@ -20,12 +20,13 @@ table {
   border-collapse: collapse;
 }
 
-th:first-child, td:first-child {
+th.row, td.row {
   width: 130px;
 }
 
 td {
   border: 1px solid black;
+  padding: 2px 5px;
 }
 
 .green {
