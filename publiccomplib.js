@@ -48,7 +48,7 @@ function router(e) {
         if (stage > 0) {
           //myscheme isn't finished yet...
           if (scheme === "complib" || [6,8].includes(stage)) {
-            schemerowsclick(scheme);
+            schemerowsclick(scheme, stage);
           }
         }
         break;
@@ -63,7 +63,7 @@ function router(e) {
   }
 }
 
-function schemerowsclick(scheme) {
+function schemerowsclick(scheme, stage) {
   scheme === "complib" ? buildcomplibrows(stage) : buildschemerows(stage);
   
   let count = 0;
