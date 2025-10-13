@@ -74,27 +74,27 @@ function router(e) {
 
 function schemerowsclick(scheme, stage) {
   let f = scheme === "complib" ? buildcomplibrows : buildschemerows;
-  const done = await f(stage);
-  
-  let count = 0;
-  let totalpoints = 0;
-  for (let row in schemerows) {
-    let tr = buildtablerow(row);
-    $("#schemetable tbody").append(tr);
-    count++;
-    totalpoints += schemerows[row].points;
-  }
-  console.log(count);
-  let num = (stage-6)/2;
-  let text = stagenames[num] + " rows with points";
-  $("h3").text(text);
-  $("#totals").text(`${count} rows, ${totalpoints} points possible`);
-  $("#loading").hide();
-  $("#schemetable,button").show();
+  f(stage, () => {
+    let count = 0;
+    let totalpoints = 0;
+    for (let row in schemerows) {
+      let tr = buildtablerow(row);
+      $("#schemetable tbody").append(tr);
+      count++;
+      totalpoints += schemerows[row].points;
+    }
+    console.log(count);
+    let num = (stage-6)/2;
+    let text = stagenames[num] + " rows with points";
+    $("h3").text(text);
+    $("#totals").text(`${count} rows, ${totalpoints} points possible`);
+    $("#loading").hide();
+    $("#schemetable,button").show();
+  });
 }
 
 //different from complib because shorter patterns can be anywhere in the row
-async function buildschemerows(stage) {
+function buildschemerows(stage, cb) {
   schemerows = {};
   let filter = myscheme.filter(o => o.stage === stage);
   filter.forEach(o => {
@@ -137,11 +137,11 @@ async function buildschemerows(stage) {
     });
     
   });
-  return true;
+  cb(true);
 }
 
 
-async function buildcomplibrows(stage) {
+function buildcomplibrows(stage, cb) {
   schemerows = {};
   let filter = complibscheme.filter(o => o.stage === stage);
   filter.forEach(o => {
@@ -190,7 +190,7 @@ async function buildcomplibrows(stage) {
       });
     });
   });
-  return true;
+  cb(true);
 }
 
 
@@ -238,22 +238,23 @@ function getcomplib(id, type, scheme) {
       let stage = results.stage;
       if ([6,8].includes(stage) || (scheme === "complib" && [6,8,10,12].includes(stage))) {
         let f = scheme === "complib" ? buildcomplibrows : buildschemerows;
-        const done = await f(stage);
-        
-        let count = 0;
-        let totalpoints = 0;
-        for (let i = 2; i < results.rows.length; i++) {
-          let row = results.rows[i][0];
-          let tr = buildtablerow(row, i-1);
-          if (schemerows[row]) {
-            count++;
-            totalpoints += schemerows[row].points;
+        f(stage, () => {
+          let count = 0;
+          let totalpoints = 0;
+          for (let i = 2; i < results.rows.length; i++) {
+            let row = results.rows[i][0];
+            let tr = buildtablerow(row, i-1);
+            if (schemerows[row]) {
+              count++;
+              totalpoints += schemerows[row].points;
+            }
+            $("#comptable tbody").append(tr);
           }
-          $("#comptable tbody").append(tr);
-        }
-        $("#totals").text(`${count} rows with points, ${totalpoints} points in total`);
-        $("#loading").hide();
-        $("#comptable,button").show();
+          $("#totals").text(`${count} rows with points, ${totalpoints} points in total`);
+          $("#loading").hide();
+          $("#comptable,button").show();
+        });
+        
       } else {
         console.log("stage: "+stage);
       }
