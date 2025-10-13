@@ -1,4 +1,8 @@
 
+button:hover {
+  cursor: pointer;
+}
+
 label {
   display: inline-block;
   margin-right: 10px;
