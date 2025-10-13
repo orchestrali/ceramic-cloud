@@ -112,7 +112,7 @@ function buildschemerows(stage) {
     } else {
       let patts = patternstage(o.pattern, stage);
       patts.forEach(p => {
-        let pp = p.map((e,i) => e === "x" ? 0 : i+1).filter(n => n > 0);
+        let pp = p.split("").map((e,i) => e === "x" ? 0 : i+1).filter(n => n > 0);
         set.push({pattern: p, places: pp});
       });
     }
