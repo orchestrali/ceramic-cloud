@@ -40,6 +40,7 @@ function clearprevious(e) {
   $("#totals").text("");
   $("tbody").contents().remove();
   $("table,button").hide();
+  $("table").removeClass("sortable");
   $(".sorttable_sorted").removeClass("sorttable_sorted");
   $(".sorttable_sorted_reverse").removeClass("sorttable_sorted_reverse");
   let id = e.currentTarget.id;
@@ -97,6 +98,7 @@ function schemerowsclick(scheme, stage) {
     $("h3").text(text);
     $("#totals").text(`${count} rows, ${totalpoints} points possible`);
     $("#loading").hide();
+    $("table").addClass("sortable");
     $("#schemetable,button").show();
   });
 }
@@ -260,11 +262,14 @@ function getcomplib(id, type, scheme) {
           }
           $("#totals").text(`${count} rows with points, ${totalpoints} points in total`);
           $("#loading").hide();
+          $("table").addClass("sortable");
           $("#comptable,button").show();
         });
         
       } else {
         console.log("stage: "+stage);
+        $("#loading").hide();
+        $("button").show();
       }
     }
   }
