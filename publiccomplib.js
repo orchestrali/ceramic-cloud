@@ -73,7 +73,7 @@ function router(e) {
 }
 
 function schemerowsclick(scheme, stage) {
-  scheme === "complib" ? buildcomplibrows(stage) : buildschemerows(stage);
+  const done = scheme === "complib" ? await buildcomplibrows(stage) : await buildschemerows(stage);
   
   let count = 0;
   let totalpoints = 0;
@@ -93,7 +93,7 @@ function schemerowsclick(scheme, stage) {
 }
 
 //different from complib because shorter patterns can be anywhere in the row
-function buildschemerows(stage) {
+async function buildschemerows(stage) {
   schemerows = {};
   let filter = myscheme.filter(o => o.stage === stage);
   filter.forEach(o => {
@@ -136,10 +136,11 @@ function buildschemerows(stage) {
     });
     
   });
+  return true;
 }
 
 
-function buildcomplibrows(stage) {
+async function buildcomplibrows(stage) {
   schemerows = {};
   let filter = complibscheme.filter(o => o.stage === stage);
   filter.forEach(o => {
@@ -188,6 +189,7 @@ function buildcomplibrows(stage) {
       });
     });
   });
+  return true;
 }
 
 
@@ -234,7 +236,7 @@ function getcomplib(id, type, scheme) {
       $("h3").text(results.title);
       let stage = results.stage;
       if ([6,8].includes(stage) || (scheme === "complib" && [6,8,10,12].includes(stage))) {
-        scheme === "complib" ? buildcomplibrows(stage) : buildschemerows(stage);
+        const done = scheme === "complib" ? await buildcomplibrows(stage) : await buildschemerows(stage);
         let count = 0;
         let totalpoints = 0;
         for (let i = 2; i < results.rows.length; i++) {
