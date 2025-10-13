@@ -40,6 +40,8 @@ function clearprevious(e) {
   $("#totals").text("");
   $("tbody").contents().remove();
   $("table,button").hide();
+  $(".sorttable_sorted").removeClass("sorttable_sorted");
+  $(".sorttable_sorted_reverse").removeClass("sorttable_sorted_reverse");
   let id = e.currentTarget.id;
   setTimeout(router, 300, id);
 }
