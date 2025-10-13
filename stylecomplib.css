@@ -18,6 +18,7 @@ div > div {
 
 table {
   border-collapse: collapse;
+  display: none;
 }
 
 th.row, td.row {
