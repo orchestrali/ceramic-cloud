@@ -29,19 +29,25 @@ function getschemes() {
     $.get("alisonscheme.json", function(arr) {
       myscheme = arr;
       //attach listener when schemes are fetched
-      $("#schemerows,#viewcomp").on("click", router);
+      $("#schemerows,#viewcomp").on("click", clearprevious);
     }); 
   });
 }
 
-function router(e) {
+function clearprevious(e) {
   $("#loading").show();
   $("h3").text("");
   $("#totals").text("");
   $("tbody").contents().remove();
   $("table,button").hide();
-  let scheme = $(`input[name="scheme"]:checked`).val();
   let id = e.currentTarget.id;
+  setTimeout(router, 300, id);
+}
+
+function router(id) {
+  
+  let scheme = $(`input[name="scheme"]:checked`).val();
+  
   let okay;
   if (scheme) {
     switch (id) {
@@ -68,7 +74,7 @@ function router(e) {
   }
   if (!okay) {
     $("#loading").hide();
-    //$("button").show();
+    $("button").show();
   }
 }
 
@@ -89,7 +95,7 @@ function schemerowsclick(scheme, stage) {
     $("h3").text(text);
     $("#totals").text(`${count} rows, ${totalpoints} points possible`);
     $("#loading").hide();
-    $("#schemetable").show();
+    $("#schemetable,button").show();
   });
 }
 
