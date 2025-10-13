@@ -265,6 +265,12 @@ sorttable = {
     if (isNaN(bb)) bb = 0;
     return aa-bb;
   },
+  sort_bellrow: function(a,b) {
+    var places = "1234567890ETABCD";
+    aa = places.indexOf(a[0]);
+    bb = places.indexOf(b[0]);
+    return aa-bb;
+  },
   sort_alpha: function(a,b) {
     if (a[0]==b[0]) return 0;
     if (a[0]<b[0]) return -1;
