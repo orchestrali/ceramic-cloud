@@ -68,7 +68,7 @@ function router(e) {
   }
   if (!okay) {
     $("#loading").hide();
-    $("button").show();
+    //$("button").show();
   }
 }
 
@@ -89,7 +89,7 @@ function schemerowsclick(scheme, stage) {
     $("h3").text(text);
     $("#totals").text(`${count} rows, ${totalpoints} points possible`);
     $("#loading").hide();
-    $("#schemetable,button").show();
+    $("#schemetable").show();
   });
 }
 
