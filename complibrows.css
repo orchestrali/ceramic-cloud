@@ -1,0 +1,31 @@
+
+div.arrow {
+  width: 0;
+  height: 0;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  border-left: 6px solid black;
+  
+}
+
+.rotate {
+  transform: rotate(90deg);
+}
+
+table {
+  border-collapse: collapse;
+  display: none;
+}
+
+th.row, td.row {
+  width: 130px;
+}
+
+td {
+  border: 1px solid black;
+  padding: 2px 5px;
+}
+
+.green {
+  background-color: rgb(209, 246, 209);
+}
