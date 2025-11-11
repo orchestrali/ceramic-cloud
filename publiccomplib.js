@@ -247,9 +247,9 @@ function buildtablerow(r, rn) {
       tr += r[i-1];
     }
     if (span) tr += `</span>`;
-    tr += `</td><td>${o.points}</td></tr>`;
+    tr += `</td><td>${o.points}</td><td>${o.places.length}</td></tr>`;
   } else {
-    tr += r + `</td><td>0</td></tr>`;
+    tr += r + `</td><td>0</td><td>0</td></tr>`;
   }
   return tr;
 }
