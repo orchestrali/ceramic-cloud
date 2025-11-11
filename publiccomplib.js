@@ -106,7 +106,7 @@ function schemerowsclick(scheme, stage) {
       } 
       if (schemerows[row].points > 1) {
         schemeinfo.multipoint++;
-        tr = buildtablerow(row);
+        if (stage < 11) tr = buildtablerow(row);
       }
       
       if (tr) $("#schemetable tbody").append(tr);
