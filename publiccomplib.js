@@ -14,6 +14,9 @@ var schemerows = {};
 //holder for composition/method rows
 var comprows;
 
+//holder for scheme stats
+var schemeinfo = {};
+
 
 $(function() {
   getschemes();
@@ -83,16 +86,34 @@ function router(id) {
 
 function schemerowsclick(scheme, stage) {
   let f = scheme === "complib" ? buildcomplibrows : buildschemerows;
+  schemeinfo = {
+    count: 0,
+    totalpoints: 0,
+    wholerows: 0,
+    multipoint: 0
+  };
   f(stage, () => {
+    
     let count = 0;
     let totalpoints = 0;
     for (let row in schemerows) {
-      let tr = buildtablerow(row);
-      $("#schemetable tbody").append(tr);
+      schemeinfo.count++;
+      schemeinfo.totalpoints += schemerows[row].points;
+      let tr;
+      if (schemerows[row].places.length === stage) {
+        schemeinfo.wholerows++;
+        tr = buildtablerow(row);
+      } 
+      if (schemerows[row].points > 1) {
+        schemeinfo.multipoint++;
+        tr = buildtablerow(row);
+      }
+      
+      if (tr) $("#schemetable tbody").append(tr);
       count++;
       totalpoints += schemerows[row].points;
     }
-    console.log(count);
+    console.log(schemeinfo);
     let num = (stage-6)/2;
     let text = stagenames[num] + " rows with points";
     $("h3").text(text);
