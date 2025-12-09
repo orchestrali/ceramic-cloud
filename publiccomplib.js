@@ -272,16 +272,29 @@ function getcomplib(id, type, scheme) {
         f(stage, () => {
           let count = 0;
           let totalpoints = 0;
+          let wraprows;
+          if (scheme === "complib") wraprows = buildcomplibwraps(stage);
+          let wrappoints = 0;
           for (let i = 2; i < results.rows.length; i++) {
             let row = results.rows[i][0];
             let tr = buildtablerow(row, i-1);
+            if (i > 2 && wraprows) {
+              let wholepull = results.rows[i-1][0]+row;
+              let ii = wraprows.map(r => wholepull.indexOf(r));
+              //if found and it's not just one of the rows
+              if (ii.some(n => n > 0 && n != stage)) {
+                wrappoints++;
+              }
+            }
             if (schemerows[row]) {
               count++;
               totalpoints += schemerows[row].points;
             }
             $("#comptable tbody").append(tr);
           }
-          $("#totals").text(`${count} rows with points, ${totalpoints} points in total`);
+          let totaltext = `${count} rows with points, ${totalpoints} points in total`;
+          if (wrappoints) totaltext += ` plus ${wrappoints} point(s) from wraps`;
+          $("#totals").text();
           $("#loading").hide();
           $("table").addClass("sortable");
           $("#comptable,button").show();
@@ -294,6 +307,28 @@ function getcomplib(id, type, scheme) {
       }
     }
   }
+}
+
+
+
+
+
+
+//complib only looks for wraps on even stages
+function buildcomplibwraps(stage) {
+  let rounds = places.slice(0, stage);
+  let backrounds = rounds.split("").reverse().join("");
+  let odds = [];
+  let evens = [];
+  let tittums = [];
+  for (let i = 1; i < stage; i+=2) {
+    odds.push(rounds[i-1]);
+    evens.push(rounds[i]);
+    let j = (i-1)/2;
+    let k = j+stage/2;
+    tittums.push(rounds[j],rounds[k]);
+  }
+  return [rounds, backrounds, odds.join("")+evens.join(""), tittums.join("")];
 }
 
 
