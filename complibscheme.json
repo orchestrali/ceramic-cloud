@@ -73,6 +73,7 @@
   {"stage": 8, "pattern": "5678", "category": "Combination roll-ups"},
   {"stage": 8, "pattern": "6478", "category": "Combination roll-ups"},
   {"stage": 8, "pattern": "6578", "category": "Combination roll-ups"},
+  {"stage": 8, "pattern": "5678", "category": "5678 combinations"},
   {"stage": 8, "pattern": "7568", "category": "5678 combinations"},
   {"stage": 8, "pattern": "7658", "category": "5678 combinations"},
   {"stage": 8, "pattern": "8765", "category": "5678 combinations"},
