@@ -294,7 +294,7 @@ function getcomplib(id, type, scheme) {
           }
           let totaltext = `${count} rows with points, ${totalpoints} points in total`;
           if (wrappoints) totaltext += ` plus ${wrappoints} point(s) from wraps`;
-          $("#totals").text();
+          $("#totals").text(totaltext);
           $("#loading").hide();
           $("table").addClass("sortable");
           $("#comptable,button").show();
