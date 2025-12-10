@@ -11,6 +11,13 @@ var myscheme;
 //keys are rowstrings, values are objects with points (number) and places (array of numbers, indication of what to highlight)
 var schemerows = {};
 
+var schemecats = {
+  Runs: {},
+  Steps: {},
+  Queensy: {},
+  Tittumsy: {}
+};
+
 //holder for composition/method rows
 var comprows;
 
@@ -127,6 +134,9 @@ function schemerowsclick(scheme, stage) {
 //different from complib because shorter patterns can be anywhere in the row
 function buildschemerows(stage, cb) {
   schemerows = {};
+  for (let cat in schemecats) {
+    schemecats[cat] = {rows: 0, points: 0};
+  }
   let filter = myscheme.filter(o => o.stage === stage);
   filter.forEach(o => {
     //objects with pattern containing x and places to highlight
@@ -157,10 +167,15 @@ function buildschemerows(stage, cb) {
     //adjust here if using different numbers of points
     rows.forEach(ro => {
       let r = ro.row;
+      let cat = o.category;
       if (schemerows[r]) {
         schemerows[r].points++; //
+        let c = schemerows[r].category;
+        schemecats[c].points++;
       } else {
-        schemerows[r] = {points: 1, places: []};
+        schemerows[r] = {points: 1, places: [], category: cat};
+        schemecats[cat].rows++;
+        schemecats[cat].points++;
       }
       ro.places.forEach(p => {
         if (!schemerows[r].places.includes(p)) schemerows[r].places.push(p);
@@ -168,6 +183,7 @@ function buildschemerows(stage, cb) {
     });
     
   });
+  console.log(schemecats);
   cb(true);
 }
 
