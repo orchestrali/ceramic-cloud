@@ -342,5 +342,5 @@
   {"stage": 8, "pattern": "5432xxxx", "description": "4-bell runs", "category": "Runs"},
   {"stage": 8, "pattern": "6543xxxx", "description": "4-bell runs", "category": "Runs"},
   {"stage": 8, "pattern": "7654xxxx", "description": "4-bell runs", "category": "Runs"},
-  {"stage": 8, "pattern": "8765xxxx", "description": "4-bell runs", "category": "Runs"},
+  {"stage": 8, "pattern": "8765xxxx", "description": "4-bell runs", "category": "Runs"}
 ]
