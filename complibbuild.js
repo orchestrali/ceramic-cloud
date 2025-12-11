@@ -20,6 +20,11 @@ $(function() {
 
 
 
+function stageclick(e) {
+  $(e.currentTarget).next().toggle();
+}
+
+
 function buildinitialrules() {
   let strs = ["1234","4321"];
   //not using this but keeping as model??
@@ -84,6 +89,7 @@ function buildinitialtables() {
         </tbody>
       </table>`;
   $(".stagescheme").append(table);
+  $(".stagescheme p").on("click", stageclick);
 }
 
 function buildinitialtablebodies() {
@@ -93,8 +99,9 @@ function buildinitialtablebodies() {
 }
 
 function buildschemetable(stage) {
-  let rules = schemerules.find(o => o.stage === stage);
-  if (rules) {
+  let list = schemerules.find(o => o.stage === stage);
+  if (list) {
+    let rules = list.rules;
     
     let categories = [];
     
