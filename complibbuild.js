@@ -1,6 +1,8 @@
 const places = "1234567890ETABCD";
-
+const stagenames = ["Doubles","Minor","Triples","Major","Caters","Royal", "Cinques","Maximus","Sextuples","Fourteen","Septuples","Sixteen"];
+const tableheads = ["Mask", "Description", "Category", "Type", "Stroke", "Possible", "Score", "ScoreFront", "ScoreInternal", "ScoreBack"];
 var schemerules = [];
+var categorynames = [];
 
 
 
@@ -8,6 +10,7 @@ var schemerules = [];
 
 
 $(function() {
+  buildinitialtables();
   buildinitialrules();
 });
 
@@ -61,7 +64,151 @@ function buildinitialrules() {
     
     strs.push(rounds, backrounds);
   }
+
+  buildinitialtablebodies();
 }
+
+function buildinitialtables() {
+  for (let s = 5; s <= 16; s++) {
+    let name = stagenames[s-5];
+    let html = `<div class="stagescheme" id="stage${s}">
+      <p>${name}</p>
+    </div>`;
+    $("#schemetables").append(html);
+  }
+  let table = `<table>
+        <thead>
+          <th>${tableheads.join("</th><th>")}</th>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>`;
+  $(".stagescheme").append(table);
+}
+
+function buildinitialtablebodies() {
+  for (let s = 5; s <= 16; s++) {
+    buildschemetable(s);
+  }
+}
+
+function buildschemetable(stage) {
+  let rules = schemerules.find(o => o.stage === stage);
+  if (rules) {
+    
+    let categories = [];
+    
+    let tablerows = [];
+    
+    rules.forEach(r => {
+      let rows = convertrule(r, stage);
+      tablerows.push(...rows);
+    });
+    let id = "#stage"+stage+" tbody";
+    tablerows.forEach(r => {
+      let row = buildtablerow(r, stage);
+      $(id).append(row);
+    });
+    
+  }
+}
+
+//convert one of my "rules" to complib spreadsheet rows
+function convertrule(r, stage) {
+  let tablerows = [];
+  if (!categorynames.includes(r.category)) {
+    categorynames.push(r.category);
+  }
+  let set = [];
+  let p = r.pattern;
+  //pattern has parentheses
+  if (p.includes("(")) {
+    //expand to multiple rows
+    //need to add this!!
+  } else {
+    set.push(r);
+  }
+  //pattern transpositions
+  if (r.transpose) {
+    //expand to multiple rows
+    //could already be working with multiple rows from parentheses
+    set.forEach(o => {
+      let tt = transpose(o.pattern, stage);
+      tt.forEach(t => {
+        let tr = {pattern: t};
+        for (let key in o) {
+          if (key != "pattern") tr[key] = o[key];
+        }
+        tablerows.push(tr);
+      });
+    });
+  } else {
+    tablerows.push(...set);
+  }
+  return tablerows;
+}
+
+//r is a "rule"
+function buildtablerow(r, stage) {
+  let p = r.pattern;
+  let cols = [p];
+  if (r.description) {
+    cols.push(r.description);
+  } else {
+    cols.push(p+"s");
+  }
+  cols.push(r.category || "");
+  //type
+  cols.push(p.length === stage ? "Row" : "Mask");
+  //stroke
+  cols.push(r.stroke || "Any");
+  //possible
+  let possible;
+  if (p.length === stage) {
+    let x = p.split("").filter(c => c === "x");
+    possible = x.length === 0 ? 1 : factorial(x.length);
+  } else {
+    let others = stage-p.length;
+    possible = 0;
+    if (r.locations.includes("f")) {
+      possible += factorial(others);
+    }
+    if (r.locations.includes("b")) {
+      possible += factorial(others);
+    }
+    if (r.locations.includes("m")) {
+      let f = others-1;
+      possible += factorial(others)*f;
+    }
+  }
+  cols.push(possible);
+  //scores
+  if (r.locations.length === 3) {
+    cols.push(r.points, 0, 0, 0);
+  } else {
+    cols.push(0);
+    ["f", "m", "b"].forEach(c => {
+      cols.push(r.locations.includes(c) ? r.points : 0);
+    });
+  }
+
+  //actually turn cols into a table row
+  let html = `<tr><td>`+cols.join("</td><td>")+`</td></tr>`;
+  return html;
+  //or just return cols?
+}
+
+function factorial(n) {
+  for (let i = n-1; i > 1; i--) {
+    n *= i;
+  }
+  return n;
+}
+
+
+
+
+
 
 
 
@@ -81,6 +228,22 @@ function bellnum(n) {
 function rowstring(arr) {
   let r = arr.map(n => places[n-1]);
   return r.join("");
+}
+
+
+function transpose(p, stage) {
+  let arr = p.split("").map(bellnum);
+  let min = Math.min(...arr);
+  let max = Math.max(...arr);
+  let patterns = [];
+  for (let i = min-1; i <= stage-max; i++) {
+    let t = [];
+    for (let j = 0; j < p.length; j++) {
+      t.push(arr[j]+i);
+    }
+    patterns.push(rowstring(t));
+  }
+  return patterns;
 }
 
 
