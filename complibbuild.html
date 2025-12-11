@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="https://sallyandbobminor.wordpress.com/wp-content/uploads/2025/07/bristol-major-short.png" />
+
+    <title>Build a music scheme</title>
+
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/stylecomplib.css" />
+  </head>
+  <body>
+    <h2>Build a complib music scheme</h2>
+    <div id="schemetables"></div>
+
+    <div class="form">
+      <div id="addrow">
+        <select id="stage">
+          <option value="5">5 - Doubles</option>
+          <option value="6">6 - Minor</option>
+          <option value="7">7 - Triples</option>
+          <option value="8">8 - Major</option>
+          <option value="9">9 - Caters</option>
+          <option value="10">10 - Royal</option>
+          <option value="11">11 - Cinques</option>
+          <option value="12">12 - Maximus</option>
+          <option value="13">13 - Sextuples</option>
+          <option value="14">14 - Fourteen</option>
+          <option value="15">15 - Septuples</option>
+          <option value="16">16 - Sixteen</option>
+        </select>
+        <label for="patternentry">pattern: <input type="text" id="patternentry" /></label>
+        <label for="patterndescript">description: <input type="text" id="patterndescript" /></label>
+        <label for="patterncat">category: <input type="text" id="patterncat" /></label>
+        <label for="front"><input type="checkbox" checked id="front" />Front</label>
+        <label for="back"><input type="checkbox" checked id="back" />Back</label>
+        <label for="middle"><input type="checkbox" checked id="middle" />Middle</label>
+        <label for="points">points: <input type="number" id="points" value="1" /></label>
+        <button id="addpattern">Add</button>
+      </div>
+    </div>
+    <div class="form">
+      
+      <button id="viewcomp">Go</button>
+    </div>
+    
+    <div id="loading" style="display:none;">
+      <img src="/images/wait.gif" alt="spinning circle" />
+    </div>
+    <h3></h3>
+    <p id="totals"></p>
+    
+    
+    <table class="sortable" id="comptable">
+      <thead>
+        <th class="sorttable_numeric">num</th>
+        <th class="row sorttable_bellrow">Row</th>
+        <th class="sorttable_numeric">Points</th>
+        <th class="sorttable_numeric">Num places</th>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"></script>
+    <script src="sort.js"></script>
+    <script src="complibbuild.js"></script>
+  </body>
+</html>
