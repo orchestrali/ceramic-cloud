@@ -47,6 +47,7 @@ function categorysummarize() {
     };
     let rows = gettablerows(stage);
     let cats = [];
+    
     categorynames.forEach(cn => {
       let catrows = rows.filter(o => o.Category === cn);
       if (catrows.length) {
@@ -70,6 +71,8 @@ function categorysummarize() {
       }
     });
     res.categories = cats;
+    res.maxpoints = 0;
+    cats.map(o => o.totalpoints).forEach(n => res.maxpoints += n);
     categorystats.push(res);
   }
 }
