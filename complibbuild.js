@@ -3,6 +3,7 @@ const stagenames = ["Doubles","Minor","Triples","Major","Caters","Royal", "Cinqu
 const tableheads = ["Mask", "Description", "Category", "Type", "Stroke", "Possible", "Score", "ScoreFront", "ScoreInternal", "ScoreBack"];
 var schemerules = [];
 var categorynames = [];
+var categorystats = [];
 
 
 
@@ -22,6 +23,55 @@ $(function() {
 
 function stageclick(e) {
   $(e.currentTarget).next().toggle();
+}
+
+function gettablerows(stage) {
+  let oo = [];
+  let num = $("#stage"+stage+" tbody tr").length;
+  for (let i = 1; i <= num; i++) {
+    let tr = $("#stage"+stage+" tbody tr:nth-child("+i+")");
+    let obj = {seq: tr.attr("id").slice(-3)};
+    for (let j = 0; j < tableheads.length; j++) {
+      obj[tableheads[j]] = tr.children("td:nth-child("+(j+1)+")").text();
+    }
+    oo.push(obj);
+  };
+  return oo;
+}
+
+function categorysummarize() {
+  categorystats = [];
+  for (let stage = 5; stage <= 16; stage++) {
+    let res = {
+      stage: stage
+    };
+    let rows = gettablerows(stage);
+    let cats = [];
+    categorynames.forEach(cn => {
+      let catrows = rows.filter(o => o.Category === cn);
+      if (catrows.length) {
+        let cat = {
+          name: cn,
+          seqids: catrows.map(o => o.seq),
+          totalpoints: 0
+        };
+        catrows.forEach(r => {
+          let numbers = [];
+          ["Possible", "Score", "ScoreFront", "ScoreInternal", "ScoreBack"].forEach(w => numbers.push(Number(r[w])));
+          if (numbers[1]) {
+            cat.totalpoints += numbers[0]*numbers[1];
+          } else {
+            let total = Math.max(...numbers.slice(2))*numbers[0];
+            cat.totalpoints += total;
+          }
+        });
+        //eventually figure out how to count bell rows in the category
+        cats.push(cat);
+      }
+    });
+    res.categories = cats;
+    categorystats.push(res);
+  }
 }
 
 
@@ -96,6 +146,8 @@ function buildinitialtablebodies() {
   for (let s = 5; s <= 16; s++) {
     buildschemetable(s);
   }
+
+  categorysummarize();
 }
 
 function buildschemetable(stage) {
@@ -112,8 +164,8 @@ function buildschemetable(stage) {
       tablerows.push(...rows);
     });
     let id = "#stage"+stage+" tbody";
-    tablerows.forEach(r => {
-      let row = buildtablerow(r, stage);
+    tablerows.forEach((r,i) => {
+      let row = buildtablerow(r, stage, i+100);
       $(id).append(row);
     });
     
@@ -156,7 +208,7 @@ function convertrule(r, stage) {
 }
 
 //r is a "rule"
-function buildtablerow(r, stage) {
+function buildtablerow(r, stage, num) {
   let p = r.pattern;
   let cols = [p];
   if (r.description) {
@@ -200,7 +252,7 @@ function buildtablerow(r, stage) {
   }
 
   //actually turn cols into a table row
-  let html = `<tr><td>`+cols.join("</td><td>")+`</td></tr>`;
+  let html = `<tr id="stage${stage}-${num}"><td>`+cols.join("</td><td>")+`</td></tr>`;
   return html;
   //or just return cols?
 }
