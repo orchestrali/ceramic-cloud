@@ -70,6 +70,7 @@ function categorysummarize() {
         cats.push(cat);
       }
     });
+    cats.sort((a,b) => Number(a.seqids[0])-Number(b.seqids[0]));
     res.categories = cats;
     res.maxpoints = 0;
     cats.map(o => o.totalpoints).forEach(n => res.maxpoints += n);
