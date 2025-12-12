@@ -311,6 +311,7 @@ function displaycomp(rows, stage) {
               Count: 1
             };
             if (obj.loc != "whole") {
+              o.parts = true;
               ["Front","Internal","Back"].forEach(loc => o[loc] = 0);
               o[obj.loc]++;
             }
