@@ -213,8 +213,8 @@ function categorysummarize() {
 function buildinitialrules() {
   let strs = ["1234","4321"];
   //not using this but keeping as model??
-  let runs = [{pattern: "1234", locations: "fb", points: 1, category: "4-bell runs", transpose: true},
-             {pattern: "4321", locations: "fb", points: 1, category: "4-bell runs", transpose: true}];
+  let runs = [{pattern: "1234", locations: "fb", points: 1, category: "4-bell run[s]", transpose: true},
+             {pattern: "4321", locations: "fb", points: 1, category: "4-bell run[s]", transpose: true}];
   for (let s = 5; s <= 16; s++) {
     let set = {
       stage: s,
@@ -225,15 +225,15 @@ function buildinitialrules() {
         pattern: p,
         locations: "fb",
         points: 1,
-        category: p.length+"-bell runs",
+        category: p.length+"-bell run[s]",
         transpose: true
       };
       set.rules.push(o);
     });
     let rounds = places.slice(0,s);
     let backrounds = rounds.split("").reverse().join("");
-    set.rules.push({pattern: rounds, locations: "fmb", points: 1, description: rounds+" (Rounds)", category: "Named rows"});
-    set.rules.push({pattern: backrounds, locations: "fmb", points: 1, description: backrounds+" (Backrounds)", category: "Named rows"});
+    set.rules.push({pattern: rounds, locations: "fmb", points: 1, description: rounds+" (Rounds)", category: "Named row[s]"});
+    set.rules.push({pattern: backrounds, locations: "fmb", points: 1, description: backrounds+" (Backrounds)", category: "Named row[s]"});
     
     let queensy = buildqueens(s);
     let tittums = buildtittums(s);
@@ -246,7 +246,7 @@ function buildinitialrules() {
         locations: "fmb",
         points: 1,
         description: queensy[name] + " ("+name+")",
-        category: "Named rows"
+        category: "Named row[s]"
       };
       set.rules.push(o);
     }
@@ -346,12 +346,14 @@ function convertrule(r, stage) {
 //r is a "rule"
 function buildtablerow(r, stage, num) {
   let p = r.pattern;
-  let cols = [p];
+  let cols = [p, p];
+  /*
   if (r.description) {
     cols.push(r.description);
   } else {
     cols.push(p+"s");
   }
+  */
   cols.push(r.category || "");
   //type
   cols.push(p.length === stage ? "Row" : "Mask");
@@ -377,6 +379,8 @@ function buildtablerow(r, stage, num) {
     }
   }
   cols.push(possible);
+  if (possible > 1) cols[1] += "[s]";
+  if (r.description) cols[1] += " "+r.description;
   //scores
   if (r.locations.length === 3) {
     cols.push(r.points, 0, 0, 0);
