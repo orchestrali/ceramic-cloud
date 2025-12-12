@@ -13,6 +13,8 @@ var categorystats = [];
 $(function() {
   buildinitialtables();
   buildinitialrules();
+
+  $("#downloadcsv").on("click", downloadfile);
 });
 
 
@@ -24,6 +26,64 @@ $(function() {
 function stageclick(e) {
   $(e.currentTarget).next().toggle();
 }
+
+
+
+
+
+
+function buildcsv() {
+  //probably rebuild summaries first??
+  categorysummarize();
+  
+  let header = ["Id", "SchemeId", "Stage", "Sequence", "Mask", "Description", "Summarise", "Type", "Stroke", "Possible", "Minimum", "Maximum", "Factor", "Score", "ScoreFront", "ScoreInternal", "ScoreBack"].join(",");
+  
+  let texts = {
+    odd: `
+    `,
+    even: `
+    `
+  };
+  let ids = {odd: 1001, even: 1}
+  
+  for (let stage = 5; stage <= 16; stage++) {
+    let odd = stage % 2 === 1;
+    let idkey = odd ? "odd" : "even";
+    let catobj = categorystats.find(o => o.stage === stage);
+    if (catobj) {
+      catobj.categories.forEach((o,i) => {
+        let row = [ids[idkey], "", stage, i+1, '"'+ o.seqids.join(",") +'"', o.name, "0", "Subtotal", "Any", "0","0","0","0","0","0","0","0"];
+        texts[idkey] += row.join(",") + `
+        `;
+        ids[idkey]++;
+      });
+    }
+    
+    let rows = gettablerows(stage);
+    rows.forEach((r,i) => {
+      let row = [ids[idkey], "", stage, r.seq, r.Mask, r.Description, "0", r.Type, r.Stroke, r.Possible, "0", "", "1", r.Score, r.ScoreFront, r.ScoreInternal, r.ScoreBack];
+      texts[idkey] += row.join(",") + `
+      `;
+      ids[idkey]++;
+    });
+  }
+  let full = header + texts.even + texts.odd;
+  return full;
+}
+
+
+function downloadfile() {
+  let file = buildcsv();
+  
+  const a = document.createElement('a');
+  const blob = new Blob([file], {type: "text/plain"});
+  a.href = URL.createObjectURL(blob);
+  a.download = "my-complib-tests.csv";
+  a.click();
+  
+  URL.revokeObjectURL(a.href);
+}
+
 
 function gettablerows(stage) {
   let oo = [];
@@ -150,7 +210,7 @@ function buildinitialtablebodies() {
   for (let s = 5; s <= 16; s++) {
     buildschemetable(s);
   }
-
+  $("#downloadcsv").show();
   categorysummarize();
 }
 
