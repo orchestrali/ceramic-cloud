@@ -21,6 +21,7 @@ $(function() {
 
 
 
+// *** actions ***
 
 //clear error info
 function patternkeydown() {
@@ -43,6 +44,9 @@ function removestagerules(e) {
   let o = schemerules.find(obj => obj.stage === stage);
   o.rules = [];
 }
+
+
+// ******* main purpose of this website *******
 
 function addschemerule() {
   let stage = Number($("#stage option:checked").val());
@@ -102,6 +106,108 @@ function addschemerule() {
 }
 
 
+//convert one of my "rules" to complib spreadsheet rows
+function convertrule(r, stage) {
+  let tablerows = [];
+  if (!categorynames.includes(r.category)) {
+    categorynames.push(r.category);
+  }
+  let set = [];
+  let p = r.pattern;
+  //pattern has parentheses
+  if (p.includes("(")) {
+    //expand to multiple rows
+    let pp = handlepatterns(p);
+    pp.forEach(pat => {
+      let o = {pattern: pat};
+      for (let key in r) {
+        if (key != "pattern") o[key] = r[key];
+      }
+      set.push(o);
+    });
+  } else {
+    set.push(r);
+  }
+  //pattern transpositions
+  if (r.transpose) {
+    //expand to multiple rows
+    //could already be working with multiple rows from parentheses
+    set.forEach(o => {
+      let tt = transpose(o.pattern, stage);
+      tt.forEach(t => {
+        let tr = {pattern: t};
+        for (let key in o) {
+          if (key != "pattern") tr[key] = o[key];
+        }
+        tablerows.push(tr);
+      });
+    });
+  } else {
+    tablerows.push(...set);
+  }
+  return tablerows;
+}
+
+//r is an object with the info needed for a single table row
+function buildtablerow(r, stage, num) {
+  let p = r.pattern;
+  let cols = [p, p];
+  /*
+  if (r.description) {
+    cols.push(r.description);
+  } else {
+    cols.push(p+"s");
+  }
+  */
+  cols.push(r.category || "");
+  //type
+  cols.push(p.length === stage ? "Row" : "Mask");
+  //stroke
+  cols.push(r.stroke || "Any");
+  //possible
+  let possible;
+  if (p.length === stage) {
+    let x = p.split("").filter(c => c === "x");
+    possible = x.length === 0 ? 1 : factorial(x.length);
+  } else {
+    let others = stage-p.length;
+    possible = 0;
+    if (r.locations.includes("f")) {
+      possible += factorial(others);
+    }
+    if (r.locations.includes("b")) {
+      possible += factorial(others);
+    }
+    if (r.locations.includes("m")) {
+      let f = others-1;
+      possible += factorial(others)*f;
+    }
+  }
+  cols.push(possible);
+  if (possible > 1) cols[1] += "[s]";
+  if (r.description) cols[1] += " "+r.description;
+  //scores
+  if (r.locations.length === 3) {
+    cols.push(r.points, 0, 0, 0);
+  } else {
+    cols.push(0);
+    ["f", "m", "b"].forEach(c => {
+      cols.push(r.locations.includes(c) ? r.points : 0);
+    });
+  }
+  // id="stage${stage}-${num}"
+  //actually turn cols into a table row
+  let html = `<tr><td>`+cols.join("</td><td>")+`</td><td class="remove">x</td></tr>`;
+  return html;
+  //or just return cols?
+}
+
+
+
+
+
+
+// **** downloading csv version ****
 
 function buildcsv() {
   //probably rebuild summaries first??
@@ -172,6 +278,9 @@ function downloadfile() {
 }
 
 
+
+// **** processing scheme rows ****
+
 function gettablerows(stage) {
   let oo = [];
   let num = $("#stage"+stage+" tbody tr").length;
@@ -226,6 +335,13 @@ function categorysummarize() {
 }
 
 
+
+
+
+
+// **** INITIAL SETUP ****
+
+//builds runs and some named rows for each stage, same parameters as complib default scheme
 function buildinitialrules() {
   let strs = ["1234","4321"];
   //not using this but keeping as model??
@@ -328,101 +444,7 @@ function buildschemetable(stage) {
   }
 }
 
-//convert one of my "rules" to complib spreadsheet rows
-function convertrule(r, stage) {
-  let tablerows = [];
-  if (!categorynames.includes(r.category)) {
-    categorynames.push(r.category);
-  }
-  let set = [];
-  let p = r.pattern;
-  //pattern has parentheses
-  if (p.includes("(")) {
-    //expand to multiple rows
-    let pp = handlepatterns(p);
-    pp.forEach(pat => {
-      let o = {pattern: pat};
-      for (let key in r) {
-        if (key != "pattern") o[key] = r[key];
-      }
-      set.push(o);
-    });
-  } else {
-    set.push(r);
-  }
-  //pattern transpositions
-  if (r.transpose) {
-    //expand to multiple rows
-    //could already be working with multiple rows from parentheses
-    set.forEach(o => {
-      let tt = transpose(o.pattern, stage);
-      tt.forEach(t => {
-        let tr = {pattern: t};
-        for (let key in o) {
-          if (key != "pattern") tr[key] = o[key];
-        }
-        tablerows.push(tr);
-      });
-    });
-  } else {
-    tablerows.push(...set);
-  }
-  return tablerows;
-}
 
-//r is a "rule"
-function buildtablerow(r, stage, num) {
-  let p = r.pattern;
-  let cols = [p, p];
-  /*
-  if (r.description) {
-    cols.push(r.description);
-  } else {
-    cols.push(p+"s");
-  }
-  */
-  cols.push(r.category || "");
-  //type
-  cols.push(p.length === stage ? "Row" : "Mask");
-  //stroke
-  cols.push(r.stroke || "Any");
-  //possible
-  let possible;
-  if (p.length === stage) {
-    let x = p.split("").filter(c => c === "x");
-    possible = x.length === 0 ? 1 : factorial(x.length);
-  } else {
-    let others = stage-p.length;
-    possible = 0;
-    if (r.locations.includes("f")) {
-      possible += factorial(others);
-    }
-    if (r.locations.includes("b")) {
-      possible += factorial(others);
-    }
-    if (r.locations.includes("m")) {
-      let f = others-1;
-      possible += factorial(others)*f;
-    }
-  }
-  cols.push(possible);
-  if (possible > 1) cols[1] += "[s]";
-  if (r.description) cols[1] += " "+r.description;
-  //scores
-  if (r.locations.length === 3) {
-    cols.push(r.points, 0, 0, 0);
-  } else {
-    cols.push(0);
-    ["f", "m", "b"].forEach(c => {
-      cols.push(r.locations.includes(c) ? r.points : 0);
-    });
-  }
-  // id="stage${stage}-${num}"
-  //actually turn cols into a table row
-  let html = `<tr><td>`+cols.join("</td><td>")+`</td><td class="remove">x</td></tr>`;
-  return html;
-  //or just return cols?
-}
 
 
 // *** weird utilities *** 
