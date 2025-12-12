@@ -563,8 +563,8 @@ function buildinitialrules() {
     });
     let rounds = places.slice(0,s);
     let backrounds = rounds.split("").reverse().join("");
-    set.rules.push({pattern: rounds, locations: "fmb", points: 1, description: rounds+" (Rounds)", category: "Named row[s]"});
-    set.rules.push({pattern: backrounds, locations: "fmb", points: 1, description: backrounds+" (Backrounds)", category: "Named row[s]"});
+    set.rules.push({pattern: rounds, locations: "fmb", points: 1, description: "(Rounds)", category: "Named row[s]"});
+    set.rules.push({pattern: backrounds, locations: "fmb", points: 1, description: "(Backrounds)", category: "Named row[s]"});
     
     let queensy = buildqueens(s);
     let tittums = buildtittums(s);
@@ -576,7 +576,7 @@ function buildinitialrules() {
         pattern: queensy[name],
         locations: "fmb",
         points: 1,
-        description: queensy[name] + " ("+name+")",
+        description: "("+name+")",
         category: "Named row[s]"
       };
       set.rules.push(o);
