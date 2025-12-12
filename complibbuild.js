@@ -40,9 +40,9 @@ function buildcsv() {
   
   let texts = {
     odd: `
-    `,
+`,
     even: `
-    `
+`
   };
   let ids = {odd: 1001, even: 1}
   
@@ -52,9 +52,25 @@ function buildcsv() {
     let catobj = categorystats.find(o => o.stage === stage);
     if (catobj) {
       catobj.categories.forEach((o,i) => {
-        let row = [ids[idkey], "", stage, i+1, '"'+ o.seqids.join(",") +'"', o.name, "0", "Subtotal", "Any", "0","0","0","0","0","0","0","0"];
+        let list = o.seqids.map(n => Number(n));
+        let lstring = '"'+o.seqids[0];
+        let current = [];
+        
+        for (let j = 1; j < list.length; j++) {
+          if (list[j]-list[j-1] === 1) {
+            current.push(j);
+          } else {
+            if (current.length) lstring += "-" + o.seqids[j-1];
+            lstring += "," + o.seqids[j];
+            current = [];
+          }
+        }
+        if (current.length) lstring += "-" + o.seqids[current[current.length-1]];
+        lstring += '"';
+        //'"'+ o.seqids.join(",") +'"'
+        let row = [ids[idkey], "", stage, i+1, lstring, o.name, "0", "Subtotal", "Any", "0","0","0","0","0","0","0","0"];
         texts[idkey] += row.join(",") + `
-        `;
+`;
         ids[idkey]++;
       });
     }
@@ -63,7 +79,7 @@ function buildcsv() {
     rows.forEach((r,i) => {
       let row = [ids[idkey], "", stage, r.seq, r.Mask, r.Description, "0", r.Type, r.Stroke, r.Possible, "0", "", "1", r.Score, r.ScoreFront, r.ScoreInternal, r.ScoreBack];
       texts[idkey] += row.join(",") + `
-      `;
+`;
       ids[idkey]++;
     });
   }
