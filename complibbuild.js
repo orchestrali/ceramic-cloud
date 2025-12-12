@@ -263,7 +263,7 @@ function buildcomptablerow(rn, row, pp, points, cat) {
       if (span) tr += `</span>`;
       span = false;
     }
-    tr += r[i-1];
+    tr += row[i-1];
   }
   if (span) tr += `</span>`;
   
