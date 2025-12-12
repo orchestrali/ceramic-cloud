@@ -109,7 +109,7 @@ function gettablerows(stage) {
   let num = $("#stage"+stage+" tbody tr").length;
   for (let i = 1; i <= num; i++) {
     let tr = $("#stage"+stage+" tbody tr:nth-child("+i+")");
-    let obj = {seq: tr.attr("id").slice(-3)};
+    let obj = {seq: (i+99).toString()};
     for (let j = 0; j < tableheads.length; j++) {
       obj[tableheads[j]] = tr.children("td:nth-child("+(j+1)+")").text();
     }
@@ -214,7 +214,7 @@ function buildinitialtables() {
     </div>`;
     $("#schemetables").append(html);
   }
-  let table = `<table>
+  let table = `<table class="sortable">
         <thead>
           <th>${tableheads.join("</th><th>")}</th>
         </thead>
@@ -334,9 +334,9 @@ function buildtablerow(r, stage, num) {
       cols.push(r.locations.includes(c) ? r.points : 0);
     });
   }
-
+  // id="stage${stage}-${num}"
   //actually turn cols into a table row
-  let html = `<tr id="stage${stage}-${num}"><td>`+cols.join("</td><td>")+`</td><td class="remove">x</td></tr>`;
+  let html = `<tr><td>`+cols.join("</td><td>")+`</td><td class="remove">x</td></tr>`;
   return html;
   //or just return cols?
 }
