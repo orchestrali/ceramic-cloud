@@ -1,0 +1,44 @@
+
+
+button:hover {
+  cursor: pointer;
+}
+
+label {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+div.form {
+  margin: 10px;
+  padding: 10px;
+  border: 2px solid navy;
+  max-width: 1000px;
+  border-radius: 6px;
+}
+
+input[type="number"] {
+  width: 50px;
+}
+
+div > div {
+  margin: 8px;
+}
+
+table {
+  border-collapse: collapse;
+  display: none;
+}
+
+th.row, td.row {
+  width: 130px;
+}
+
+td {
+  border: 1px solid black;
+  padding: 2px 5px;
+}
+
+.green {
+  background-color: rgb(209, 246, 209);
+}
