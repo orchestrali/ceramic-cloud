@@ -8,7 +8,7 @@
     <title>Build a music scheme</title>
 
     <!-- import the webpage's stylesheet -->
-    <link rel="stylesheet" href="/stylecomplib.css" />
+    <link rel="stylesheet" href="/complibbuild.css" />
   </head>
   <body>
     <h2>Build a complib music scheme</h2>
@@ -36,17 +36,23 @@
         <label for="patternentry">pattern: <input type="text" id="patternentry" /></label>
         <label for="patterndescript">description: <input type="text" id="patterndescript" /></label>
         <label for="patterncat">category: <input type="text" id="patterncat" /></label>
+        <select id="stroke">
+          <option>Any</option>
+          <option>Handstroke</option>
+          <option>Backstroke</option>
+        </select>
         <label for="front"><input type="checkbox" checked id="front" />Front</label>
         <label for="back"><input type="checkbox" checked id="back" />Back</label>
         <label for="middle"><input type="checkbox" checked id="middle" />Middle</label>
         <label for="points">points: <input type="number" id="points" value="1" /></label>
+        <label for="transpose"><input type="checkbox" id="transpose" />transpose</label>
         <button id="addpattern">Add</button>
       </div>
     </div>
-    <div class="form">
+    <!--<div class="form">
       
       <button id="viewcomp">Go</button>
-    </div>
+    </div>-->
     
     <div id="loading" style="display:none;">
       <img src="/images/wait.gif" alt="spinning circle" />
