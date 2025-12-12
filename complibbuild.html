@@ -12,11 +12,22 @@
   </head>
   <body>
     <h2>Build a complib music scheme</h2>
+    <div id="aboutpanel" style="display:none;">
+      <p>This website helps with the building and testing of a custom scheme for evaluating bellringing compositions on <a href="https://complib.org" target="blank">complib.org</a>.</p>
+      <p>The structure of a complib music scheme spreadsheet is explained in <a href="https://complib.org/issue/581" target="blank">this issue</a>.</p>
+      <p>This page is designed to reduce the amount of copying and pasting involved. Some things can't be edited here so will need to be adjusted in the downloaded file.</p>
+      <p>Reloading will clear all your work!</p>
+      <p>Made by Alison Stevens</p>
+    </div>
     <div>
       <button type="button" id="downloadcsv" style="display:none;">Download scheme csv</button>
     </div>
     <div id="schemetables"></div>
 
+    <div id="instructions" style="display:none;">
+      <p>"pattern" corresponds to "Mask" in the final spreadsheet. It can include parentheses, to indicate that the bells inside the parentheses can be in any order. For example, "xxxx(57)68" will be converted to two masks, xxxx5768 and xxxx7568.</p>
+      <p>transpose</p>
+    </div>
     <div class="form">
       <div id="addrow">
         <select id="stage">
