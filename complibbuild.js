@@ -1,5 +1,7 @@
 const places = "1234567890ETABCD";
 const stagenames = ["Doubles","Minor","Triples","Major","Caters","Royal", "Cinques","Maximus","Sextuples","Fourteen","Septuples","Sixteen"];
+//complib api url for getting methods & compositions
+var url = "https://api.complib.org/";
 const tableheads = ["Mask", "Description", "Category", "Type", "Stroke", "Possible", "Score", "ScoreFront", "ScoreInternal", "ScoreBack"];
 var schemerules = [];
 var categorynames = [];
@@ -17,6 +19,7 @@ $(function() {
   $("#downloadcsv").on("click", downloadfile);
   $("#addpattern").on("click", addschemerule);
   $("#patternentry").on("keydown", patternkeydown);
+  $("#viewcomp").on("click", viewcomp);
 });
 
 
@@ -43,6 +46,22 @@ function removestagerules(e) {
   //remove saved rules
   let o = schemerules.find(obj => obj.stage === stage);
   o.rules = [];
+}
+
+function viewcomp() {
+  //clear previous
+  $("h3").text("");
+  $("#comptable tbody").contents().remove();
+  $("#comptable").hide();
+  
+  let complibid = $("#complibid").val();
+  let comptype = $('input[name="idtype"]:checked').val();
+  if (comptype && complibid.length) {
+    $("#loading").show();
+    getcomplib(complibid, comptype);
+  } else {
+    //mention problem???
+  }
 }
 
 
@@ -205,6 +224,136 @@ function buildtablerow(r, stage, num) {
 
 
 
+// **** applying the scheme ****
+
+
+//row is an actual bell row
+//pattern may be: actual row, segment, or row with x's
+//both strings!!
+//returns places in the row (1-indexed) where the pattern occurs
+function testrow(row, pattern) {
+  if (row.includes(pattern)) {
+    let start = row.indexOf(pattern);
+    let pp = places.slice(start, start+pattern.length).split("").map(bellnum);
+    return pp;
+  }
+  if (row.length === pattern.length && pattern.includes("x")) {
+    let match = true;
+    let i = 0;
+    let pp = [];
+    while (match && i < row.length) {
+      match = pattern[i] === "x" || row[i] === pattern[i];
+      if (row[i] === pattern[i]) pp.push(i+1);
+      i++;
+    }
+    return match ? pp : [];
+  }
+  return [];
+}
+
+
+function buildcomptablerow(rn, row, pp, points, cat) {
+  let tr = `<tr><td>${rn}</td><td class="row">`;
+  let span;
+  for (let i = 1; i <= row.length; i++) {
+    if (pp.includes(i)) {
+      if (!span) tr += `<span class="green">`;
+      span = true;
+    } else {
+      if (span) tr += `</span>`;
+      span = false;
+    }
+    tr += r[i-1];
+  }
+  if (span) tr += `</span>`;
+  
+  tr += `</td><td>${points}</td><td>${pp.length}</td><td>${cat}</td></tr>`;
+  return tr;
+}
+
+//rows of a method or composition, obtained from complib
+function displaycomp(rows, stage) {
+  let patterns = buildstagepatterns(stage);
+  let count = 0;
+  let totalpoints = 0;
+  let catpoints = {};
+  for (let i = 2; i < rows.length; i++) {
+    let row = rows[i][0];
+    let pp = [];
+    let points = 0;
+    let cat = "";
+    //some rows can match multiple categories; collect them all
+    let cats = [];
+    patterns.forEach(obj => {
+      let pl = testrow(row, obj.Mask);
+      if (pl.length) {
+        cats.push({cat: obj.Category, numplaces: pl.length});
+        points += obj.points;
+        pl.forEach(n => {
+          if (!pp.includes(n)) pp.push(n);
+        });
+      }
+    });
+    if (points) {
+      if (cats.length) {
+        cats.sort((a,b) => b.numplaces-a.numplaces);
+        cat = cats[0].cat;
+        if (catpoints[cat]) {
+          catpoints[cat] += points;
+        } else {
+          catpoints[cat] = points;
+        }
+      }
+      pp.sort((a,b) => a-b);
+      count++;
+      totalpoints += points;
+    }
+    //brackets for plurals
+    let bi = cat.indexOf("[");
+    let bj = cat.indexOf("]");
+    if (bi > -1 && bj > -1) {
+      let carr = cat.split("");
+      let count = bj-bi+1;
+      carr.splice(bi,count);
+      cat = carr.join("");
+    }
+    //add the comprow to the table
+    let tr = buildcomptablerow(i-1, row, pp, points, cat);
+    $("#comptable tbody").append(tr);
+  }
+  $("#comptable").show();
+}
+
+//complib id, type method or composition
+function getcomplib(id, type) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url+type+"/"+id+"/rows", true);
+  xhr.send();
+
+  xhr.onload = function() {
+    $("#loading").hide();
+    let results = JSON.parse(xhr.responseText);
+
+    if (results.rows) {
+      $("h3").text(results.title);
+      let stage = results.stage;
+      displaycomp(results.rows, stage);
+    } else {
+      //something is wrong?
+      console.log(results);
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
 
 
 // **** downloading csv version ****
@@ -332,6 +481,56 @@ function categorysummarize() {
     cats.map(o => o.totalpoints).forEach(n => res.maxpoints += n);
     categorystats.push(res);
   }
+}
+
+
+//doesn't have to be related to categories
+//take a table row and produce separate patterns if front, internal, and back aren't all checked
+function catrowpatterns(catrow, stage) {
+  let pattern = catrow.Mask;
+  let partscores = ["ScoreFront", "ScoreInternal", "ScoreBack"].map(w => catrow[w]);
+  let pp = [];
+  if (pattern.length === stage || !partscores.includes("0")) {
+    pp.push(pattern);
+  } else {
+    let x = "xxxxxxxxxxxxxxxxxxxxxxxxx".slice(0, stage-pattern.length);
+    if (partscores[0] != "0") {
+      pp.push(pattern+x);
+    }
+    if (partscores[2] != "0") {
+      pp.push(x+pattern);
+    }
+    if (partscores[1] != "0") {
+      for (let i = 1; i < x.length; i++) {
+        let p = x.slice(0,i) + pattern + x.slice(i);
+        pp.push(p);
+      }
+    }
+  }
+  return pp;
+}
+
+//convert so that each test/mask/pattern/whatever only has one "points" field
+function buildstagepatterns(stage) {
+  let trr = gettablerows(stage);
+  let patterns = [];
+  trr.forEach(tr => {
+    let pp = catrowpatterns(tr, stage);
+    pp.forEach(p => {
+      let o = {
+        Mask: p
+      };
+      let numbers = ["Score", "ScoreFront", "ScoreInternal", "ScoreBack"].map(w => Number(tr[w]));
+      o.points = Math.max(...numbers);
+      for (let key in tr) {
+        if (!["Mask", "Score", "ScoreFront", "ScoreInternal", "ScoreBack"].includes(key)) {
+          o[key] = tr[key];
+        }
+      }
+      patterns.push(o);
+    });
+  });
+  return patterns;
 }
 
 
