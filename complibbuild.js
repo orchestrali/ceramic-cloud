@@ -15,6 +15,7 @@ $(function() {
   buildinitialrules();
 
   $("#downloadcsv").on("click", downloadfile);
+  //$("#addpattern")
 });
 
 
@@ -27,7 +28,9 @@ function stageclick(e) {
   $(e.currentTarget).next().toggle();
 }
 
-
+function removerowclick(e) {
+  $(e.currentTarget).parent("tr").remove();
+}
 
 
 
@@ -220,6 +223,7 @@ function buildinitialtables() {
       </table>`;
   $(".stagescheme").append(table);
   $(".stagescheme p").on("click", stageclick);
+  $("table").on("click", ".remove", removerowclick);
 }
 
 function buildinitialtablebodies() {
@@ -332,7 +336,7 @@ function buildtablerow(r, stage, num) {
   }
 
   //actually turn cols into a table row
-  let html = `<tr id="stage${stage}-${num}"><td>`+cols.join("</td><td>")+`</td></tr>`;
+  let html = `<tr id="stage${stage}-${num}"><td>`+cols.join("</td><td>")+`</td><td class="remove">x</td></tr>`;
   return html;
   //or just return cols?
 }
