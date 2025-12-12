@@ -441,8 +441,7 @@ function buildcsv() {
   let header = ["Id", "SchemeId", "Stage", "Sequence", "Mask", "Description", "Summarise", "Type", "Stroke", "Possible", "Minimum", "Maximum", "Factor", "Score", "ScoreFront", "ScoreInternal", "ScoreBack"].join(",");
   
   let texts = {
-    odd: `
-`,
+    odd: ``,
     even: `
 `
   };
@@ -470,7 +469,9 @@ function buildcsv() {
         if (current.length) lstring += "-" + o.seqids[current[current.length-1]];
         lstring += '"';
         //'"'+ o.seqids.join(",") +'"'
-        let row = [ids[idkey], "", stage, i+1, lstring, o.name, "0", "Subtotal", "Any", "0","0","0","0","0","0","0","0"];
+        //ids[idkey]
+        //leaving Id column blank; can just be automatically numbered in the spreadsheet
+        let row = ["", "", stage, i+1, lstring, o.name, "0", "Subtotal", "Any", "0","0","0","0","0","0","0","0"];
         texts[idkey] += row.join(",") + `
 `;
         ids[idkey]++;
@@ -479,7 +480,7 @@ function buildcsv() {
     
     let rows = gettablerows(stage);
     rows.forEach((r,i) => {
-      let row = [ids[idkey], "", stage, r.seq, r.Mask, r.Description, "0", r.Type, r.Stroke, r.Possible, "0", "", "1", r.Score, r.ScoreFront, r.ScoreInternal, r.ScoreBack];
+      let row = ["", "", stage, r.seq, r.Mask, r.Description, "0", r.Type, r.Stroke, r.Possible, "0", "", "1", r.Score, r.ScoreFront, r.ScoreInternal, r.ScoreBack];
       texts[idkey] += row.join(",") + `
 `;
       ids[idkey]++;
