@@ -54,7 +54,7 @@ function viewcomp() {
   $("h3").text("");
   $("#totals").text("");
   $("#comptable tbody,#reporttable tbody").contents().remove();
-  $("#comptable,#reporttable").hide();
+  $("#compdisplay").hide();
   
   let complibid = $("#complibid").val();
   let comptype = $('input[name="idtype"]:checked').val();
@@ -358,7 +358,7 @@ function displaycomp(rows, stage) {
   buildcompreport(report);
   let totaltext = `${count} rows with points, ${totalpoints} points in total`;
   $("#totals").text(totaltext);
-  $("#comptable").show();
+  $("#compdisplay").show();
 }
 
 
@@ -395,7 +395,7 @@ function buildcompreport(report) {
     
     i++;
   }
-  $("#reporttable").show();
+  
 }
 
 
