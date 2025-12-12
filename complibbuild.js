@@ -266,7 +266,7 @@ function buildinitialtables() {
     </div>`;
     $("#schemetables").append(html);
   }
-  let table = `<table class="sortable">
+  let table = `<table>
         <thead>
           <th>${tableheads.join("</th><th>")}</th>
         </thead>
@@ -304,7 +304,7 @@ function buildschemetable(stage) {
       let row = buildtablerow(r, stage, i+100);
       $(id).append(row);
     });
-    
+    $("#stage"+stage+" table").addClass("sortable");
   }
 }
 
