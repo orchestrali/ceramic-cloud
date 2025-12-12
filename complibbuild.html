@@ -50,10 +50,18 @@
         <p id="addinginfo"></p>
       </div>
     </div>
-    <!--<div class="form">
-      
+    <div class="form">
+      Apply scheme to method or composition
+      <div>
+        <div>
+          <label for="complibid">Complib id: <input type="number" id="complibid" /></label>
+        </div>
+        <div>
+          <label><input type="radio" name="idtype" value="method" />method</label><label><input type="radio" name="idtype" value="composition" />composition</label>
+        </div>
+      </div>
       <button id="viewcomp">Go</button>
-    </div>-->
+    </div>
     
     <div id="loading" style="display:none;">
       <img src="/images/wait.gif" alt="spinning circle" />
@@ -68,6 +76,7 @@
         <th class="row sorttable_bellrow">Row</th>
         <th class="sorttable_numeric">Points</th>
         <th class="sorttable_numeric">Num places</th>
+        <th>Category</th>
       </thead>
       <tbody></tbody>
     </table>
