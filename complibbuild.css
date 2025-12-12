@@ -29,8 +29,15 @@ table {
   border-collapse: collapse;
 }
 
-#comptable, .tcontainer {
+#comptable, #reporttable, .tcontainer {
   display: none;
+}
+
+tr.subcat {
+  display: none;
+}
+tr.subcat td:first-child {
+  padding-left: 20px;
 }
 
 th.row, td.row {
