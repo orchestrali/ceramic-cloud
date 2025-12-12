@@ -228,11 +228,12 @@ function buildtablerow(r, stage, num) {
 
 
 //row is an actual bell row
-//pattern may be: actual row, segment, or row with x's
+//pattern may be: actual row or row with x's
 //both strings!!
 //returns places in the row (1-indexed) where the pattern occurs
 function testrow(row, pattern) {
   if (row.includes(pattern)) {
+    //this should now only happen for whole row matches...
     let start = row.indexOf(pattern);
     let pp = places.slice(start, start+pattern.length).split("").map(bellnum);
     return pp;
@@ -273,9 +274,13 @@ function buildcomptablerow(rn, row, pp, points, cat) {
 
 //rows of a method or composition, obtained from complib
 function displaycomp(rows, stage) {
-  let patterns = buildstagepatterns(stage);
+  let patterns = buildstagepatterns2(stage);
   let count = 0;
   let totalpoints = 0;
+  let report = {
+    Category: {},
+    Description: {}
+  };
   let catpoints = {};
   for (let i = 2; i < rows.length; i++) {
     let row = rows[i][0];
@@ -286,12 +291,37 @@ function displaycomp(rows, stage) {
     let cats = [];
     patterns.forEach(obj => {
       let pl = testrow(row, obj.Mask);
-      if (pl.length) {
+      if (pl.length && obj.points) {
         cats.push({cat: obj.Category, numplaces: pl.length});
         points += obj.points;
         pl.forEach(n => {
           if (!pp.includes(n)) pp.push(n);
         });
+      }
+      if (pl.length) {
+        ["Category","Description"].forEach(w => {
+          let o = report[w][obj[w]];
+          if (o) {
+            o.Score += obj.points;
+            o.Count++;
+            if (obj.loc != "whole") o[obj.loc]++;
+          } else {
+            o = {
+              Score: obj.points,
+              Count: 1
+            };
+            if (obj.loc != "whole") {
+              ["Front","Internal","Back"].forEach(loc => o[loc] = 0);
+              o[obj.loc]++;
+            }
+            if (w === "Category") o.descripts = [obj.Description];
+            report[w][obj[w]] = o;
+          }
+        });
+        let catdesc = report.Category[obj.Category].descripts;
+        if (!catdesc.includes(obj.Description)) {
+          catdesc.push(obj.Description);
+        }
       }
     });
     if (points) {
@@ -309,18 +339,14 @@ function displaycomp(rows, stage) {
       totalpoints += points;
     }
     //brackets for plurals
-    let bi = cat.indexOf("[");
-    let bj = cat.indexOf("]");
-    if (bi > -1 && bj > -1) {
-      let carr = cat.split("");
-      let count = bj-bi+1;
-      carr.splice(bi,count);
-      cat = carr.join("");
-    }
+    let cattext = handleplural(cat);
     //add the comprow to the table
-    let tr = buildcomptablerow(i-1, row, pp, points, cat);
+    let tr = buildcomptablerow(i-1, row, pp, points, cattext);
     $("#comptable tbody").append(tr);
   }
+  console.log("total points: "+totalpoints);
+  console.log(catpoints);
+  console.log(report);
   $("#comptable").show();
 }
 
@@ -510,6 +536,41 @@ function catrowpatterns(catrow, stage) {
   return pp;
 }
 
+//build front, internal, and back even if they don't get points, because they'll still be counted
+function partialpatterns(tablerow, stage) {
+  let pattern = tablerow.Mask;
+  let pp = [];
+  if (tablerow.Type === "Row") {
+    pp.push({Mask: pattern, loc: "whole", points: Number(tablerow.Score)});
+  } else {
+    let x = "xxxxxxxxxxxxxxxxxxxxxxxxx".slice(0, stage-pattern.length);
+    let partscores = ["ScoreFront", "ScoreInternal", "ScoreBack"].map(w => Number(tablerow[w]));
+    pp.push({Mask: pattern+x, loc: "Front", points: partscores[0]});
+    pp.push({Mask: x+pattern, loc: "Back", points: partscores[2]});
+    for (let i = 1; i < x.length; i++) {
+      let p = x.slice(0,i) + pattern + x.slice(i);
+      pp.push({Mask: p, loc: "Internal", points: partscores[1]});
+    }
+  }
+  return pp;
+}
+
+//returned patterns now have "points" and "loc"
+function buildstagepatterns2(stage) {
+  let trr = gettablerows(stage);
+  let patterns = [];
+  trr.forEach(tr => {
+    let oo = partialpatterns(tr, stage);
+    oo.forEach(o => {
+      for (let key in tr) {
+        if (key != "Mask") o[key] = tr[key];
+      }
+      patterns.push(o);
+    });
+  });
+  return patterns;
+}
+
 //convert so that each test/mask/pattern/whatever only has one "points" field
 function buildstagepatterns(stage) {
   let trr = gettablerows(stage);
@@ -662,6 +723,22 @@ function replacebellletters(p) {
     let c = arr[i];
     if ("etabcd".includes(c)) {
       arr.splice(i, 1, c.toUpperCase());
+    }
+  }
+  return arr.join("");
+}
+
+function handleplural(text, plural) {
+  let i = text.indexOf("[");
+  let j = text.indexOf("]");
+  let arr = text.split("");
+  if (i > -1 && j > -1 && j > i) {
+    if (plural) {
+      arr.splice(j,1);
+      arr.splice(i,1);
+    } else {
+      let count = j-i+1;
+      arr.splice(i, count);
     }
   }
   return arr.join("");
