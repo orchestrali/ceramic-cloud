@@ -16,13 +16,16 @@ $(function() {
 
   $("#downloadcsv").on("click", downloadfile);
   $("#addpattern").on("click", addschemerule);
+  $("#patternentry").on("keydown", patternkeydown);
 });
 
 
 
 
-
-
+//clear error info
+function patternkeydown() {
+  $("#addinginfo").text("");
+}
 
 function stageclick(e) {
   $(e.currentTarget).next().toggle();
@@ -32,14 +35,27 @@ function removerowclick(e) {
   $(e.currentTarget).parent("tr").remove();
 }
 
+function removestagerules(e) {
+  let stage = Number(e.currentTarget.id.slice(5));
+  //remove table rows
+  $("#stage"+stage+" tbody tr").remove();
+  //remove saved rules
+  let o = schemerules.find(obj => obj.stage === stage);
+  o.rules = [];
+}
+
 function addschemerule() {
   let stage = Number($("#stage option:checked").val());
   let rounds = places.slice(0, stage);
   let chars = rounds + "x()";
   let pattern = $("#patternentry").val();
-  let parr = pattern.split("");
-  if (parr.some(c => !chars.includes(c))) {
+  let p = replacebellletters(pattern);
+  let set = [p];
+  if (p.includes("(")) set = handlepatterns(p);
+  let parr = p.split("");
+  if (parr.some(c => !chars.includes(c)) || set.length === 0) {
     //invalid pattern
+    $("#addinginfo").text("pattern not valid");
   } else if (pattern.length) {
     let o = {
       pattern: pattern,
@@ -263,6 +279,9 @@ function buildinitialtables() {
     let name = stagenames[s-5];
     let html = `<div class="stagescheme" id="stage${s}">
       <p>${name}</p>
+      <div class="tcontainer">
+        <button class="clearrows" id="clear${s}" type="button">Delete all</button>
+      </div>
     </div>`;
     $("#schemetables").append(html);
   }
@@ -273,9 +292,10 @@ function buildinitialtables() {
         <tbody>
         </tbody>
       </table>`;
-  $(".stagescheme").append(table);
+  $(".tcontainer").append(table);
   $(".stagescheme p").on("click", stageclick);
   $("table").on("click", ".remove", removerowclick);
+  $(".clearrows").on("click", removestagerules);
 }
 
 function buildinitialtablebodies() {
@@ -319,7 +339,14 @@ function convertrule(r, stage) {
   //pattern has parentheses
   if (p.includes("(")) {
     //expand to multiple rows
-    //need to add this!!
+    let pp = handlepatterns(p);
+    pp.forEach(pat => {
+      let o = {pattern: pat};
+      for (let key in r) {
+        if (key != "pattern") o[key] = r[key];
+      }
+      set.push(o);
+    });
   } else {
     set.push(r);
   }
@@ -397,6 +424,9 @@ function buildtablerow(r, stage, num) {
   //or just return cols?
 }
 
+
+// *** weird utilities *** 
+
 function factorial(n) {
   for (let i = n-1; i > 1; i--) {
     n *= i;
@@ -404,8 +434,17 @@ function factorial(n) {
   return n;
 }
 
-
-
+//capitalize
+function replacebellletters(p) {
+  let arr = p.split("");
+  for (let i = 0; i < arr.length; i++) {
+    let c = arr[i];
+    if ("etabcd".includes(c)) {
+      arr.splice(i, 1, c.toUpperCase());
+    }
+  }
+  return arr.join("");
+}
 
 
 
@@ -568,7 +607,7 @@ function handlepatterns(pattern) {
         closeparens.push(i);
         break;
       default:
-        if (inside && c === "X") xinside = true;
+        if (inside && c === "x") xinside = true;
         chars++;
     }
   }
