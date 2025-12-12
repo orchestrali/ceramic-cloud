@@ -29,8 +29,22 @@ table {
   border-collapse: collapse;
 }
 
-#comptable, #reporttable, .tcontainer {
+#compdisplay, .tcontainer {
   display: none;
+}
+
+#reporttable {
+  margin-bottom: 20px;
+}
+
+#reporttable th {
+  width: 60px;
+}
+#reporttable th:first-child {
+  width: 400px;
+}
+#reporttable td:nth-child(n+2) {
+  text-align: right;
 }
 
 tr.subcat {
