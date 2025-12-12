@@ -20,6 +20,7 @@ $(function() {
   $("#addpattern").on("click", addschemerule);
   $("#patternentry").on("keydown", patternkeydown);
   $("#viewcomp").on("click", viewcomp);
+  $("#reporttable").on("click", ".reportcat", reportcatclick);
 });
 
 
@@ -51,8 +52,9 @@ function removestagerules(e) {
 function viewcomp() {
   //clear previous
   $("h3").text("");
-  $("#comptable tbody").contents().remove();
-  $("#comptable").hide();
+  $("#totals").text("");
+  $("#comptable tbody,#reporttable tbody").contents().remove();
+  $("#comptable,#reporttable").hide();
   
   let complibid = $("#complibid").val();
   let comptype = $('input[name="idtype"]:checked').val();
@@ -62,6 +64,11 @@ function viewcomp() {
   } else {
     //mention problem???
   }
+}
+
+function reportcatclick(e) {
+  let c = e.currentTarget.id.slice(6);
+  $("."+c).toggle();
 }
 
 
@@ -345,11 +352,53 @@ function displaycomp(rows, stage) {
     let tr = buildcomptablerow(i-1, row, pp, points, cattext);
     $("#comptable tbody").append(tr);
   }
-  console.log("total points: "+totalpoints);
-  console.log(catpoints);
-  console.log(report);
+  //console.log("total points: "+totalpoints);
+  //console.log(catpoints);
+  //console.log(report);
+  buildcompreport(report);
+  let totaltext = `${count} rows with points, ${totalpoints} points in total`;
+  $("#totals").text(totaltext);
   $("#comptable").show();
 }
+
+
+function buildreportrow(name, o) {
+  let cols = [handleplural(name, true)];
+  if (o.parts) {
+    ["Front","Internal","Back"].forEach(w => {
+      cols.push(o[w]);
+    });
+  } else {
+    cols.push("", "", "");
+  }
+  cols.push(o.Count, o.Score);
+  return cols;
+}
+
+function buildcompreport(report) {
+  
+  let i = 1;
+  for (let cat in report.Category) {
+    let o = report.Category[cat];
+    let cols = buildreportrow(cat, o);
+    
+    let tr = `<tr id="reportcat${i}" class="reportcat"><td>` + cols.join(`</td><td>`) + `</td></tr>`;
+    //add the table row
+    $("#reporttable tbody").append(tr);
+    
+    o.descripts.forEach(desc => {
+      let d = report.Description[desc];
+      let cells = buildreportrow(desc, d);
+      let row = `<tr class="subcat cat${i}"><td>` + cells.join(`</td><td>`) + `</td></tr>`;
+      $("#reporttable tbody").append(row);
+    });
+    
+    i++;
+  }
+  $("#reporttable").show();
+}
+
+
 
 //complib id, type method or composition
 function getcomplib(id, type) {
