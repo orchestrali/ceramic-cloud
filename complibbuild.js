@@ -15,7 +15,7 @@ $(function() {
   buildinitialrules();
 
   $("#downloadcsv").on("click", downloadfile);
-  //$("#addpattern")
+  $("#addpattern").on("click", addschemerule);
 });
 
 
@@ -32,6 +32,58 @@ function removerowclick(e) {
   $(e.currentTarget).parent("tr").remove();
 }
 
+function addschemerule() {
+  let stage = Number($("#stage option:checked").val());
+  let rounds = places.slice(0, stage);
+  let chars = rounds + "x()";
+  let pattern = $("#patternentry").val();
+  let parr = pattern.split("");
+  if (parr.some(c => !chars.includes(c))) {
+    //invalid pattern
+  } else if (pattern.length) {
+    let o = {
+      pattern: pattern,
+      locations: "",
+      points: Number($("#points").val())
+    };
+    let descript = $("#patterndescript").val();
+    if (descript.length) o.description = descript;
+    let ocat = $("#patterncat").val();
+    if (ocat.length) {
+      o.category = ocat;
+      if (!categorynames.includes(ocat)) categorynames.push(ocat);
+    }
+    ["front","middle","back"].forEach(w => {
+      if ($("#"+w).is(":checked")) {
+        o.locations += w[0];
+      }
+    });
+    let stroke = $("#stroke option:checked").text();
+    if (stroke != "Any") o.stroke = stroke;
+    if ($("#transpose").is(":checked")) o.transpose = true;
+    
+    let set = schemerules.find(obj => obj.stage === stage);
+    set.rules.push(o);
+    
+    //add to the actual table
+    let tablerows = convertrule(o, stage);
+    tablerows.forEach(tr => {
+      let html = buildtablerow(tr, stage);
+      $("#stage"+stage+" tbody").append(html);
+    });
+    //table no longer sorted
+    ["sorttable_sorted","sorttable_sorted_reverse"].forEach(c => {
+      $("#stage"+stage+" th."+c).removeClass(c);
+    });
+    //inform user
+    $("#patternentry").val("");
+    $("#addinginfo").text("Added!");
+    setTimeout(() => {
+      $("#addinginfo").text("");
+    }, 1000);
+  }
+  
+}
 
 
 
