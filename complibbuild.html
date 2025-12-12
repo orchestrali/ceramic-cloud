@@ -66,31 +66,36 @@
     <div id="loading" style="display:none;">
       <img src="/images/wait.gif" alt="spinning circle" />
     </div>
-    <h3></h3>
-    <p id="totals"></p>
 
-    <table id="reporttable">
-      <thead>
-        <th>Musical combination</th>
-        <th>Front</th>
-        <th>Internal</th>
-        <th>Back</th>
-        <th>Count</th>
-        <th>Score</th>
-      </thead>
-      <tbody></tbody>
-    </table>
-    
-    <table class="sortable" id="comptable">
-      <thead>
-        <th class="sorttable_numeric">num</th>
-        <th class="row sorttable_bellrow">Row</th>
-        <th class="sorttable_numeric">Points</th>
-        <th class="sorttable_numeric">Num places</th>
-        <th>Category</th>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div id="compdisplay">
+      <h3></h3>
+      <p id="totals"></p>
+  
+      <h4>Music report</h4>
+      <table id="reporttable">
+        <thead>
+          <th>Musical combination</th>
+          <th>Front</th>
+          <th>Internal</th>
+          <th>Back</th>
+          <th>Count</th>
+          <th>Score</th>
+        </thead>
+        <tbody></tbody>
+      </table>
+  
+      <h4>Rows</h4>
+      <table class="sortable" id="comptable">
+        <thead>
+          <th class="sorttable_numeric">num</th>
+          <th class="row sorttable_bellrow">Row</th>
+          <th class="sorttable_numeric">Points</th>
+          <th class="sorttable_numeric">Num places</th>
+          <th>Category</th>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
 
     <script
   src="https://code.jquery.com/jquery-3.6.0.min.js"
