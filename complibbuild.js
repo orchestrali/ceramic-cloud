@@ -5,6 +5,7 @@ var url = "https://api.complib.org/";
 const tableheads = ["Mask", "Description", "Category", "Type", "Stroke", "Possible", "Score", "ScoreFront", "ScoreInternal", "ScoreBack"];
 var schemerules = [];
 var categorynames = [];
+var categorystages = {};
 var categorystats = [];
 
 
@@ -21,6 +22,7 @@ $(function() {
   $("#patternentry").on("keydown", patternkeydown);
   $("#viewcomp").on("click", viewcomp);
   $("#reporttable").on("click", ".reportcat", reportcatclick);
+  $("#categorytable").on("change", ".cposition", movecategory);
 });
 
 
@@ -37,7 +39,12 @@ function stageclick(e) {
 }
 
 function removerowclick(e) {
-  $(e.currentTarget).parent("tr").remove();
+  let tr = $(e.currentTarget).parent("tr");
+  let id = tr.parents(".stagescheme").attr("id");
+  let stage = Number(id.slice(5));
+  let cat = tr.children("td:nth-child(3)").text();
+  console.log(cat, stage);
+  tr.remove();
 }
 
 function removestagerules(e) {
@@ -47,6 +54,23 @@ function removestagerules(e) {
   //remove saved rules
   let o = schemerules.find(obj => obj.stage === stage);
   o.rules = [];
+  let removecats = [];
+  categorynames.forEach((n,j) => {
+    let i = categorystages[n].indexOf(stage);
+    if (i > -1) {
+      categorystages[n].splice(i,1);
+    }
+    if (categorystages[n].length === 0) removecats.push(j);
+  });
+  if (removecats.length) {
+    for (let i = removecats.length-1; i > -1; i--) {
+      categorynames.splice(removecats[i], 1);
+    }
+    buildcattable();
+  } else {
+    let tdi = stage-2;
+    $("#categorytable tbody td:nth-child("+tdi+")").text("");
+  }
 }
 
 function viewcomp() {
@@ -69,6 +93,26 @@ function viewcomp() {
 function reportcatclick(e) {
   let c = e.currentTarget.id.slice(6);
   $("."+c).toggle();
+}
+
+//trying version without waiting for confirmation
+function movecategory(e) {
+  //let npos = Number($(e.currentTarget).prevAll("select").children("option:checked").text());
+  let npos = Number($(e.currentTarget).children("option:checked").text());
+  let ni = npos-1;
+  let oi = $(e.currentTarget).parent().parent().index();
+  let test = $(e.currentTarget).parent().next().text();
+  let cat = categorynames[oi];
+  if (test != cat) {
+    //problem or I did something wrong
+    console.log(test);
+    console.log(cat);
+  } else {
+    categorynames.splice(oi, 1);
+    categorynames.splice(ni, 0, cat);
+    buildcattable();
+  }
+  
 }
 
 
@@ -97,7 +141,7 @@ function addschemerule() {
     let ocat = $("#patterncat").val();
     if (ocat.length) {
       o.category = ocat;
-      if (!categorynames.includes(ocat)) categorynames.push(ocat);
+      //category is added to categorynames in convertrule
     }
     ["front","middle","back"].forEach(w => {
       if ($("#"+w).is(":checked")) {
@@ -136,7 +180,9 @@ function addschemerule() {
 function convertrule(r, stage) {
   let tablerows = [];
   if (!categorynames.includes(r.category)) {
-    categorynames.push(r.category);
+    addcategory(r.category, stage);
+  } else {
+    checkcategory(r.category, stage, true);
   }
   let set = [];
   let p = r.pattern;
@@ -554,7 +600,7 @@ function categorysummarize() {
         cats.push(cat);
       }
     });
-    cats.sort((a,b) => Number(a.seqids[0])-Number(b.seqids[0]));
+    cats.sort((a,b) => Number(a.seqids[0])-Number(b.seqids[0])); //change this???????
     res.categories = cats;
     res.maxpoints = 0;
     cats.map(o => o.totalpoints).forEach(n => res.maxpoints += n);
@@ -656,6 +702,70 @@ function buildstagepatterns(stage) {
 
 
 
+// **** category table stuff ****
+
+function addcategory(name, stage) {
+  let pos = categorynames.indexOf(name);
+  if (pos === -1) {
+    pos = categorynames.length;
+    categorynames.push(name);
+    categorystages[name] = [stage];
+  }
+  
+  let position = `<select class="cposition">
+  `;
+  for (let i = 1; i <= categorynames.length; i++) {
+    let s = i === pos+1 ? " selected" : "";
+    position += `<option${s}>${i}</option>
+    `;
+  }
+  position += `</select>`;
+  let tr = `<tr><td>${position}</td><td>${name}</td>`;
+  for (let s = 5; s <= 16; s++) {
+    tr += `<td>`;
+    if (categorystages[name].includes(s)) tr += "✓";
+    tr += `</td>`;
+  }
+  //remove button? more work for me
+  tr += `</tr>`;
+  $("#categorytable tbody").append(tr);
+}
+
+function buildcattable() {
+  $("#categorytable tbody tr").remove();
+  categorynames.forEach(n => addcategory(n));
+}
+
+
+function checkcategory(name, stage, include) {
+  if (include) {
+    if (!categorystages[name].includes(stage)) {
+      let tri = categorynames.indexOf(name)+1;
+      let tdi = stage-2;
+      $(`#categorytable tbody tr:nth-child(${tri}) td:nth-child(${tdi})`).text("✓");
+      categorystages[name].push(stage);
+    }
+  } else {
+    let oo = gettablerows(stage).map(o => o.Category);
+    if (!oo.includes(name)) {
+      let arr = categorystages[name];
+      let i = arr.indexOf(stage);
+      arr.splice(i, 1);
+      let j = categorynames.indexOf(name);
+      if (arr.length === 0) {
+        categorynames.splice(j, 1);
+        buildcattable();
+      } else {
+        let tri = j+1;
+        let tdi = stage-2;
+        $(`#categorytable tbody tr:nth-child(${tri}) td:nth-child(${tdi})`).text("");
+      }
+    }
+  }
+  
+}
+
+
 
 
 // **** INITIAL SETUP ****
@@ -711,6 +821,7 @@ function buildinitialrules() {
 
 function buildinitialtables() {
   for (let s = 5; s <= 16; s++) {
+    $("#categorytable thead").append(`<th>${s}</th>`);
     let name = stagenames[s-5];
     let html = `<div class="stagescheme" id="stage${s}">
       <p>${name}</p>
@@ -722,7 +833,9 @@ function buildinitialtables() {
   }
   let table = `<table>
         <thead>
-          <th>${tableheads.join("</th><th>")}</th>
+          <th class="row">Mask</th>
+          <th class="wide">Description</th>
+          <th>${tableheads.slice(2).join("</th><th>")}</th>
         </thead>
         <tbody>
         </tbody>
@@ -746,7 +859,6 @@ function buildschemetable(stage) {
   if (list) {
     let rules = list.rules;
     
-    let categories = [];
     
     let tablerows = [];
     
