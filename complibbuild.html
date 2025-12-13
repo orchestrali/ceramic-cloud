@@ -22,7 +22,15 @@
     <div>
       <button type="button" id="downloadcsv" style="display:none;">Download scheme csv</button>
     </div>
-    <div id="schemetables"></div>
+    <div id="schemetables">
+      <table id="categorytable">
+        <thead>
+          <th></th><!--order-->
+          <th class="wide">Category</th>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
 
     <div id="instructions" style="display:none;">
       <p>"pattern" corresponds to "Mask" in the final spreadsheet. It can include parentheses, to indicate that the bells inside the parentheses can be in any order. For example, "xxxx(57)68" will be converted to two masks, xxxx5768 and xxxx7568.</p>
