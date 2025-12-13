@@ -43,7 +43,8 @@ function removerowclick(e) {
   let id = tr.parents(".stagescheme").attr("id");
   let stage = Number(id.slice(5));
   let cat = tr.children("td:nth-child(3)").text();
-  console.log(cat, stage);
+  //console.log(cat, stage);
+  checkcategory(cat, stage);
   tr.remove();
 }
 
@@ -710,6 +711,7 @@ function addcategory(name, stage) {
     pos = categorynames.length;
     categorynames.push(name);
     categorystages[name] = [stage];
+    $(".cposition").append(`<option>${(pos+1)}</option>`);
   }
   
   let position = `<select class="cposition">
