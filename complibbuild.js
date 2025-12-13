@@ -159,7 +159,7 @@ function convertrule(r, stage) {
     //expand to multiple rows
     //could already be working with multiple rows from parentheses
     set.forEach(o => {
-      let tt = transpose(o.pattern, stage);
+      let tt = transposepattern(o.pattern, stage);
       tt.forEach(t => {
         let tr = {pattern: t};
         for (let key in o) {
@@ -593,11 +593,17 @@ function catrowpatterns(catrow, stage) {
 function partialpatterns(tablerow, stage) {
   let pattern = tablerow.Mask;
   let pp = [];
+  let num = Number(tablerow.Score);
   if (tablerow.Type === "Row") {
-    pp.push({Mask: pattern, loc: "whole", points: Number(tablerow.Score)});
+    pp.push({Mask: pattern, loc: "whole", points: num});
   } else {
     let x = "xxxxxxxxxxxxxxxxxxxxxxxxx".slice(0, stage-pattern.length);
-    let partscores = ["ScoreFront", "ScoreInternal", "ScoreBack"].map(w => Number(tablerow[w]));
+    let partscores;
+    if (num === 0) {
+      partscores = ["ScoreFront", "ScoreInternal", "ScoreBack"].map(w => Number(tablerow[w]));
+    } else {
+      partscores = [num, num, num];
+    }
     pp.push({Mask: pattern+x, loc: "Front", points: partscores[0]});
     pp.push({Mask: x+pattern, loc: "Back", points: partscores[2]});
     for (let i = 1; i < x.length; i++) {
@@ -820,12 +826,34 @@ function rowstring(arr) {
 }
 
 
+function transposepattern(p, stage) {
+  let arr = p.split("");
+  let bells = arr.filter(c => places.includes(c)).map(bellnum);
+  
+  let min = Math.min(...bells);
+  let max = Math.max(...bells);
+  let patterns = [];
+  for (let i = 1-min; i <= stage-max; i++) {
+    let t = [];
+    for (let j = 0; j < p.length; j++) {
+      if (arr[j] === "x") {
+        t.push("x");
+      } else {
+        let num = places.indexOf(arr[j]);
+        t.push(places[num+i]);
+      }
+    }
+    patterns.push(t.join(""));
+  }
+  return patterns;
+}
+
 function transpose(p, stage) {
   let arr = p.split("").map(bellnum);
   let min = Math.min(...arr);
   let max = Math.max(...arr);
   let patterns = [];
-  for (let i = min-1; i <= stage-max; i++) {
+  for (let i = 1-min; i <= stage-max; i++) {
     let t = [];
     for (let j = 0; j < p.length; j++) {
       t.push(arr[j]+i);
