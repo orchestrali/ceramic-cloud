@@ -207,8 +207,10 @@ function convertrule(r, stage) {
     //could already be working with multiple rows from parentheses
     set.forEach(o => {
       let tt = transposepattern(o.pattern, stage);
+      //help with sorting later
+      let group = "stage"+places[stage-1]+"group"+tt[0];
       tt.forEach(t => {
-        let tr = {pattern: t};
+        let tr = {pattern: t, group: group};
         for (let key in o) {
           if (key != "pattern") tr[key] = o[key];
         }
@@ -269,8 +271,9 @@ function buildtablerow(r, stage, num) {
     });
   }
   // id="stage${stage}-${num}"
+  let c = r.group ? ` class="${r.group}"` : "";
   //actually turn cols into a table row
-  let html = `<tr><td>`+cols.join("</td><td>")+`</td><td class="remove">x</td></tr>`;
+  let html = `<tr${c}><td>`+cols.join("</td><td>")+`</td><td class="remove">x</td></tr>`;
   return html;
   //or just return cols?
 }
@@ -447,9 +450,9 @@ function buildcompreport(report) {
       //add the table row
       $("#reporttable tbody").append(tr);
       
-      o.descripts.sort(); //will this work???
+      let descripts = descriptionsort(o.descripts);
 
-      o.descripts.forEach(desc => {
+      descripts.forEach(desc => {
         let d = report.Description[desc];
         let cells = buildreportrow(desc, d);
         let row = `<tr class="subcat cat${i}"><td>` + cells.join(`</td><td>`) + `</td></tr>`;
@@ -460,6 +463,42 @@ function buildcompreport(report) {
     }
   });
   
+}
+
+//input is already descriptions in the same category
+//array of strings
+function descriptionsort(descripts) {
+  //slice to have just the row/segment
+  let arr = [];
+  let hasx = [];
+  descripts.forEach(d => {
+    let i = d.indexOf("[");
+    if (i === -1) i = d.indexOf(" ");
+    let s = i > -1 ? d.slice(0,i) : d;
+    let o = {
+      description: d,
+      segment: s
+    };
+    if (s.includes("x")) {
+      hasx.push(o);
+    } else {
+      let a = s.split("").map(bellnum);
+      let min = Math.min(...a);
+      let diff = 1-min;
+      let r = a.map(n => n+diff);
+      o.normal = rowstring(r);
+      arr.push(o);
+    }
+  });
+  //create "normal" forms????
+  
+  arr.sort((a,b) => {
+    let normal = bellrowsort(a.normal, b.normal);
+    return normal === 0 ? bellrowsort(a.segment, b.segment) : normal;
+  });
+  
+  let res = arr.concat(hasx);
+  return res.map(o => o.description);
 }
 
 
@@ -578,13 +617,20 @@ function gettablerows(stage) {
   let num = $("#stage"+stage+" tbody tr").length;
   for (let i = 1; i <= num; i++) {
     let tr = $("#stage"+stage+" tbody tr:nth-child("+i+")");
+    let c = tr.attr("class");
     let obj = {seq: (i+99).toString()};
+    if (c) obj.group = c.slice(11);
     for (let j = 0; j < tableheads.length; j++) {
       obj[tableheads[j]] = tr.children("td:nth-child("+(j+1)+")").text();
     }
     oo.push(obj);
   };
+  //if building csv, should sort objects by category then mask, and assign sequence numbers after
   return oo;
+}
+
+function tablerowsort() {
+  
 }
 
 function categorysummarize() {
@@ -594,6 +640,8 @@ function categorysummarize() {
       stage: stage
     };
     let rows = gettablerows(stage);
+    //sort the table rows here? and apply sequence numbers?
+    //no that won't work, because building the csv fetches the table rows again!
     let cats = [];
     
     categorynames.forEach(cn => {
@@ -618,7 +666,7 @@ function categorysummarize() {
         cats.push(cat);
       }
     });
-    cats.sort((a,b) => Number(a.seqids[0])-Number(b.seqids[0])); //change this???????
+    //cats are already sorted by categorynames order
     res.categories = cats;
     res.maxpoints = 0;
     cats.map(o => o.totalpoints).forEach(n => res.maxpoints += n);
@@ -892,7 +940,7 @@ function buildschemetable(stage) {
       let row = buildtablerow(r, stage, i+100);
       $(id).append(row);
     });
-    $("#stage"+stage+" table").addClass("sortable");
+    //$("#stage"+stage+" table").addClass("sortable");
   }
 }
 
@@ -934,6 +982,32 @@ function handleplural(text, plural) {
     }
   }
   return arr.join("");
+}
+
+function bellrowsort(a, b) {
+  if (a.length != b.length) {
+    return a.length-b.length;
+  }
+  let l = a.length;
+  let max = l;
+  let strs = {};
+  strs[a] = "";
+  strs[b] = "";
+  let pp = "0ETABCD";
+  let subs = "ABCDEFG";
+  for (let i = 0; i < l; i++) {
+    [a,b].forEach(r => {
+      let c = r[i];
+      let j = pp.indexOf(c);
+      max = Math.max(max, j+10);
+      let nc = j > -1 ? subs[j] : c;
+      strs[r] += nc;
+    });
+  }
+  let base = max > 9 ? max+1 : 10;
+  let aa = parseInt(strs[a], base);
+  let bb = parseInt(strs[b], base);
+  return aa-bb;
 }
 
 
