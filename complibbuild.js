@@ -353,6 +353,7 @@ function displaycomp(rows, stage) {
         });
       }
       if (pl.length) {
+        //count things even if they don't get points
         ["Category","Description"].forEach(w => {
           let o = report[w][obj[w]];
           if (o) {
@@ -422,26 +423,42 @@ function buildreportrow(name, o) {
   return cols;
 }
 
+/*
+report object:
+{
+  Category: {
+    "[category name]": {
+      possible keys: Score, Count, Front, Internal, Back, parts (boolean), descripts
+    }
+  },
+  Description: {}
+}
+*/
 function buildcompreport(report) {
   
   let i = 1;
-  for (let cat in report.Category) {
-    let o = report.Category[cat];
-    let cols = buildreportrow(cat, o);
-    
-    let tr = `<tr id="reportcat${i}" class="reportcat"><td>` + cols.join(`</td><td>`) + `</td></tr>`;
-    //add the table row
-    $("#reporttable tbody").append(tr);
-    
-    o.descripts.forEach(desc => {
-      let d = report.Description[desc];
-      let cells = buildreportrow(desc, d);
-      let row = `<tr class="subcat cat${i}"><td>` + cells.join(`</td><td>`) + `</td></tr>`;
-      $("#reporttable tbody").append(row);
-    });
-    
-    i++;
-  }
+  //go in categorynames order
+  categorynames.forEach(cat => {
+    if (report.Category[cat]) {
+      let o = report.Category[cat];
+      let cols = buildreportrow(cat, o);
+
+      let tr = `<tr id="reportcat${i}" class="reportcat"><td>` + cols.join(`</td><td>`) + `</td></tr>`;
+      //add the table row
+      $("#reporttable tbody").append(tr);
+      
+      o.descripts.sort(); //will this work???
+
+      o.descripts.forEach(desc => {
+        let d = report.Description[desc];
+        let cells = buildreportrow(desc, d);
+        let row = `<tr class="subcat cat${i}"><td>` + cells.join(`</td><td>`) + `</td></tr>`;
+        $("#reporttable tbody").append(row);
+      });
+
+      i++;
+    }
+  });
   
 }
 
