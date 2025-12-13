@@ -413,7 +413,9 @@ function getcomplib(id, type) {
     if (results.rows) {
       $("h3").text(results.title);
       let stage = results.stage;
-      displaycomp(results.rows, stage);
+      let rows = results.rows;
+      if (rows[rows.length-3][1] === "That's all at handstroke") rows.pop();
+      displaycomp(rows, stage);
     } else {
       //something is wrong?
       console.log(results);
