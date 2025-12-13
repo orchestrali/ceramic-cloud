@@ -28,10 +28,11 @@ input[type="number"] {
 }
 .stagescheme > p {
   margin-left: 10px;
-  color: navy;
+  
 }
 .stagescheme > p:hover {
   cursor: pointer;
+  color: navy;
 }
 
 div > div {
@@ -60,6 +61,11 @@ table {
   text-align: right;
 }
 
+.reportcat:hover {
+  cursor: pointer;
+  color: navy;
+}
+
 tr.subcat {
   display: none;
 }
@@ -67,8 +73,16 @@ tr.subcat td:first-child {
   padding-left: 20px;
 }
 
+td.number {
+  text-align: right;
+}
+
+th.wide, td.wide {
+  width: 300px;
+}
+
 th.row, td.row {
-  width: 130px;
+  width: 155px;
 }
 
 td {
