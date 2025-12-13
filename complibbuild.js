@@ -542,6 +542,7 @@ function getcomplib(id, type) {
 function buildcsv() {
   //probably rebuild summaries first??
   categorysummarize();
+  //actually should probably do those tasks here to avoid repeatedly getting the table rows
   
   let header = ["Id", "SchemeId", "Stage", "Sequence", "Mask", "Description", "Summarise", "Type", "Stroke", "Possible", "Minimum", "Maximum", "Factor", "Score", "ScoreFront", "ScoreInternal", "ScoreBack"].join(",");
   
@@ -618,7 +619,8 @@ function gettablerows(stage) {
   for (let i = 1; i <= num; i++) {
     let tr = $("#stage"+stage+" tbody tr:nth-child("+i+")");
     let c = tr.attr("class");
-    let obj = {seq: (i+99).toString()};
+    let obj = {};
+    //seq: (i+99).toString()
     if (c) obj.group = c.slice(11);
     for (let j = 0; j < tableheads.length; j++) {
       obj[tableheads[j]] = tr.children("td:nth-child("+(j+1)+")").text();
@@ -626,11 +628,28 @@ function gettablerows(stage) {
     oo.push(obj);
   };
   //if building csv, should sort objects by category then mask, and assign sequence numbers after
+  oo.sort(tablerowsort);
+  for (let i = 0; i < oo.length; i++) {
+    oo[i].seq = (i+100).toString();
+  }
   return oo;
 }
 
-function tablerowsort() {
-  
+function tablerowsort(a, b) {
+  let ii = [];
+  [a,b].forEach(o => ii.push(categorynames.indexOf(o.Category)));
+  if (ii[0] != ii[1]) {
+    return ii[0]-ii[1];
+  }
+  if (ii[0] === ii[1]) {
+    let x = [];
+    [a,b].forEach(o => x.push(o.Mask.includes("x") ? 1 : 0));
+    if (x.includes(1)) {
+      return x[0]-x[1];
+    } else {
+      return bellrowsort(a.Mask, b.Mask);
+    }
+  }
 }
 
 function categorysummarize() {
