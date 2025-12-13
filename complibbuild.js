@@ -821,7 +821,7 @@ function buildinitialrules() {
 
 function buildinitialtables() {
   for (let s = 5; s <= 16; s++) {
-    $("#categorytable thead").append(`<th>${s}</th>`);
+    $("#categorytable thead tr").append(`<th>${s}</th>`);
     let name = stagenames[s-5];
     let html = `<div class="stagescheme" id="stage${s}">
       <p>${name}</p>
@@ -833,9 +833,11 @@ function buildinitialtables() {
   }
   let table = `<table>
         <thead>
+          <tr>
           <th class="row">Mask</th>
           <th class="wide">Description</th>
           <th>${tableheads.slice(2).join("</th><th>")}</th>
+          </tr>
         </thead>
         <tbody>
         </tbody>
