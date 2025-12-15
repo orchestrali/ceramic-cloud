@@ -347,39 +347,47 @@ function displaycomp(rows, stage) {
     //some rows can match multiple categories; collect them all
     let cats = [];
     patterns.forEach(obj => {
-      let pl = testrow(row, obj.Mask);
-      if (pl.length && obj.points) {
-        cats.push({cat: obj.Category, numplaces: pl.length});
-        points += obj.points;
-        pl.forEach(n => {
-          if (!pp.includes(n)) pp.push(n);
-        });
-      }
-      if (pl.length) {
-        //count things even if they don't get points
-        ["Category","Description"].forEach(w => {
-          let o = report[w][obj[w]];
-          if (o) {
-            o.Score += obj.points;
-            o.Count++;
-            if (obj.loc != "whole") o[obj.loc]++;
-          } else {
-            o = {
-              Score: obj.points,
-              Count: 1
-            };
-            if (obj.loc != "whole") {
-              o.parts = true;
-              ["Front","Internal","Back"].forEach(loc => o[loc] = 0);
-              o[obj.loc]++;
+      //stroke of composition row: 0 for handstroke, 1 for backstroke
+      let rowstroke = i%2;
+      //stroke at which pattern gets points
+      let pstroke = obj.Stroke === "Handstroke" ? 0 : obj.Stroke === "Backstroke" ? 1 : i%2;
+      //only test pattern if stroke is correct
+      if (pstroke === rowstroke) {
+        let pl = testrow(row, obj.Mask);
+        
+        if (pl.length && obj.points) {
+          cats.push({cat: obj.Category, numplaces: pl.length});
+          points += obj.points;
+          pl.forEach(n => {
+            if (!pp.includes(n)) pp.push(n);
+          });
+        }
+        if (pl.length) {
+          //count things even if they don't get points
+          ["Category","Description"].forEach(w => {
+            let o = report[w][obj[w]];
+            if (o) {
+              o.Score += obj.points;
+              o.Count++;
+              if (obj.loc != "whole") o[obj.loc]++;
+            } else {
+              o = {
+                Score: obj.points,
+                Count: 1
+              };
+              if (obj.loc != "whole") {
+                o.parts = true;
+                ["Front","Internal","Back"].forEach(loc => o[loc] = 0);
+                o[obj.loc]++;
+              }
+              if (w === "Category") o.descripts = [obj.Description];
+              report[w][obj[w]] = o;
             }
-            if (w === "Category") o.descripts = [obj.Description];
-            report[w][obj[w]] = o;
+          });
+          let catdesc = report.Category[obj.Category].descripts;
+          if (!catdesc.includes(obj.Description)) {
+            catdesc.push(obj.Description);
           }
-        });
-        let catdesc = report.Category[obj.Category].descripts;
-        if (!catdesc.includes(obj.Description)) {
-          catdesc.push(obj.Description);
         }
       }
     });
