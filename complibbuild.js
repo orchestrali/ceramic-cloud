@@ -675,6 +675,9 @@ function downloadfile() {
 
 
 
+
+
+
 // **** processing scheme rows ****
 
 function gettablerows(stage) {
@@ -716,6 +719,7 @@ function tablerowsort(a, b) {
   }
 }
 
+
 function categorysummarize() {
   categorystats = [];
   for (let stage = 5; stage <= 16; stage++) {
@@ -725,6 +729,11 @@ function categorysummarize() {
     let rows = gettablerows(stage);
     //sort the table rows here? and apply sequence numbers?
     //no that won't work, because building the csv fetches the table rows again!
+    let ref = reformat(rows, stage);
+    let sinfo = countrows(ref.map(o => o.Mask));
+    res.totalrows = sinfo.total;
+    res.sharedquantity = sinfo.sharedrows.length;
+    
     let cats = [];
     
     categorynames.forEach(cn => {
@@ -746,6 +755,10 @@ function categorysummarize() {
           }
         });
         //eventually figure out how to count bell rows in the category
+        let arr = reformat(catrows, stage);
+        let info = countrows(arr.map(o => o.Mask));
+        cat.uniquerows = info.total;
+        cat.sharedquantity = info.sharedrows.length;
         cats.push(cat);
       }
     });
@@ -755,6 +768,111 @@ function categorysummarize() {
     cats.map(o => o.totalpoints).forEach(n => res.maxpoints += n);
     categorystats.push(res);
   }
+}
+
+//input table rows
+//returned objects have Mask, loc, points
+function reformat(trr, stage) {
+  let oo = [];
+  trr.forEach(tr => {
+    let pp = partialpatterns(tr, stage);
+    pp.forEach(p => {
+      if (p.points) {
+        oo.push(p);
+      }
+    });
+  });
+  return oo;
+}
+
+//input is array of strings
+function countrows(pp) {
+  pp.sort((a,b) => {
+    let arr = [a,b].map(countx);
+    return arr[0]-arr[1];
+  });
+  
+  let extra = [];
+  let nooverlap = [];
+  let overlaps = [];
+  let hasoverlap = [];
+  for (let i = 0; i < pp.length-1; i++) {
+    let r = pp[i];
+    let j = pp.length-1;
+    let matches = [];
+    let contain;
+    let match;
+    while (!contain && j > i) {
+      match = buildoverlap(r, pp[j]);
+      contain = [r,pp[j]].includes(match);
+      if (match && !contain) {
+        matches.push({overlap: match, sources: [r, pp[j]]});
+      }
+      j--;
+    }
+    if (match === r) {
+      extra.push(r);
+    } else if (match === pp[j+1]) {
+      extra.push(pp[j+1]);
+    } else if (matches.length) {
+      matches.forEach(o => {
+        let ov = overlaps.find(obj => obj.overlap === o.overlap);
+        o.sources.forEach(s => {
+          if (ov) {
+            if (!ov.sources.includes(s)) ov.sources.push(s);
+          }
+          if (!hasoverlap.includes(s)) hasoverlap.push(s);
+        });
+        if (!ov) {
+          overlaps.push(o);
+        }
+      });
+    } else {
+      if (!hasoverlap.includes(r)) nooverlap.push(r);
+    }
+  }
+  let last = pp[pp.length-1];
+  if (!extra.includes(last) && !hasoverlap.includes(last)) {
+    nooverlap.push(last);
+  }
+  
+  //console.log(nooverlap);
+  
+  
+  let sharedrows = [];
+  let uniquecounts = [];
+  hasoverlap.forEach(p => {
+    let shared = [];
+    let oo = overlaps.filter(o => o.sources.includes(p));
+    let num = countx(p);
+    let total = factorial(num);
+    oo.forEach(o => {
+      let rows = getrowsfrompattern(o.overlap);
+      rows.forEach(r => {
+        if (!shared.includes(r)) shared.push(r);
+      });
+    });
+    let unique = total-shared.length;
+    uniquecounts.push(unique);
+    shared.forEach(r => {
+      if (!sharedrows.includes(r)) sharedrows.push(r);
+    });
+  });
+  
+  //console.log(sharedrows);
+  //console.log(uniquecounts);
+  
+  let total = sharedrows.length;
+  for (let i = 0; i < nooverlap.length; i++) {
+    let o = nooverlap[i];
+    let num = countx(o);
+    let count = num ? factorial(num) : 1;
+    total += count;
+  }
+  uniquecounts.forEach(n => total += n);
+  //console.log(total);
+  
+  return {nooverlap: nooverlap, sharedrows: sharedrows, total: total};
 }
 
 
@@ -1039,6 +1157,12 @@ function factorial(n) {
   return n;
 }
 
+//how many times does "x" appear in the pattern?
+function countx(p) {
+  let arr = p.split("").filter(c => c === "x");
+  return arr.length;
+}
+
 //capitalize
 function replacebellletters(p) {
   let arr = p.split("");
@@ -1091,6 +1215,35 @@ function bellrowsort(a, b) {
   let aa = parseInt(strs[a], base);
   let bb = parseInt(strs[b], base);
   return aa-bb;
+}
+
+//designed for two patterns with x
+//if there is no overlap in matching rows, returns false
+//if there *is* overlap, the overlap is returned in the form of a row or pattern with x
+function buildoverlap(p, q) {
+  let chars = [];
+  let match = true;
+  let i = 0;
+  while (match && i < p.length) {
+    let cc = p[i]+q[i];
+    if (cc === "xx") {
+      chars.push("x");
+    } else if (cc.includes("x")) {
+      let c = cc[0] === "x" ? cc[1] : cc[0];
+      if (chars.includes(c)) {
+        match = false;
+      } else {
+        chars.push(c);
+      }
+    } else if (p[i] === q[i]) {
+      chars.push(p[i]);
+    } else {
+      match = false;
+    }
+    
+    i++;
+  }
+  return match ? chars.join("") : match;
 }
 
 
