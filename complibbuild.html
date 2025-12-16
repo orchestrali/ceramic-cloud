@@ -34,40 +34,60 @@
       </table>
     </div>
 
-    <div id="instructions" style="display:none;">
-      <p>"pattern" corresponds to "Mask" in the final spreadsheet. It can include parentheses, to indicate that the bells inside the parentheses can be in any order. For example, "xxxx(57)68" will be converted to two masks, xxxx5768 and xxxx7568.</p>
-      <p>transpose</p>
+    <div class="button" id="showinstruct">Instructions</div>
+    <div id="instructions" class="form">
+      <p>Here are explanations of the items in the form below that do not correspond exactly to columns in the final spreadsheet.</p>
+      <p><span class="bold">Pattern:</span> this corresponds to the "Mask" column of the spreadsheet, with one limitation and one addition:</p>
+      <p class="indent">The field will accept whole rows, exact or with x as a wildcard, and segments of a row (types "Row" and "Mask" in the final spreadsheet). Wraps are not available. Subtotals will be automatically generated from the category field.</p>
+      <p class="indent">Parentheses can be used to indicate that the bells inside the parentheses can be in any order. For example, entering "xxxx(57)(68)" with stage 8 will result in four rows being added to the major table:</p>
+      <ul>
+        <li>xxxx5768</li>
+        <li>xxxx7568</li>
+        <li>xxxx5786</li>
+        <li>xxxx7586</li>
+      </ul>
+      <p><span class="bold">Transpose:</span> when entering a pattern shorter than a whole row, checking this box will cause the pattern to be added with every starting bell possible for the stage. For example, entering "1234" as the pattern and checking "transpose" will automatically add all descending four-bell runs.</p>
+      <p><span class="bold">Front/Middle/Back:</span> when entering a pattern shorter than a whole row, check these to indicate where in the row it will receive points.</p>
+      <p><span class="bold">Description:</span> this website will automatically add the pattern/mask to the description column. This field is for any additional text you want to appear. For example, named rows in complib's default scheme have the row followed by its name in parentheses: "15263748 (Tittums)". To recreate this you would enter just "(Tittums)" in the description field.</p>
+      <p><span class="bold">Category:</span> this field is how this website builds subtotal rows in the spreadsheet output. You can see what categories currently exist for each stage in the table at the top of the page.</p>
+      
+      <div class="button" id="closeinstruct">Close</div>
     </div>
     <div class="form">
       <div id="addrow">
-        <select id="stage">
-          <option value="5">5 - Doubles</option>
-          <option value="6">6 - Minor</option>
-          <option value="7">7 - Triples</option>
-          <option value="8">8 - Major</option>
-          <option value="9">9 - Caters</option>
-          <option value="10">10 - Royal</option>
-          <option value="11">11 - Cinques</option>
-          <option value="12">12 - Maximus</option>
-          <option value="13">13 - Sextuples</option>
-          <option value="14">14 - Fourteen</option>
-          <option value="15">15 - Septuples</option>
-          <option value="16">16 - Sixteen</option>
-        </select>
-        <label for="patternentry">pattern: <input type="text" id="patternentry" /></label>
-        <label for="patterndescript">description: <input type="text" id="patterndescript" /></label>
-        <label for="patterncat">category: <input type="text" id="patterncat" /></label>
-        <select id="stroke">
-          <option>Any</option>
-          <option>Handstroke</option>
-          <option>Backstroke</option>
-        </select>
-        <label for="front"><input type="checkbox" checked id="front" />Front</label>
-        <label for="back"><input type="checkbox" checked id="back" />Back</label>
-        <label for="middle"><input type="checkbox" checked id="middle" />Middle</label>
-        <label for="points">points: <input type="number" id="points" value="1" /></label>
-        <label for="transpose"><input type="checkbox" id="transpose" />transpose</label>
-        <button id="addpattern">Add</button>
+        <div>
+          <select id="stage">
+            <option value="5">5 - Doubles</option>
+            <option value="6">6 - Minor</option>
+            <option value="7">7 - Triples</option>
+            <option value="8">8 - Major</option>
+            <option value="9">9 - Caters</option>
+            <option value="10">10 - Royal</option>
+            <option value="11">11 - Cinques</option>
+            <option value="12">12 - Maximus</option>
+            <option value="13">13 - Sextuples</option>
+            <option value="14">14 - Fourteen</option>
+            <option value="15">15 - Septuples</option>
+            <option value="16">16 - Sixteen</option>
+          </select>
+          <label for="patternentry">pattern: <input type="text" id="patternentry" /></label>
+          <label for="transpose"><input type="checkbox" id="transpose" />transpose</label>
+          <select id="stroke">
+            <option>Any</option>
+            <option>Handstroke</option>
+            <option>Backstroke</option>
+          </select>
+          <label for="front"><input type="checkbox" checked id="front" />Front</label>
+          <label for="middle"><input type="checkbox" checked id="middle" />Middle</label>
+          <label for="back"><input type="checkbox" checked id="back" />Back</label>
+          <label for="points">points: <input type="number" id="points" value="1" /></label>
+        </div>
+        <div>
+          <label for="patterndescript">description: <input type="text" id="patterndescript" /></label>
+          <label for="patterncat">category: <input type="text" id="patterncat" /></label>
+          <button id="addpattern">Add</button>
+        </div>
+        
         <p id="addinginfo"></p>
       </div>
     </div>
@@ -75,11 +95,9 @@
       Apply scheme to method or composition
       <div>
         <div>
-          <label for="complibid">Complib id: <input type="number" id="complibid" /></label>
+          <label for="compliburl">Complib link: <input type="text" id="compliburl" /></label>
         </div>
-        <div>
-          <label><input type="radio" name="idtype" value="method" />method</label><label><input type="radio" name="idtype" value="composition" />composition</label>
-        </div>
+        <div id="complibinfo"></div>
       </div>
       <button id="viewcomp">Go</button>
     </div>
