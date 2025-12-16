@@ -77,6 +77,14 @@ td.number {
   text-align: right;
 }
 
+td.remove {
+  font-family: Arial;
+  border: none;
+}
+td.remove:hover {
+  cursor: pointer;
+}
+
 th.wide, td.wide {
   width: 300px;
 }
