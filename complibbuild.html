@@ -12,12 +12,24 @@
   </head>
   <body>
     <h2>Build a complib music scheme</h2>
-    <div id="aboutpanel" style="display:none;">
+    <div class="button" id="showabout">About</div>
+    <div id="aboutpanel" class="form">
+      <h3>The Basics</h3>
       <p>This website helps with the building and testing of a custom scheme for evaluating bellringing compositions on <a href="https://complib.org" target="blank">complib.org</a>.</p>
       <p>The structure of a complib music scheme spreadsheet is explained in <a href="https://complib.org/issue/581" target="blank">this issue</a>.</p>
-      <p>This page is designed to reduce the amount of copying and pasting involved. Some things can't be edited here so will need to be adjusted in the downloaded file.</p>
-      <p>Reloading will clear all your work!</p>
-      <p>Made by Alison Stevens</p>
+      <p>On this page you can build a preliminary version of a custom music scheme, test the scheme on a method (plain course) or composition, and then download your scheme as a csv.</p>
+      <h3>Viewing and Editing</h3>
+      <p>Clicking on one of the stage names will display the current tests for that stage.</p>
+      <p>I have started each stage out with runs of 4+ bells, given points at front and back, and a small selection of named rows. These can be deleted individually by clicking the "x" at the end of a table row, or there is a button to clear everything for the stage for a fresh start. Items in these tables can't be edited here—you can either delete items and add them again with changes, or edit the downloaded csv file.</p>
+      <p>Some columns of the complib spreadsheet cannot be edited here at all and will need to be adjusted in the downloaded file. "Summarise" is perhaps the most important of these.</p>
+      <p>The form for adding items to the scheme, along with some more specific instructions, is below all the tables.</p>
+      <p><span class="bold">IMPORTANT:</span> This website has no way to save or remember your work! If the page is reloaded, everything you have added will be lost. If you want to keep your work, be sure to download the csv! Unfortunately there is not currently a way to restore work from a previous session.</p>
+      <h3>Downloading Your Work</h3>
+      <p>The download button will give you a csv file with everything visible in the tables under each stage, with the additional columns needed for the final version. Even stages are together at the top, then all the odd stages. Each stage will have subtotal rows created from the test categories.</p>
+      <p>When viewing/editing the csv in Excel, it may be best to import the file rather than opening it directly. That way you can set the "Mask" column to be interpreted as text (important particularly on Royal so initial "0" doesn't get removed).</p>
+        
+      <h3>Background</h3>
+      <p>This was made by Alison Stevens, currently a ringer at St Mary's Cathedral in Edinburgh. She is also the creator of <a href="https://www.changeringing.net" target="blank">www.changeringing.net</a>.</p>
     </div>
     <div>
       <button type="button" id="downloadcsv" style="display:none;">Download scheme csv</button>
@@ -125,7 +137,7 @@
         <tbody></tbody>
       </table>
   
-      <h4>Rows</h4>
+      <h4>Rows (click on a header to sort by that column)</h4>
       <table class="sortable" id="comptable">
         <thead>
           <tr>
