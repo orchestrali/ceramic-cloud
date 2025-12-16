@@ -719,6 +719,15 @@ function tablerowsort(a, b) {
   }
 }
 
+var stagecount;
+function performcount(stage) {
+  let rows = gettablerows(stage);
+  
+  let ref = reformat(rows, stage);
+  let sinfo = countrows(ref.map(o => o.Mask));
+  stagecount = {stage: stage, sharedrows: sinfo.sharedrows, totalrows: sinfo.total};
+}
+
 var countholder = [];
 function categorysummarize() {
   console.log("summarizing");
@@ -761,7 +770,7 @@ function categorysummarize() {
         if (stage < 13) {
           let arr = reformat(catrows, stage);
           let info = countrows(arr.map(o => o.Mask));
-          countholder.push({stage: stage, cat: cn, sharedrows: info.sharedrows, totalrows: info.total});
+          //countholder.push({stage: stage, cat: cn, sharedrows: info.sharedrows, totalrows: info.total});
           //if (stage === 8 && cn === "4-bell run[s]") console.log(info);
           cat.uniquerows = info.total;
           cat.sharedquantity = info.sharedrows.length;
