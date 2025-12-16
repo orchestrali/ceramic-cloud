@@ -572,7 +572,21 @@ function getcomplib(id, type, access) {
     } else {
       //something is wrong?
       console.log(results);
+      let text = type + " not found";
+      $("#complibinfo").text(text);
     }
+  }
+
+  xhr.onerror = function() {
+    $("#loading").hide();
+    let results = JSON.parse(xhr.responseText);
+    let text;
+    if (results && results.status && results.status === 401) {
+      text = "That appears to be a private "+type+". If that is what you want, look for the share link.";
+    } else {
+      text = type + " not found";
+    }
+    $("#complibinfo").text(text);
   }
 }
 
