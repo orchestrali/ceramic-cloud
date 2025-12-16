@@ -719,7 +719,7 @@ function tablerowsort(a, b) {
   }
 }
 
-
+var countholder = [];
 function categorysummarize() {
   console.log("summarizing");
   categorystats = [];
@@ -760,7 +760,10 @@ function categorysummarize() {
         //eventually figure out how to count bell rows in the category
         if (stage < 9) {
           let arr = reformat(catrows, stage);
+          if (stage === 8 && cn === "4-bell run[s]") console.log(arr.length);
           let info = countrows(arr.map(o => o.Mask));
+          countholder.push(info);
+          //if (stage === 8 && cn === "4-bell run[s]") console.log(info);
           cat.uniquerows = info.total;
           cat.sharedquantity = info.sharedrows.length;
         }
