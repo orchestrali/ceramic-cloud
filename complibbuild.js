@@ -758,14 +758,14 @@ function categorysummarize() {
           }
         });
         //eventually figure out how to count bell rows in the category
-        //if (stage < 11) {
+        if (stage < 13) {
           let arr = reformat(catrows, stage);
           let info = countrows(arr.map(o => o.Mask));
           countholder.push({stage: stage, cat: cn, sharedrows: info.sharedrows, totalrows: info.total});
           //if (stage === 8 && cn === "4-bell run[s]") console.log(info);
           cat.uniquerows = info.total;
           cat.sharedquantity = info.sharedrows.length;
-        //}
+        }
         cats.push(cat);
       }
     });
