@@ -227,6 +227,7 @@ function convertrule(r, stage) {
 function buildtablerow(r, stage, num) {
   let p = r.pattern;
   let cols = [p, p];
+  let numbers = [];
   /*
   if (r.description) {
     cols.push(r.description);
@@ -258,22 +259,22 @@ function buildtablerow(r, stage, num) {
       possible += factorial(others)*f;
     }
   }
-  cols.push(possible);
+  numbers.push(possible);
   if (possible > 1) cols[1] += "[s]";
   if (r.description) cols[1] += " "+r.description;
   //scores
   if (r.locations.length === 3 || p.length === stage) {
-    cols.push(r.points, 0, 0, 0);
+    numbers.push(r.points, 0, 0, 0);
   } else {
-    cols.push(0);
+    numbers.push(0);
     ["f", "m", "b"].forEach(c => {
-      cols.push(r.locations.includes(c) ? r.points : 0);
+      numbers.push(r.locations.includes(c) ? r.points : 0);
     });
   }
   // id="stage${stage}-${num}"
   let c = r.group ? ` class="${r.group}"` : "";
   //actually turn cols into a table row
-  let html = `<tr${c}><td>`+cols.join("</td><td>")+`</td><td class="remove">x</td></tr>`;
+  let html = `<tr${c}><td>`+cols.join("</td><td>")+`</td><td class="number">`+numbers.join(`</td><td class="number">`)+`</td><td class="remove">x</td></tr>`;
   return html;
   //or just return cols?
 }
