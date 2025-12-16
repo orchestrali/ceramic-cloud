@@ -730,7 +730,7 @@ function categorysummarize() {
     let rows = gettablerows(stage);
     //sort the table rows here? and apply sequence numbers?
     //no that won't work, because building the csv fetches the table rows again!
-    if (stage < 9) {
+    if (stage < 13) {
       let ref = reformat(rows, stage);
       let sinfo = countrows(ref.map(o => o.Mask));
       res.totalrows = sinfo.total;
@@ -758,15 +758,14 @@ function categorysummarize() {
           }
         });
         //eventually figure out how to count bell rows in the category
-        if (stage < 11) {
+        //if (stage < 11) {
           let arr = reformat(catrows, stage);
-          //if (stage === 8 && cn === "4-bell run[s]") console.log(arr.length);
           let info = countrows(arr.map(o => o.Mask));
-          countholder.push(info);
+          countholder.push({stage: stage, cat: cn, sharedrows: info.sharedrows, totalrows: info.total});
           //if (stage === 8 && cn === "4-bell run[s]") console.log(info);
           cat.uniquerows = info.total;
           cat.sharedquantity = info.sharedrows.length;
-        }
+        //}
         cats.push(cat);
       }
     });
