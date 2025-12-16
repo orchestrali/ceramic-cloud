@@ -24,8 +24,12 @@ div.button:hover {
   cursor: pointer;
 }
 
-#instructions {
+#instructions, #aboutpanel {
   display: none;
+}
+
+.form h3:first-child {
+  margin-top: 8px;
 }
 
 span.bold {
