@@ -18,11 +18,17 @@ $(function() {
   buildinitialrules();
 
   $("#downloadcsv").on("click", downloadfile);
+  $("#categorytable").on("change", ".cposition", movecategory);
+
+  $("#showinstruct").on("click", () => $("#instructions").toggle());
+  $("#closeinstruct").on("click", () => $("#instructions").hide());
+  
   $("#addpattern").on("click", addschemerule);
   $("#patternentry").on("keydown", patternkeydown);
+  
   $("#viewcomp").on("click", viewcomp);
+  $("#compliburl").on("click", () => $("#complibinfo").text(""));
   $("#reporttable").on("click", ".reportcat", reportcatclick);
-  $("#categorytable").on("change", ".cposition", movecategory);
 });
 
 
@@ -81,13 +87,44 @@ function viewcomp() {
   $("#comptable tbody,#reporttable tbody").contents().remove();
   $("#compdisplay").hide();
   
-  let complibid = $("#complibid").val();
-  let comptype = $('input[name="idtype"]:checked').val();
-  if (comptype && complibid.length) {
-    $("#loading").show();
-    getcomplib(complibid, comptype);
+  let compliburl = $("#compliburl").val();
+  let problem;
+  let complibid, comptype, accesskey;
+  if (compliburl.startsWith("https://complib.org/")) {
+    compliburl = compliburl.slice(20);
+    
+    if (compliburl.startsWith("method/")) {
+      comptype = "method";
+    } else if (compliburl.startsWith("composition/")) {
+      comptype = "composition";
+    }
+    if (comptype) {
+      let i = comptype.length+1;
+      compliburl = compliburl.slice(i);
+      let q = compliburl.indexOf("?");
+      let j = q > -1 ? q : compliburl.length;
+      let id = compliburl.slice(0, j);
+      if (/^\d+$/.test(id)) {
+        complibid = id;
+        if (q > -1 && compliburl[q+1]) {
+          let query = compliburl.slice(q+1).split("&");
+          accesskey = query.find(s => s.startsWith("accessKey="));
+        }
+        //[complibid, comptype, accesskey].forEach(v => console.log(v));
+        getcomplib(complibid, comptype, accesskey);
+      } else {
+        problem = "id should be all numbers";
+      }
+    } else {
+      problem = "not method or composition";
+    }
   } else {
-    //mention problem???
+    problem = "incorrect url";
+  }
+  
+  if (problem) {
+    //display something??
+    $("#complibinfo").text("problem with link");
   }
 }
 
@@ -516,7 +553,7 @@ function descriptionsort(descripts) {
 function getcomplib(id, type, access) {
   var xhr = new XMLHttpRequest();
   let path = url+type+"/"+id+"/rows";
-  if (access.length) path += "?" + access;
+  if (access && access.length) path += "?" + access;
   
   xhr.open('GET', path, true);
   xhr.send();
