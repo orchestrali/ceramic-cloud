@@ -758,9 +758,9 @@ function categorysummarize() {
           }
         });
         //eventually figure out how to count bell rows in the category
-        if (stage < 9) {
+        if (stage < 11) {
           let arr = reformat(catrows, stage);
-          if (stage === 8 && cn === "4-bell run[s]") console.log(arr.length);
+          //if (stage === 8 && cn === "4-bell run[s]") console.log(arr.length);
           let info = countrows(arr.map(o => o.Mask));
           countholder.push(info);
           //if (stage === 8 && cn === "4-bell run[s]") console.log(info);
@@ -1366,6 +1366,7 @@ function buildtittums(stage) {
 
 
 //pattern has the form of a row where some characters are specific bells and others are "X";
+//returns array of STRINGS
 function getrowsfrompattern(pattern) {
   let rows = [];
   //holder for bells represented by x
@@ -1373,28 +1374,28 @@ function getrowsfrompattern(pattern) {
   let rounds = places.slice(0, pattern.length);
   for (let i = 0; i < rounds.length; i++) {
     if (!pattern.includes(rounds[i])) {
-      v.push(bellnum(rounds[i]));
+      v.push(rounds[i]);
     }
   }
   if (v.length) {
-    let extent = buildextent(v);
+    let extent = v.length === 1 ? v : buildextent(v);
     for (let i = 0; i < extent.length; i++) {
       let row = [];
       let sub = extent[i];
       let k = 0;
       for (let j = 0; j < pattern.length; j++) {
         let c = pattern[j];
-        if (c === "X") {
+        if (c === "x") {
           row.push(sub[k]);
           k++;
         } else {
-          row.push(bellnum(c));
+          row.push(c);
         }
       }
-      rows.push(row);
+      rows.push(row.join(""));
     }
   } else {
-    rows.push(pattern.split("").map(bellnum));
+    rows.push(pattern);
   }
   return rows;
 }
