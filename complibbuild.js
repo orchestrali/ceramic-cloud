@@ -20,6 +20,7 @@ $(function() {
   $("#downloadcsv").on("click", downloadfile);
   $("#categorytable").on("change", ".cposition", movecategory);
 
+  $("#showabout").on("click", () => $("#aboutpanel").toggle());
   $("#showinstruct").on("click", () => $("#instructions").toggle());
   $("#closeinstruct").on("click", () => $("#instructions").hide());
   
