@@ -262,7 +262,7 @@ function buildtablerow(r, stage, num) {
   if (possible > 1) cols[1] += "[s]";
   if (r.description) cols[1] += " "+r.description;
   //scores
-  if (r.locations.length === 3) {
+  if (r.locations.length === 3 || p.length === stage) {
     cols.push(r.points, 0, 0, 0);
   } else {
     cols.push(0);
