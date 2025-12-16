@@ -721,6 +721,7 @@ function tablerowsort(a, b) {
 
 
 function categorysummarize() {
+  console.log("summarizing");
   categorystats = [];
   for (let stage = 5; stage <= 16; stage++) {
     let res = {
@@ -729,10 +730,12 @@ function categorysummarize() {
     let rows = gettablerows(stage);
     //sort the table rows here? and apply sequence numbers?
     //no that won't work, because building the csv fetches the table rows again!
-    let ref = reformat(rows, stage);
-    let sinfo = countrows(ref.map(o => o.Mask));
-    res.totalrows = sinfo.total;
-    res.sharedquantity = sinfo.sharedrows.length;
+    if (stage < 9) {
+      let ref = reformat(rows, stage);
+      let sinfo = countrows(ref.map(o => o.Mask));
+      res.totalrows = sinfo.total;
+      res.sharedquantity = sinfo.sharedrows.length;
+    }
     
     let cats = [];
     
@@ -755,10 +758,12 @@ function categorysummarize() {
           }
         });
         //eventually figure out how to count bell rows in the category
-        let arr = reformat(catrows, stage);
-        let info = countrows(arr.map(o => o.Mask));
-        cat.uniquerows = info.total;
-        cat.sharedquantity = info.sharedrows.length;
+        if (stage < 9) {
+          let arr = reformat(catrows, stage);
+          let info = countrows(arr.map(o => o.Mask));
+          cat.uniquerows = info.total;
+          cat.sharedquantity = info.sharedrows.length;
+        }
         cats.push(cat);
       }
     });
@@ -1040,6 +1045,7 @@ function checkcategory(name, stage, include) {
 
 //builds runs and some named rows for each stage, same parameters as complib default scheme
 function buildinitialrules() {
+  console.log("building rules");
   let strs = ["1234","4321"];
   //not using this but keeping as model??
   let runs = [{pattern: "1234", locations: "fb", points: 1, category: "4-bell run[s]", transpose: true},
