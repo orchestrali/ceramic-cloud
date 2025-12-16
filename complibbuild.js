@@ -513,9 +513,12 @@ function descriptionsort(descripts) {
 
 
 //complib id, type method or composition
-function getcomplib(id, type) {
+function getcomplib(id, type, access) {
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', url+type+"/"+id+"/rows", true);
+  let path = url+type+"/"+id+"/rows";
+  if (access.length) path += "?" + access;
+  
+  xhr.open('GET', path, true);
   xhr.send();
 
   xhr.onload = function() {
