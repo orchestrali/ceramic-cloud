@@ -725,7 +725,34 @@ function performcount(stage) {
   
   let ref = reformat(rows, stage);
   let sinfo = countrows(ref.map(o => o.Mask));
-  stagecount = {stage: stage, sharedrows: sinfo.sharedrows, totalrows: sinfo.total};
+  stagecount = {stage: stage, sharedquantity: sinfo.sharedrows.length, totalrows: sinfo.total, categories: []};
+  categorynames.forEach(cn => {
+    let catrows = rows.filter(o => o.Category === cn);
+    if (catrows.length) {
+      let cat = {
+        name: cn,
+        numrows: catrows.length,
+        totalpoints: 0
+      };
+      catrows.forEach(r => {
+        let numbers = [];
+        ["Possible", "Score", "ScoreFront", "ScoreInternal", "ScoreBack"].forEach(w => numbers.push(Number(r[w])));
+        if (numbers[1]) {
+          cat.totalpoints += numbers[0]*numbers[1];
+        } else {
+          let total = Math.max(...numbers.slice(2))*numbers[0];
+          cat.totalpoints += total;
+        }
+      });
+      
+      let arr = reformat(catrows, stage);
+      let info = countrows(arr.map(o => o.Mask));
+      cat.totalrows = info.total;
+      cat.sharedcount = info.sharedrows.length;
+      stagecount.categories.push(cat);
+    }
+  });
+  return "done";
 }
 
 var countholder = [];
