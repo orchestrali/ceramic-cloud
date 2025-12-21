@@ -47,7 +47,7 @@ $(function() {
 function subcomplib() {
   $("tbody").contents().detach();
   $("h3,#reptable").detach();
-  $("#container,#table,#svgcontainer").contents().detach();
+  $("#container,#table,#svgcontainer,#choosebellscontainer").contents().detach();
   $("#composition div ul").contents().detach();
   methodinfo = {};
   leadlength = null;
@@ -471,6 +471,13 @@ function reprowclick(e) {
   });
 }
 
+function choosebellclick(e) {
+  let id = this.id;
+  let bell = id.slice(4);
+  let text = $(this).is(":checked") ? bell : "x";
+  $("span."+id).text(text);
+}
+
 function methodexperiment() {
   coursingdiagrams();
   //check plain bob patterns??
@@ -517,8 +524,10 @@ function methodexperiment() {
     }
   });
   $("#container").append(`<table id="configs"><tr></tr></table>`);
+  $("#choosebellscontainer").append(`<div id="choosebells"></div>`);
   //$("#configs").append(`<tr><td>${configs.join("</td></tr><tr><td>")}</td></tr>`);
   for (let i = 0; i < stage; i++) {
+    $("#choosebells").append(`<label for="bell${places[i]}"><input type="checkbox" id="bell${places[i]}" checked />${(i+1)}</label>`);
     let filter = configs.filter(r => r.indexOf("1") === i);
     
     let html = `<td><ul>`;
@@ -552,6 +561,7 @@ function methodexperiment() {
   stringrepetition = findrepetition(rows);
   //<th>segment</th><th>contents</th><th>row</th><th>rownum</th><th>row in lead</th>
   $("main").append(`<table id="reptable"><tr></tr></table>`);
+  $("#choosebellscontainer").append(`<table id="choosetable"><tr></tr></table>`);
   //repetitiontable();
   for (let i = 0; i < Math.ceil(rows.length/leadlength); i++) {
     let html = `<td><ul><li>`;
@@ -566,9 +576,12 @@ function methodexperiment() {
     });
     html += chunk.join(`</li><li>`);
     html += `</li></ul></td>`;
+    let choose = `<td><ul><li>` + another.join(`</li><li>`) + `</li></ul></td>`;
     $("#reptable tr").append(html);
+    $("#choosetable tr").append(choose);
   }
   $("#reptable").on("click", "li", reprowclick);
+  $("#choosebells input").on("click", choosebellclick);
 
   
   $("#table").append(`<tr><th>row num</th><th>row</th><th>apart</th><th>consec</th></tr>`);
