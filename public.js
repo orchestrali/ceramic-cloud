@@ -47,7 +47,7 @@ $(function() {
 function subcomplib() {
   $("tbody").contents().detach();
   $("h3,#reptable").detach();
-  $("#container,#table").contents().detach();
+  $("#container,#table,#svgcontainer").contents().detach();
   $("#composition div ul").contents().detach();
   methodinfo = {};
   leadlength = null;
@@ -556,6 +556,14 @@ function methodexperiment() {
   for (let i = 0; i < Math.ceil(rows.length/leadlength); i++) {
     let html = `<td><ul><li>`;
     let chunk = rows.slice(i*leadlength, (i+1)*leadlength);
+    let another = chunk.map(r => {
+      let a = r.split("");
+      let row = "";
+      a.forEach(b => {
+        row += `<span class="bell${b}">${b}</span>`;
+      });
+      return row;
+    });
     html += chunk.join(`</li><li>`);
     html += `</li></ul></td>`;
     $("#reptable tr").append(html);
