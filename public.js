@@ -19,6 +19,7 @@ var tritone = {
 var svg;
 var url = "https://api.complib.org/";
 //holder for rows from complib
+//rows are arrays of numbers, starting rounds is not included
 var rowarr = [];
 var compcalls = [];
 //features of current search
@@ -643,14 +644,17 @@ function methodexperiment() {
 
 // ************* BELLRINGING FUNCTIONS *************
 
+//convert array of numbers to string
 function rowstring(r) {
   return r.map(n => places[n-1]).join("");
 }
 
+//convert character to its bell number
 function bellnum(c) {
   return places.indexOf(c)+1;
 }
 
+//build rows of a plain course of plain bob
 function buildplainbob(stage) {
   let rows = [];
   let prev = places.slice(0, stage).split("").map(bellnum);
@@ -702,6 +706,8 @@ function checkzigzag(chunk) {
   return zigzag;
 }
 
+//row is an array of numbers
+//pn is also an array, with numbers or empty
 function applypn(row, pn) {
   let next = [];
   let dir = 1;
@@ -1154,3 +1160,55 @@ function findrepetition(arr) {
   console.log(Object.keys(res).length + " repeated strings found");
   return res;
 }
+
+
+//let's say r is an array
+function getlhsfromrow(r) {
+  let trebleplace = r.indexOf(1);
+  let lhs = [];
+  for (let i = -1; i < methodinfo.leadlength-1; i++) {
+    let row = i === -1 ? places.slice(0,stage).split("").map(bellnum) : rowarr[i];
+    if (row.indexOf(1) === trebleplace) {
+      let lh = [1];
+      for (let b = 2; b <= stage; b++) {
+        let p = row.indexOf(b);
+        lh.push(r[p]);
+      }
+      lhs.push(lh);
+    }
+  }
+  return lhs;
+}
+
+//lh as array
+//returns co without tenor
+function getcofromlh(lh) {
+  let home = homecourseorder(lh.length);
+  home.unshift(lh.length);
+  let co = [];
+  for (let i = 0; i < home.length; i++) {
+    co.push(lh[home[i]-1]);
+  }
+  
+  let rot = rotateco(co,lh.length);
+  return rot;
+}
+
+//co and lh
+//row r is array
+//return obj with lh keys and co values
+function getbothfromrow(r) {
+  let lhs = getlhsfromrow(r);
+  let res = {};
+  lhs.forEach(a => {
+    let co = getcofromlh(a);
+    res[rowstring(a)] = rowstring(co);
+  });
+  return res;
+}
+
+
+
+
+
+
