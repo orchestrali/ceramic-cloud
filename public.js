@@ -542,7 +542,11 @@ function methodexperiment() {
     let even = aa[w].filter(n => n%2 === 0).sort((a,b) => b-a);
     $("#tenorbuddies").append(`<p>Even bells the tenor meets at the ${w}: ${even.join(", ")}</p>`);
     let patterns = coursingagain(w);
-    let arr = Object.keys(patterns).sort(bellrowsort);
+    let arr = Object.keys(patterns).sort((a,b) => {
+      let tenor = places[stage-1];
+      let diff = a.indexOf(tenor)-b.indexOf(tenor);
+      return diff === 0 ? bellrowsort(a,b) : diff;
+    });
     $("#tenorbuddies").append(`<table id="${w}table"></table>`);
     let id = "#"+w+"table";
     arr.forEach(p => {
