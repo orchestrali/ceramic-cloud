@@ -539,6 +539,7 @@ function methodexperiment() {
   $("#container").append(`<div id="tenorbuddies"></div>`);
   //I don't think I'm actually checking if the standard coursing order is correct...
   ["back","front"].forEach(w => {
+    console.log(coursingagain(w));
     let even = aa[w].filter(n => n%2 === 0).sort((a,b) => b-a);
     $("#tenorbuddies").append(`<p>Even bells the tenor meets at the ${w}: ${even.join(", ")}</p>`);
   });
@@ -825,6 +826,27 @@ function buildcourse(co) {
   return course;
 }
 
+
+function coursingagain(loc) {
+  let patterns = {};
+  let pp = loc === "front" ? [0,1,2,3] : places.slice(stage-5, stage-1).split("").map(bellnum);
+  for (let i = 0; i < rowarr.length; i++) {
+    let row = rowarr[i];
+    let tp = row.indexOf(1);
+    let tenor = row.indexOf(stage);
+    if (pp.includes(tenor) && !pp.includes(tp)) {
+      let a = pp.map(i => row[i]);
+      let segment = rowstring(a);
+      if (patterns[segment]) {
+        patterns[segment]++;
+      } else {
+        patterns[segment] = 1;
+      }
+    }
+  }
+  return patterns;
+}
+
 //assuming plain course, list places in coursing order
 function analyzecoursing(row) {
   let co = homecourseorder(stage);
@@ -841,6 +863,7 @@ function analyzecoursing(row) {
   return res;
 }
 
+//o is the result of analyzecoursing
 function analyzedistribution(o) {
   let pp = o.order;
   let one = 0;
