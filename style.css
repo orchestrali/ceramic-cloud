@@ -144,6 +144,13 @@ th, td {
   border-collapse: collapse;
 }
 
+#reptable, #configs, #choosetable {
+  font-size: 9pt;
+}
+#choosetable {
+  font-family: Courier New;
+}
+
 tr.border {
   border: 1px solid black;
 }
