@@ -539,9 +539,15 @@ function methodexperiment() {
   $("#container").append(`<div id="tenorbuddies"></div>`);
   //I don't think I'm actually checking if the standard coursing order is correct...
   ["back","front"].forEach(w => {
-    console.log(coursingagain(w));
     let even = aa[w].filter(n => n%2 === 0).sort((a,b) => b-a);
     $("#tenorbuddies").append(`<p>Even bells the tenor meets at the ${w}: ${even.join(", ")}</p>`);
+    let patterns = coursingagain(w);
+    let arr = Object.keys(patterns).sort(bellrowsort);
+    $("#tenorbuddies").append(`<table id="${w}table"></table>`);
+    let id = "#"+w+"table";
+    arr.forEach(p => {
+      $(id).append(`<tr><td>${p}</td><td>${patterns[p]}</td></tr>`);
+    });
   });
   
 
@@ -683,6 +689,33 @@ function rowstring(r) {
 //convert character to its bell number
 function bellnum(c) {
   return places.indexOf(c)+1;
+}
+
+//sort rows
+function bellrowsort(a, b) {
+  if (a.length != b.length) {
+    return a.length-b.length;
+  }
+  let l = a.length;
+  let max = l;
+  let strs = {};
+  strs[a] = "";
+  strs[b] = "";
+  let pp = "0ETABCD";
+  let subs = "ABCDEFG";
+  for (let i = 0; i < l; i++) {
+    [a,b].forEach(r => {
+      let c = r[i];
+      let j = pp.indexOf(c);
+      max = Math.max(max, j+10);
+      let nc = j > -1 ? subs[j] : c;
+      strs[r] += nc;
+    });
+  }
+  let base = max > 9 ? max+1 : 10;
+  let aa = parseInt(strs[a], base);
+  let bb = parseInt(strs[b], base);
+  return aa-bb;
 }
 
 //build rows of a plain course of plain bob
