@@ -481,6 +481,7 @@ function choosebellclick(e) {
 
 function methodexperiment() {
   coursingdiagrams();
+  /*
   //check plain bob patterns??
   $("#container").append(`<table id="plainbob"></table>`);
   let plainbobrows = buildplainbob(stage).map(r => rowstring(r));
@@ -513,8 +514,37 @@ function methodexperiment() {
     html += `</td></tr>`;
     $("#plainbob").append(html);
   }
+  */
 
+  //yet another attempt to understand relationship between coursing order and rows
+  //who does the tenor meet at front and back?
+  let aa = {
+    back: [],
+    front: []
+  };
+  let last;
+  for (let i = 0; i < rowarr.length; i++) {
+    let row = rowarr[i];
+    let p = row.indexOf(stage);
+    if ([0,stage-1].includes(p)) {
+      if (last) {
+        let bell = last[p];
+        let arr = p === 0 ? aa.front : aa.back;
+        if (!arr.includes(bell)) arr.push(bell);
+      }
+    } else {
+      last = row;
+    }
+  }
+  $("#container").append(`<div id="tenorbuddies"></div>`);
+  //I don't think I'm actually checking if the standard coursing order is correct...
+  ["back","front"].forEach(w => {
+    let even = aa[w].filter(n => n%2 === 0).sort((a,b) => b-a);
+    $("#tenorbuddies").append(`<p>Even bells the tenor meets at the ${w}: ${even.join(", ")}</p>`);
+  });
   
+
+  //"configs": back bell positions & treble
   let configs = rowarr.map(r => rowstring(r).replace(/[23456]/g, "x")).sort((a,b) => {
     let diff = a.indexOf("1") - b.indexOf("1");
     if (diff === 0) {
