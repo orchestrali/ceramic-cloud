@@ -709,13 +709,7 @@ function tablerowsort(a, b) {
     return ii[0]-ii[1];
   }
   if (ii[0] === ii[1]) {
-    let x = [];
-    [a,b].forEach(o => x.push(o.Mask.includes("x") ? 1 : 0));
-    if (x.includes(1)) {
-      return x[0]-x[1];
-    } else {
-      return bellrowsort(a.Mask, b.Mask);
-    }
+    return normalrowsort(a.Mask, b.Mask);
   }
 }
 
@@ -1259,6 +1253,60 @@ function bellrowsort(a, b) {
   let aa = parseInt(strs[a], base);
   let bb = parseInt(strs[b], base);
   return aa-bb;
+}
+
+function normalrowsort(a,b) {
+  //first compare length
+  let dl = a.length-b.length;
+  if (dl != 0) {
+    return dl;
+  }
+  //then compare number of x's
+  let ax = countx(a);
+  let dx = ax - countx(b);
+  if (dx != 0) {
+    return dx;
+  }
+  //if they both have x
+  if (ax) {
+    let di = a.split("").findIndex(c => c != "x")-b.split("").findIndex(c => c != "x");
+    if (di != 0) {
+      return di;
+    }
+    a = a.replace(/x/g, "");
+    b = b.replace(/x/g, "");
+  }
+  //next normal forms
+  let aa = normalizerow(a);
+  let bb = normalizerow(b);
+  let dn = bellrowsort(aa, bb);
+  if (dn != 0) {
+    return dn;
+  }
+  return bellrowsort(a,b);
+}
+
+//given a string with some bells
+//transpose it to highest pitches
+function normalizerow(p) {
+  let a = p.split("");
+  let nums = a.filter(c => c != "x").map(bellnum);
+  let min = Math.min(...nums);
+  let normal = [];
+  let n = 0;
+  let diff = 1-min;
+  for (let i = 0; i < a.length; i++) {
+    let c = a[i];
+    let s;
+    if (c === "x") {
+      s = c;
+    } else {
+      s = places[nums[n]+diff-1];
+      n++;
+    }
+    normal.push(s);
+  }
+  return normal.join("");
 }
 
 //designed for two patterns with x
