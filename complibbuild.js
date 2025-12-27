@@ -450,6 +450,10 @@ function displaycomp(rows, stage) {
     let tr = buildcomptablerow(i-1, row, pp, points, cattext);
     $("#comptable tbody").append(tr);
   }
+  //table no longer sorted
+  ["sorttable_sorted","sorttable_sorted_reverse"].forEach(c => {
+    $("#comptable th."+c).removeClass(c);
+  });
   //console.log("total points: "+totalpoints);
   //console.log(catpoints);
   //console.log(report);
