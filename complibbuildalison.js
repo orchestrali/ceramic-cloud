@@ -1272,7 +1272,7 @@ function buildinitialrules() {
         if (tstage != actstage) parts.push("on "+tstage);
         let o = {
           pattern: seg,
-          description: parts.join(" ")
+          description: "("+parts.join(" ")+")"
         };
         tittumsysegments.push(o);
       });
