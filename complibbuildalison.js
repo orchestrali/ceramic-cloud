@@ -1275,7 +1275,7 @@ function buildinitialrules() {
           pattern: seg,
           description: "("+parts.join(" ")+")"
         };
-        tittumsysegments.push(o);
+        if (seg.length != actstage) tittumsysegments.push(o);
       });
     }
     if (s%2 === 0 && s > 6) {
@@ -1293,7 +1293,8 @@ function buildinitialrules() {
       o.transpose = true;
       set.rules.push(o);
     });
-    
+
+    //currently adds odd lengths
     tittumsagain.exploded.push(tittumsy["Exploded Tittums"]);
 
     if (s > 6) {
@@ -1731,9 +1732,13 @@ function transposenumbers(row, from, to) {
   let t = [];
   for (let i = 0; i < row.length; i++) {
     let old = arr[i];
-    let oldi = places.indexOf(old);
-    let np = places[oldi+diff];
-    t.push(np);
+    if (old === "x") {
+      t.push("x");
+    } else {
+      let oldi = places.indexOf(old);
+      let np = places[oldi+diff];
+      t.push(np);
+    }
   }
   return t.join("");
 }
