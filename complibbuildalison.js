@@ -1294,6 +1294,23 @@ function buildinitialrules() {
     });
     
     tittumsagain.exploded.push(tittumsy["Exploded Tittums"]);
+
+    if (s > 6) {
+      let arr = buildtittumsends(actstage);
+      if (s%2 === 1) {
+        let tenor = places[s];
+        arr = arr.filter(p => p.endsWith(tenor)).map(p => p.slice(0,-1));
+      }
+      arr.forEach(p => {
+        let o = {
+          pattern: p,
+          locations: "fmb",
+          points: 1,
+          category: "Tittumsy pattern[s]"
+        };
+        set.rules.push(o);
+      });
+    }
     
     schemerules.push(set);
     
@@ -1652,6 +1669,22 @@ function buildtittums(stage) {
     //rows["Tittums cross"] += top[i];
     rows["Exploded Tittums cross"] += revtop[i];
   }
+  return rows;
+}
+
+//maximus versions
+var tittumsends = ["2E1T","E2T1","2E3T","E2T3","4E3T","E4T3","4E5T","E4T5","6E5T","E6T5","9x0xExT"];
+
+function buildtittumsends(stage) {
+  let rows = [];
+  tittumsends.forEach(p => {
+    let x = "xxxxxxxxxxxxxxxxxxxxxxxxxxx".slice(0,stage-p.length);
+    let t = stage === 12 ? p : transposenumbers(p, 12, stage);
+    if (t) {
+      let pat = x+t;
+      rows.push(pat);
+    }
+  });
   return rows;
 }
 
