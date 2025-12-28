@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="https://sallyandbobminor.wordpress.com/wp-content/uploads/2025/07/bristol-major-short.png" />
+
+    <title>Build a music scheme</title>
+
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/complibbuild.css" />
+  </head>
+  <body>
+    <h2>Build a complib music scheme</h2>
+    <div class="button" id="showabout">About</div>
+    <div id="aboutpanel" class="form">
+      <h3>The Basics</h3>
+      <p>This website helps with the building and testing of a custom scheme for evaluating bellringing compositions on <a href="https://complib.org" target="blank">complib.org</a>.</p>
+      <p>The structure of a complib music scheme spreadsheet is explained in <a href="https://complib.org/issue/581" target="blank">this issue</a>.</p>
+      <p>On this page you can build a preliminary version of a custom music scheme, test the scheme on a method (plain course) or composition, and then download your scheme as a csv.</p>
+      <h3>Viewing and Editing</h3>
+      <p>Clicking on one of the stage names will display the current tests for that stage.</p>
+      <p>I have started each stage out with runs of 4+ bells, given points at front and back, and a small selection of named rows. These can be deleted individually by clicking the "x" at the end of a table row, or there is a button to clear everything for the stage for a fresh start. Items in these tables can't be edited here—you can either delete items and add them again with changes, or edit the downloaded csv file.</p>
+      <p>Some columns of the complib spreadsheet cannot be edited here at all and will need to be adjusted in the downloaded file. "Summarise" is perhaps the most important of these.</p>
+      <p>The form for adding items to the scheme, along with some more specific instructions, is below all the tables.</p>
+      <p><span class="bold">IMPORTANT:</span> This website has no way to save or remember your work! If the page is reloaded, everything you have added will be lost. If you want to keep your work, be sure to download the csv! Unfortunately there is not currently a way to restore work from a previous session.</p>
+      <h3>Downloading Your Work</h3>
+      <p>The download button will give you a csv file with everything visible in the tables under each stage, with the additional columns needed for the final version. Even stages are together at the top, then all the odd stages. Each stage will have subtotal rows created from the test categories.</p>
+      <p>When viewing/editing the csv in Excel, it may be best to import the file rather than opening it directly. That way you can set the "Mask" column to be interpreted as text (important particularly on Royal so initial "0" doesn't get removed).</p>
+        
+      <h3>Background</h3>
+      <p>This was made by Alison Stevens, currently a ringer at St Mary's Cathedral in Edinburgh. She is also the creator of <a href="https://www.changeringing.net" target="blank">www.changeringing.net</a>.</p>
+    </div>
+    <div>
+      <button type="button" id="downloadcsv" style="display:none;">Download scheme csv</button>
+    </div>
+    <div id="schemetables">
+      <table id="categorytable">
+        <thead>
+          <tr>
+            <th></th><!--order-->
+            <th class="wide">Category</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="button" id="showinstruct">Instructions</div>
+    <div id="instructions" class="form">
+      <p>Here are explanations of the items in the form below that do not correspond exactly to columns in the final spreadsheet.</p>
+      <p><span class="bold">Pattern:</span> this corresponds to the "Mask" column of the spreadsheet, with one limitation and one addition:</p>
+      <p class="indent">The field will accept whole rows, exact or with x as a wildcard, and segments of a row (types "Row" and "Mask" in the final spreadsheet). Wraps are not available. Subtotals will be automatically generated from the category field.</p>
+      <p class="indent">Parentheses can be used to indicate that the bells inside the parentheses can be in any order. For example, entering "xxxx(57)(68)" with stage 8 will result in four rows being added to the major table:</p>
+      <ul>
+        <li>xxxx5768</li>
+        <li>xxxx7568</li>
+        <li>xxxx5786</li>
+        <li>xxxx7586</li>
+      </ul>
+      <p><span class="bold">Transpose:</span> when entering a pattern shorter than a whole row, checking this box will cause the pattern to be added with every starting bell possible for the stage. For example, entering "1234" as the pattern and checking "transpose" will automatically add all descending four-bell runs.</p>
+      <p><span class="bold">Front/Middle/Back:</span> when entering a pattern shorter than a whole row, check these to indicate where in the row it will receive points.</p>
+      <p><span class="bold">Description:</span> this website will automatically add the pattern/mask to the description column. This field is for any additional text you want to appear. For example, named rows in complib's default scheme have the row followed by its name in parentheses: "15263748 (Tittums)". To recreate this you would enter just "(Tittums)" in the description field.</p>
+      <p><span class="bold">Category:</span> this field is how this website builds subtotal rows in the spreadsheet output. You can see what categories currently exist for each stage in the table at the top of the page.</p>
+      
+      <div class="button" id="closeinstruct">Close</div>
+    </div>
+    <div class="form">
+      <div id="addrow">
+        <div>
+          <select id="stage">
+            <option value="5">5 - Doubles</option>
+            <option value="6">6 - Minor</option>
+            <option value="7">7 - Triples</option>
+            <option value="8">8 - Major</option>
+            <option value="9">9 - Caters</option>
+            <option value="10">10 - Royal</option>
+            <option value="11">11 - Cinques</option>
+            <option value="12">12 - Maximus</option>
+            <option value="13">13 - Sextuples</option>
+            <option value="14">14 - Fourteen</option>
+            <option value="15">15 - Septuples</option>
+            <option value="16">16 - Sixteen</option>
+          </select>
+          <label for="patternentry">pattern: <input type="text" id="patternentry" /></label>
+          <label for="transpose"><input type="checkbox" id="transpose" />transpose</label>
+          <select id="stroke">
+            <option>Any</option>
+            <option>Handstroke</option>
+            <option>Backstroke</option>
+          </select>
+          <label for="front"><input type="checkbox" checked id="front" />Front</label>
+          <label for="middle"><input type="checkbox" checked id="middle" />Middle</label>
+          <label for="back"><input type="checkbox" checked id="back" />Back</label>
+          <label for="points">points: <input type="number" id="points" value="1" /></label>
+        </div>
+        <div>
+          <label for="patterndescript">description: <input type="text" id="patterndescript" /></label>
+          <label for="patterncat">category: <input type="text" id="patterncat" /></label>
+          <button id="addpattern">Add</button>
+        </div>
+        
+        <p id="addinginfo"></p>
+      </div>
+    </div>
+    <div class="form">
+      Apply scheme to method or composition
+      <div>
+        <div>
+          <label for="compliburl">Complib link: <input type="text" id="compliburl" /></label>
+        </div>
+        <div id="complibinfo"></div>
+      </div>
+      <button id="viewcomp">Go</button>
+    </div>
+    
+    <div id="loading" style="display:none;">
+      <img src="/images/wait.gif" alt="spinning circle" />
+    </div>
+
+    <div id="compdisplay">
+      <h3></h3>
+      <p id="totals"></p>
+  
+      <h4>Music report</h4>
+      <table id="reporttable">
+        <thead>
+          <tr>
+            <th>Musical combination</th>
+            <th>Front</th>
+            <th>Internal</th>
+            <th>Back</th>
+            <th>Count</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+  
+      <h4>Rows (click on a header to sort by that column)</h4>
+      <table class="sortable" id="comptable">
+        <thead>
+          <tr>
+            <th class="sorttable_numeric">num</th>
+            <th class="row sorttable_bellrow">Row</th>
+            <th class="sorttable_numeric">Points</th>
+            <th class="sorttable_numeric">Num places</th>
+            <th>Category</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"></script>
+    <script src="sort.js"></script>
+    <script src="complibbuildalison.js"></script>
+  </body>
+</html>
