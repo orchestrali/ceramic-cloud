@@ -4,7 +4,7 @@ const stagenames = ["Doubles","Minor","Triples","Major","Caters","Royal", "Cinqu
 var url = "https://api.complib.org/";
 const tableheads = ["Mask", "Description", "Category", "Type", "Stroke", "Possible", "Score", "ScoreFront", "ScoreInternal", "ScoreBack"];
 var schemerules = [];
-var categorynames = [];
+var categorynames = ["Run-based whole row[s]", "Long run[s]", "Short run[s]", "Step-based whole row[s]", "Step-based pattern[s]", "Queensy whole row[s]", "Queensy smaller version[s]", "Queensy arpeggio[s]", "Tittumsy whole row[s]", "Tittumsy smaller version[s]", "Tittumsy pattern[s]"];
 var categorystages = {};
 var categorystats = [];
 
@@ -1102,9 +1102,9 @@ function buildinitialrules() {
     let roundsnear = buildnearmisses(rounds);
     let backnear = buildnearmisses(backrounds);
     let misplaced = buildmisplacedtreble(s);
-    let descripts = ["(Rounds near miss)", "(Backrounds near miss)", "(misplaced treble)", "("+(stage-1)+"-bell run)", "("+(stage-2)+"-bell run)"];
+    let descripts = ["(Rounds near miss)", "(Backrounds near miss)", "(misplaced treble)", "("+(s-1)+"-bell run)", "("+(s-2)+"-bell run)"];
     let arrarr = [roundsnear, backnear, misplaced, longruns.one];
-    if (stage > 5) arrarr.push(longruns.two);
+    if (s > 5) arrarr.push(longruns.two);
     arrarr.forEach((arr,i) => {
       let des = descripts[i];
       arr.forEach(r => {
