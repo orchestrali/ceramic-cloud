@@ -1120,7 +1120,7 @@ function buildinitialrules() {
     });
     
     
-    strs.filter(p => p.length < stage-2).forEach(p => {
+    strs.filter(p => p.length < s-2).forEach(p => {
       let o = {
         pattern: p,
         locations: "fb",
