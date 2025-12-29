@@ -384,6 +384,7 @@ function displaycomp(rows, stage) {
     let pp = [];
     let points = 0;
     let cat = "";
+    let displaytext = "";
     //some rows can match multiple categories; collect them all
     let cats = [];
     patterns.forEach(obj => {
@@ -396,7 +397,7 @@ function displaycomp(rows, stage) {
         let pl = testrow(row, obj.Mask);
         
         if (pl.length && obj.points) {
-          cats.push({cat: obj.Category, numplaces: pl.length});
+          cats.push({cat: obj.Category, numplaces: pl.length, descript: obj.Description});
           points += obj.points;
           pl.forEach(n => {
             if (!pp.includes(n)) pp.push(n);
@@ -435,6 +436,12 @@ function displaycomp(rows, stage) {
       if (cats.length) {
         cats.sort((a,b) => b.numplaces-a.numplaces);
         cat = cats[0].cat;
+        displaytext = cat;
+        let paren = cats[0].descript ? cats[0].descript.indexOf("(") : -1;
+        if (paren > -1) {
+          let j = cats[0].descript.indexOf(")");
+          if (j > paren+1) displaytext = cats[0].descript.slice(paren+1, j);
+        }
         if (catpoints[cat]) {
           catpoints[cat] += points;
         } else {
@@ -446,7 +453,7 @@ function displaycomp(rows, stage) {
       totalpoints += points;
     }
     //brackets for plurals
-    let cattext = handleplural(cat);
+    let cattext = handleplural(displaytext);
     //add the comprow to the table
     let tr = buildcomptablerow(i-1, row, pp, points, cattext);
     $("#comptable tbody").append(tr);
