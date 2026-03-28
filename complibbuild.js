@@ -182,7 +182,7 @@ function addschemerule() {
       o.category = ocat;
       //category is added to categorynames in convertrule
     }
-    ["front","middle","back"].forEach(w => {
+    ["front","middle","back","wrap"].forEach(w => {
       if ($("#"+w).is(":checked")) {
         o.locations += w[0];
       }
@@ -217,6 +217,7 @@ function addschemerule() {
 
 //convert one of my "rules" to complib spreadsheet rows
 function convertrule(r, stage) {
+  let middleset = [];
   let tablerows = [];
   if (!categorynames.includes(r.category)) {
     addcategory(r.category, stage);
@@ -252,11 +253,30 @@ function convertrule(r, stage) {
         for (let key in o) {
           if (key != "pattern") tr[key] = o[key];
         }
-        tablerows.push(tr);
+        middleset.push(tr);
       });
     });
   } else {
-    tablerows.push(...set);
+    middleset.push(...set);
+  }
+  //separate wraps
+  if (r.locations.includes("w") && r.locations.length > 1) {
+    middleset.forEach(o => {
+      let wrap = {};
+      let row = {};
+      for (let key in o) {
+        if (key === "locations") {
+          wrap[key] = "w";
+          row[key] = o[key].split("").filter(l => l != "w").join("");
+        } else {
+          wrap[key] = o[key];
+          row[key] = o[key];
+        }
+      }
+      tablerows.push(wrap, row);
+    });
+  } else {
+    tablerows = middleset;
   }
   return tablerows;
 }
@@ -275,13 +295,23 @@ function buildtablerow(r, stage, num) {
   */
   cols.push(r.category || "");
   //type
-  cols.push(p.length === stage ? "Row" : "Mask");
+  cols.push(r.locations === "w" ? "Wrap" : p.length === stage ? "Row" : "Mask");
   //stroke
   cols.push(r.stroke || "Any");
   //possible
   let possible;
-  if (p.length === stage) {
-    let x = p.split("").filter(c => c === "x");
+  let x = p.split("").filter(c => c === "x");
+  if (r.locations === "w") {
+    //wraps
+    //this calculates number of possibilities for the row in which the wrap terminates. Not quite the same as the total possibilities???
+    possible = 0;
+    let factor = x.length === 0 ? 1 : factorial(x.length);
+    for (let i = 1; i < p.length; i++) {
+      let others = stage-i;
+      possible += factor * factorial(others);
+    }
+  } else if (p.length === stage) {
+    
     possible = x.length === 0 ? 1 : factorial(x.length);
   } else {
     let others = stage-p.length;
@@ -301,7 +331,7 @@ function buildtablerow(r, stage, num) {
   if (possible > 1) cols[1] += "[s]";
   if (r.description) cols[1] += " "+r.description;
   //scores
-  if (r.locations.length === 3 || p.length === stage) {
+  if (r.locations.length === 3 || p.length === stage || r.locations === "w") {
     numbers.push(r.points, 0, 0, 0);
   } else {
     numbers.push(0);
@@ -348,6 +378,55 @@ function testrow(row, pattern) {
   return [];
 }
 
+//"rows" is the two rows combined in one string
+function testtworows(rows, pattern) {
+  let start = stage-pattern.length+1;
+  let pp = [];
+  let i = start;
+  do {
+    let segment = rows.slice(i, i+pattern.length);
+    pp = testrow(segment, pattern);
+    i++;
+  } while (i < stage && pp.length === 0);
+  i--;
+  pp = pp.map(p => p+i);
+  return pp;
+}
+
+//rn, row, pp, wpp, points, cat
+//wraps take precedence for some reason
+function buildcomptablerow2(obj) {
+  let tr = `<tr><td>${obj.rn}</td><td class="row">`;
+  let span;
+  let row = obj.row;
+  let wpp = obj.wpp;
+  let pp = obj.pp;
+  for (let i = 1; i <= row.length; i++) {
+    if (wpp.includes(i)) {
+      if (span === "green") {
+        tr += `</span>`;
+        span = false;
+      }
+      if (!span) tr += `<span class="wrap">`;
+      span = "wrap";
+    } else if (pp.includes(i)) {
+      if (span === "wrap") {
+        tr += `</span>`;
+        span = false;
+      }
+      if (!span) tr += `<span class="green">`;
+      span = "green";
+    } else {
+      if (span) tr += `</span>`;
+      span = false;
+    }
+    tr += row[i-1];
+  }
+  if (span) tr += `</span>`;
+
+  tr += `</td><td>${obj.points}</td><td>${pp.length}</td><td>${obj.cat}</td></tr>`;
+  return tr;
+}
 
 function buildcomptablerow(rn, row, pp, points, cat) {
   let tr = `<tr><td>${rn}</td><td class="row">`;
@@ -366,6 +445,139 @@ function buildcomptablerow(rn, row, pp, points, cat) {
   
   tr += `</td><td>${points}</td><td>${pp.length}</td><td>${cat}</td></tr>`;
   return tr;
+}
+
+
+//display comp including wraps...
+function displaycompwraps(rows, stage) {
+  let patterns = buildstagepatterns2(stage);
+  let count = 0;
+  let totalpoints = 0;
+  let report = {
+    Category: {},
+    Description: {}
+  };
+  let catpoints = {};
+  let comprows = [];
+  for (let i = 2; i < rows.length; i++) {
+    let row = rows[i][0];
+    let pp = [];
+    let wpp = [];
+    let points = 0;
+    let cat = "";
+    //some rows can match multiple categories; collect them all
+    let cats = [];
+    patterns.forEach(obj => {
+      //stroke of composition row: 0 for handstroke, 1 for backstroke
+      let rowstroke = i%2;
+      //stroke at which pattern gets points
+      let pstroke = obj.Stroke === "Handstroke" ? 0 : obj.Stroke === "Backstroke" ? 1 : i%2;
+      //only test pattern if stroke is correct
+      if (pstroke === rowstroke) {
+        let pl = [];
+        if (obj.Type === "Wrap") {
+          let combo = rows[i-1][0]+row;
+          let wp = testtworows(combo, obj.Mask);
+          if (wp.length && obj.points) {
+            let prev = comprows[comprows.length-1];
+            if (!prev.wpp) prev.wpp = [];
+            wp.forEach(n => {
+              if (n <= stage) {
+                if (!prev.wpp.includes(n)) prev.wpp.push(n);
+              } else {
+                let b = n-stage;
+                if (!wpp.includes(b)) wpp.push(b);
+                pl.push(b);
+              }
+            });
+          }
+        } else {
+          //if not wrap
+          pl = testrow(row, obj.Mask);
+          if (pl.length && obj.points) {
+            pl.forEach(n => {
+              if (!pp.includes(n)) pp.push(n);
+            });
+          }
+        }
+        //actually add points & category
+        if (pl.length && obj.points) {
+          cats.push({cat: obj.Category, numplaces: pl.length});
+          points += obj.points;
+        }
+        if (pl.length) {
+          //count things even if they don't get points
+          ["Category","Description"].forEach(w => {
+            let o = report[w][obj[w]];
+            if (o) {
+              o.Score += obj.points;
+              o.Count++;
+              if (obj.loc != "whole") o[obj.loc]++;
+            } else {
+              o = {
+                Score: obj.points,
+                Count: 1
+              };
+              if (obj.loc != "whole") {
+                o.parts = true;
+                ["Front","Internal","Back"].forEach(loc => o[loc] = 0);
+                o[obj.loc]++;
+              }
+              if (w === "Category") o.descripts = [obj.Description];
+              report[w][obj[w]] = o;
+            }
+          });
+          let catdesc = report.Category[obj.Category].descripts;
+          if (!catdesc.includes(obj.Description)) {
+            catdesc.push(obj.Description);
+          }
+        }
+      }
+      //end of pattern
+    });
+    if (points) {
+      if (cats.length) {
+        cats.sort((a,b) => b.numplaces-a.numplaces);
+        cat = cats[0].cat;
+        if (catpoints[cat]) {
+          catpoints[cat] += points;
+        } else {
+          catpoints[cat] = points;
+        }
+      }
+      pp.sort((a,b) => a-b);
+      count++;
+      totalpoints += points;
+    }
+    //brackets for plurals
+    let cattext = handleplural(cat);
+    //rn, row, pp, wpp, points, cat
+    let rowobj = {
+      rn: i-1,
+      row: row,
+      pp: pp,
+      wpp: wpp,
+      points: points,
+      cat: cattext
+    };
+    comprows.push(rowobj);
+    //end of row
+  }
+  //table no longer sorted
+  ["sorttable_sorted","sorttable_sorted_reverse"].forEach(c => {
+    $("#comptable th."+c).removeClass(c);
+  });
+  
+  comprows.forEach(o => {
+    //add the comprow to the table
+    let tr = buildcomptablerow2(o);
+    $("#comptable tbody").append(tr);
+  });
+
+  buildcompreport(report);
+  let totaltext = `${count} rows with points, ${totalpoints} points in total`;
+  $("#totals").text(totaltext);
+  $("#compdisplay").show();
 }
 
 //rows of a method or composition, obtained from complib
@@ -572,7 +784,8 @@ function getcomplib(id, type, access) {
       let stage = results.stage;
       let rows = results.rows;
       if (rows[rows.length-3][1] === "That's all at handstroke") rows.pop();
-      displaycomp(rows, stage);
+      //displaycomp(rows, stage);
+      displaycompwraps(rows, stage);
     } else {
       //something is wrong?
       console.log(results);
@@ -948,7 +1161,7 @@ function partialpatterns(tablerow, stage) {
   let pattern = tablerow.Mask;
   let pp = [];
   let num = Number(tablerow.Score);
-  if (tablerow.Type === "Row") {
+  if (["Row","Wrap"].includes(tablerow.Type)) {
     pp.push({Mask: pattern, loc: "whole", points: num});
   } else {
     let x = "xxxxxxxxxxxxxxxxxxxxxxxxx".slice(0, stage-pattern.length);
