@@ -1,4 +1,4 @@
-const places = "1234567890ETABCD";
+const places = "1234567890ETABCDFGHJKLMNPQRSUVWXYZ"; //extra long because of a thing with wraps
 const stagenames = ["Doubles","Minor","Triples","Major","Caters","Royal", "Cinques","Maximus","Sextuples","Fourteen","Septuples","Sixteen"];
 //complib api url for getting methods & compositions
 var url = "https://api.complib.org/";
@@ -379,7 +379,7 @@ function testrow(row, pattern) {
 }
 
 //"rows" is the two rows combined in one string
-function testtworows(rows, pattern) {
+function testtworows(rows, pattern, stage) {
   let start = stage-pattern.length+1;
   let pp = [];
   let i = start;
@@ -477,7 +477,7 @@ function displaycompwraps(rows, stage) {
         let pl = [];
         if (obj.Type === "Wrap") {
           let combo = rows[i-1][0]+row;
-          let wp = testtworows(combo, obj.Mask);
+          let wp = testtworows(combo, obj.Mask, stage);
           if (wp.length && obj.points) {
             let prev = comprows[comprows.length-1];
             if (!prev.wpp) prev.wpp = [];
