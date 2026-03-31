@@ -580,6 +580,7 @@ function displaycompwraps(rows, stage) {
   $("#compdisplay").show();
 }
 
+//as of March 2026 not using this version; other version that handles wraps
 //rows of a method or composition, obtained from complib
 function displaycomp(rows, stage) {
   let patterns = buildstagepatterns2(stage);
@@ -838,6 +839,7 @@ function buildcsv() {
     let odd = stage % 2 === 1;
     let idkey = odd ? "odd" : "even";
     let catobj = categorystats.find(o => o.stage === stage);
+    //build subtotal rows for the stage
     if (catobj) {
       catobj.categories.forEach((o,i) => {
         let list = o.seqids.map(n => Number(n));
@@ -930,6 +932,7 @@ function tablerowsort(a, b) {
   }
 }
 
+//this is a function for me to run in the console, to get info about the scheme I've entered
 var stagecount;
 function performcount(stage) {
   let rows = gettablerows(stage);
@@ -965,6 +968,7 @@ function performcount(stage) {
   });
   return "done";
 }
+
 
 var countholder = [];
 function categorysummarize() {
@@ -1197,6 +1201,7 @@ function buildstagepatterns2(stage) {
   return patterns;
 }
 
+//not in use March 2026
 //convert so that each test/mask/pattern/whatever only has one "points" field
 function buildstagepatterns(stage) {
   let trr = gettablerows(stage);
