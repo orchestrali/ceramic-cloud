@@ -24,8 +24,9 @@ $(function() {
   $("#showinstruct").on("click", () => $("#instructions").toggle());
   $("#closeinstruct").on("click", () => $("#instructions").hide());
   
-  $("#addpattern").on("click", addschemerule);
+  $("#addpattern").on("click", addschemeclick);
   $("#patternentry").on("keydown", patternkeydown);
+  $("#stage").on("change", stagechange);
   
   $("#viewcomp").on("click", viewcomp);
   $("#compliburl").on("click", () => $("#complibinfo").text(""));
@@ -41,6 +42,15 @@ function patternkeydown() {
   $("#addinginfo").text("");
 }
 
+//change stage on form
+function stagechange(e) {
+  let stage = Number($("#stage option:checked").val());
+  let odd = stage % 2 === 1;
+  let text = odd ? "odd" : "even";
+  $("#whichhalf").text(text);
+}
+
+//view stage table
 function stageclick(e) {
   $(e.currentTarget).next().toggle();
 }
@@ -157,6 +167,85 @@ function movecategory(e) {
 
 // ******* main purpose of this website *******
 
+function addschemeclick() {
+  let stage = Number($("#stage option:checked").val());
+  let rounds = places.slice(0, stage);
+  let chars = rounds + "x()";
+  let pattern = $("#patternentry").val();
+  let p = replacebellletters(pattern);
+  let set = [p];
+  if (p.includes("(")) set = handlepatterns(p);
+  let parr = p.split("");
+  if (parr.some(c => !chars.includes(c)) || set.length === 0) {
+    //invalid pattern
+    $("#addinginfo").text("pattern not valid");
+  } else if (pattern.length) {
+    let stages = [stage];
+    let start = stage;
+    let inc;
+    if ($("#higherstages").is(":checked")) {
+      inc = 1;
+    } else if ($("#higherhalf").is(":checked")) {
+      inc = 2;
+    }
+    if (inc) {
+      start += inc;
+      for (let s = start; s <= 16; s+=inc) {
+        stages.push(s);
+      }
+    }
+
+    let o = buildruleobj(pattern);
+
+    stages.forEach(s => {
+      let ruleset = schemerules.find(obj => obj.stage === s);
+      ruleset.rules.push(o);
+
+      //add to the actual table
+      let tablerows = convertrule(o, s);
+      tablerows.forEach(tr => {
+        let html = buildtablerow(tr, s);
+        $("#stage"+s+" tbody").append(html);
+      });
+    });
+
+    //inform user
+    $("#patternentry").val("");
+    $("#addinginfo").text("Added!");
+    setTimeout(() => {
+      $("#addinginfo").text("");
+    }, 1000);
+    
+  }
+
+}
+
+function buildruleobj(pattern) {
+  let o = {
+    pattern: pattern,
+    locations: "",
+    points: Number($("#points").val())
+  };
+  let descript = $("#patterndescript").val();
+  if (descript.length) o.description = descript;
+  let ocat = $("#patterncat").val();
+  if (ocat.length) {
+    o.category = ocat;
+    //category is added to categorynames in convertrule
+  }
+  ["front","middle","back","wrap"].forEach(w => {
+    if ($("#"+w).is(":checked")) {
+      o.locations += w[0];
+    }
+  });
+  let stroke = $("#stroke option:checked").text();
+  if (stroke != "Any") o.stroke = stroke;
+  if ($("#transpose").is(":checked")) o.transpose = true;
+
+  return o;
+}
+
+//March 2026: replaced by version above, to accommodate multiple stages at once
 function addschemerule() {
   let stage = Number($("#stage option:checked").val());
   let rounds = places.slice(0, stage);
