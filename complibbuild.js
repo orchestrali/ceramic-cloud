@@ -167,10 +167,11 @@ function movecategory(e) {
 
 // ******* main purpose of this website *******
 
+
 function addschemeclick() {
   let stage = Number($("#stage option:checked").val());
   let rounds = places.slice(0, stage);
-  let chars = rounds + "x()";
+  let chars = rounds + "xy()";
   let pattern = $("#patternentry").val();
   let p = replacebellletters(pattern);
   let set = [p];
@@ -305,6 +306,7 @@ function addschemerule() {
 
 
 //convert one of my "rules" to complib spreadsheet rows
+//expansion levels: parentheses, transposition, wraps
 function convertrule(r, stage) {
   let middleset = [];
   let tablerows = [];
@@ -329,11 +331,44 @@ function convertrule(r, stage) {
   } else {
     set.push(r);
   }
+  //character y...
+  if (p.includes("y")) {
+    let count = countchar(p, "y");
+    set.forEach(obj => {
+      let workingpat = obj.pattern;
+      let leftovers = places.slice(0,stage).split("").filter(c => !workingpat.includes(c));
+      let ysets = nchooser(leftovers, count);
+      ysets.forEach(yset => {
+        let yext = count === 1 ? [yset.r] : buildextent(yset.r);
+        yext.forEach(yp => {
+          let j = 0;
+          let pattern = "";
+          for (let i = 0; i < workingpat.length; i++) {
+            let c = workingpat[i];
+            if (c === "y") {
+              pattern += yp[j];
+              j++;
+            } else {
+              pattern += c;
+            }
+          }
+          let o = {pattern: pattern};
+          for (let key in obj) {
+            if (key != "pattern") o[key] = obj[key];
+          }
+          middleset.push(o);
+        });
+      });
+    });
+  } else {
+    middleset.push(...set);
+  }
   //pattern transpositions
   if (r.transpose) {
     //expand to multiple rows
-    //could already be working with multiple rows from parentheses
-    set.forEach(o => {
+    //could already be working with multiple rows from parentheses and/or y expansion
+    let container = [];
+    middleset.forEach(o => {
       let tt = transposepattern(o.pattern, stage);
       //help with sorting later
       let group = "stage"+places[stage-1]+"group"+tt[0];
@@ -342,12 +377,14 @@ function convertrule(r, stage) {
         for (let key in o) {
           if (key != "pattern") tr[key] = o[key];
         }
-        middleset.push(tr);
+        container.push(tr);
       });
     });
-  } else {
-    middleset.push(...set);
+    middleset = container;
   }
+  
+  
+  
   //separate wraps
   if (r.locations.includes("w") && r.locations.length > 1) {
     middleset.forEach(o => {
@@ -1506,9 +1543,39 @@ function factorial(n) {
   return n;
 }
 
+//given a set of things
+//return array of objects with the set divided into two groups: "r" and "others"
+function nchooser(set, r) {
+  let res = [];
+  for (let i = 0; i < set.length+1-r; i++) {
+    let chosen = [set[i]];
+    if (r === 1) {
+      let o = {
+        r: chosen,
+        others: set.filter(n => !chosen.includes(n))
+      };
+      res.push(o);
+    } else {
+      let nset = set.slice(i+1);
+      let next = nchooser(nset, r-1);
+      next.forEach(o => {
+        let current = chosen.concat(o.r);
+        let others = set.filter(n => !current.includes(n));
+        res.push({r: current, others: others});
+      });
+    }
+  }
+  return res;
+}
+
 //how many times does "x" appear in the pattern?
 function countx(p) {
   let arr = p.split("").filter(c => c === "x");
+  return arr.length;
+}
+//how many times does the character x appear
+function countchar(p,x) {
+  let arr = p.split("").filter(c => c === x);
   return arr.length;
 }
 
@@ -1794,6 +1861,7 @@ function getrowsfrompattern(pattern) {
   return rows;
 }
 
+//not in use April 2026; also I think I fixed needing capital X...
 //take a pattern shorter than the given stage and produce all the versions with "X" (capital because of bell letters also being capitals)
 function patternstage(pattern, stage) {
   let n = pattern.length;
@@ -1833,7 +1901,7 @@ function handlepatterns(pattern) {
         closeparens.push(i);
         break;
       default:
-        if (inside && c === "x") xinside = true;
+        if (inside && ["x","y"].includes(c)) xinside = true;
         chars++;
     }
   }
