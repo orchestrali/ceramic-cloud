@@ -49,8 +49,8 @@
     <div class="button" id="showinstruct">Instructions</div>
     <div id="instructions" class="form">
       <p>Here are explanations of the items in the form below that do not correspond exactly to columns in the final spreadsheet.</p>
-      <p><span class="bold">Pattern:</span> this corresponds to the "Mask" column of the spreadsheet, with one limitation and one addition:</p>
-      <p class="indent">The field will accept whole rows, exact or with x as a wildcard, and segments of a row (types "Row" and "Mask" in the final spreadsheet). Subtotals will be automatically generated from the category field.</p>
+      <p><span class="bold">Pattern:</span> this corresponds to the "Mask" column of the spreadsheet. The field will accept whole rows, exact or with x as a wildcard, and segments of a row (types "Row", "Mask", and "Wrap" in the final spreadsheet). Subtotals will be automatically generated from the category field and can't be added manually with this form.</p>
+      <p class="indent">Two options allow a pattern entered here to be converted to multiple spreadsheet rows:</p>
       <p class="indent">Parentheses can be used to indicate that the bells inside the parentheses can be in any order. For example, entering "xxxx(57)(68)" with stage 8 will result in four rows being added to the major table:</p>
       <ul>
         <li>xxxx5768</li>
@@ -58,6 +58,12 @@
         <li>xxxx5786</li>
         <li>xxxx7586</li>
       </ul>
+      <p class="indent">An additional wildcard can be used, "y". Unlike x, which will remain as x in the final spreadsheet version, y will be converted to a specific bell. For example, entering "yy357468" with stage 8 (Queens on the back six) will cause two rows to be added to the major table:</p>
+      <ul>
+        <li>12357468</li>
+        <li>21357468</li>
+      </ul>
+      <p class="indent">With the above two rows in a complib music scheme, the whole row would be highlighted if it appears in a method or composition. With "xx357468" in the music scheme, the first two bells will not be highlighted.</p>
       <p><span class="bold">Transpose:</span> when entering a pattern shorter than a whole row, checking this box will cause the pattern to be added with every starting bell possible for the stage. For example, entering "1234" as the pattern and checking "transpose" will automatically add all descending four-bell runs.</p>
       <p><span class="bold">Front/Middle/Back:</span> when entering a pattern shorter than a whole row, check these to indicate where in the row it will receive points.</p>
       <p><span class="bold">Description:</span> this website will automatically add the pattern/mask to the description column. This field is for any additional text you want to appear. For example, named rows in complib's default scheme have the row followed by its name in parentheses: "15263748 (Tittums)". To recreate this you would enter just "(Tittums)" in the description field.</p>
