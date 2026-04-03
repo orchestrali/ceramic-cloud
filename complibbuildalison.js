@@ -1256,7 +1256,7 @@ function buildinitialrules() {
       //standard arpeggios
       for (let n = 8; n <= Math.min(actstage, 12); n+=2) {
         if (s != actstage) {
-          standardarpeggios["stage"+n].forEach(arp => {
+          standardarpeggios["stage"+n.toString()].forEach(arp => {
             let t = transposenumbers(arp, n, actstage);
             let p = xx.slice(arp.length-actstage)+t.slice(0,-1);
             let o = {
@@ -1270,7 +1270,7 @@ function buildinitialrules() {
           });
         }
         if (s >= n) {
-          standardarpeggios["stage"+n].forEach(arp => {
+          standardarpeggios["stage"+n.toString()].forEach(arp => {
             let o = {
               pattern: arp,
               locations: "fmb",
