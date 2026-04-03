@@ -1178,7 +1178,7 @@ function buildinitialrules() {
           set.rules.push(o);
         });
       }
-      /*
+      /* [check]
       let stepsegments = buildsteppatterns(s);
       stepsegments.forEach(p => {
         let o = {
@@ -1242,13 +1242,16 @@ function buildinitialrules() {
         };
         set.rules.push(q, k);
       }
+      /* [check]
       let qends = buildqueensyends(s);
       if (s != actstage) {
         let oddends = buildoddqueensy(s);
         qends.push(...oddends);
       }
       set.rules.push(...qends);
+      */
 
+      /* [check]
       //standard arpeggios
       for (let n = 8; n <= Math.min(actstage, 12); n+=2) {
         if (s != actstage) {
@@ -1279,6 +1282,7 @@ function buildinitialrules() {
           });
         }
       }
+      */
     }
     
     
