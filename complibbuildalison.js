@@ -1693,13 +1693,13 @@ function buildseesawbases(p, stage) {
       second.push(places[start+i]);
     });
     last = places.indexOf(second[second.length-1]);
-    if (second.every(e => !a.includes(e))) {
+    if (second.every(e => !a.includes(e)) && last < stage) {
       pairs.push([p, second.join("")]);
     }
     do {
       start++;
     } while (start < stage && ii.includes(start));
-  } while (last < stage-1);
+  } while (last < stage && start < stage-1);
   
   return pairs;
 }
@@ -1715,6 +1715,7 @@ function buildseesaws(a,b) {
   return combos;
 }
 
+/* [check]
 //stage 7+ I think
 //this is going to cause some rows with two runs to get more points
 function buildsteppatterns(n) {
@@ -1733,6 +1734,7 @@ function buildsteppatterns(n) {
   });
   return patterns;
 }
+*/
 
 //actually does kings + queens + princes + princesses
 function buildqueens(stage) {
@@ -1762,6 +1764,7 @@ function buildqueens(stage) {
   return rows;
 }
 
+/* [check]
 //for odd stages, 7+
 //queensy smaller versions on the back, assuming tenor
 function buildoddqueensy(n) {
@@ -1784,7 +1787,9 @@ function buildoddqueensy(n) {
   }
   return res;
 }
+*/
 
+/* [check]
 //shorter arpeggios allowed at the back
 //stage 7+
 function buildqueensyends(n) {
@@ -1818,7 +1823,7 @@ function buildqueensyends(n) {
   
   return res;
 }
-
+*/
 
 
 function buildtittums(stage) {
