@@ -1103,7 +1103,7 @@ function buildinitialrules() {
   let tittums = {"Tittums": ["142536","15263748","1627384950","172839405E6T","1829304E5T6A7B"], "Exploded": ["342516","45362718","5647382910","675849302E1T","7869504E3T2A1B"], explodedends: [], explodedx: [], explodedxends: [], revtittums: []};
   let tittumsagain = {exploded: [], explodedx: []};
   let xx = "xxxxxxxxxxxxxxxxxxxxxxxxxxx";
-  console.log(standardarpeggios);
+  //console.log(standardarpeggios);
   
   for (let s = 5; s <= 16; s++) {
     let actstage = s%2 === 1 ? s+1 : s;
@@ -1257,7 +1257,7 @@ function buildinitialrules() {
       set.rules.push(...qends);
       */
 
-      /* {check}
+      ///* {check}
       //standard arpeggios
       for (let n = 8; n <= Math.min(actstage, 12); n+=2) {
         if (s != actstage) {
@@ -1275,7 +1275,7 @@ function buildinitialrules() {
           });
         }
         if (s >= n) {
-          standardarpeggios["stage"+n.toString()].forEach(arp => {
+          standardarpeggios["stage"+n].forEach(arp => {
             let o = {
               pattern: arp,
               locations: "fmb",
@@ -1288,7 +1288,7 @@ function buildinitialrules() {
           });
         }
       }
-      */
+      
     }
     
     
