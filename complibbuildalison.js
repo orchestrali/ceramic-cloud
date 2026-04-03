@@ -1093,11 +1093,14 @@ function buildinitialrules() {
   let strs = ["1234","4321"];
   let queens = {Queens: [], Kings: [], Princes: []};
   let arpeggios = {queens: "13579EAC", kings: "CAE97531", standard: "1468"};
+  let standardarpeggios = {stage8: ["1468","1358","1368"], stage10: ["13680","13580"], stage12: ["13580T","2579T"]};
   let tittums = {"Tittums": ["142536","15263748","1627384950","172839405E6T","1829304E5T6A7B"], "Exploded": ["342516","45362718","5647382910","675849302E1T","7869504E3T2A1B"], explodedends: [], explodedx: [], explodedxends: [], revtittums: []};
   let tittumsagain = {exploded: [], explodedx: []};
+  let xx = "xxxxxxxxxxxxxxxxxxxxxxxxxxx";
   
   
   for (let s = 5; s <= 16; s++) {
+    let actstage = s%2 === 1 ? s+1 : s;
     let set = {
       stage: s,
       rules: []
@@ -1131,7 +1134,7 @@ function buildinitialrules() {
     strs.filter(p => p.length < s-2).forEach(p => {
       let o = {
         pattern: p,
-        locations: "fb",
+        locations: "fmb",
         points: 1,
         description: "("+p.length+"-bell run[s])",
         transpose: true
@@ -1156,7 +1159,7 @@ function buildinitialrules() {
       set.rules.push(o);
     }
     //need to do the step-based endings...
-    let actstage = s%2 === 1 ? s+1 : s;
+    
     if (s > 6) {
       let stependings = buildstepends(actstage);
       for (let key in stependings) {
@@ -1210,7 +1213,7 @@ function buildinitialrules() {
       for (let l = 4; l <= limit; l++) {
         let q = {
           pattern: arpeggios.queens.slice(0,l),
-          locations: "fb",
+          locations: "fmb",
           points: 1,
           description: "(from Queens)",
           category: "Queensy arpeggio[s]",
@@ -1218,7 +1221,7 @@ function buildinitialrules() {
         };
         let k = {
           pattern: arpeggios.kings.slice(-l),
-          locations: "fb",
+          locations: "fmb",
           points: 1,
           description: "(from Kings)",
           category: "Queensy arpeggio[s]",
@@ -1226,18 +1229,37 @@ function buildinitialrules() {
         };
         set.rules.push(q, k);
       }
+      for (let n = 8; n <= Math.min(actstage, 12); n+=2) {
+        if (s != actstage) {
+          standardarpeggios["stage"+n].forEach(arp => {
+            let t = transposenumbers(arp, n, actstage);
+            let p = xx.slice(arp.length-actstage)+t.slice(0,-1);
+            let o = {
+              pattern: p,
+              locations: "fmb",
+              points: 1,
+              description: "(standard arpeggio ending)",
+              category: "Queensy arpeggio[s]"
+            };
+            set.rules.push(o);
+          });
+        }
+        if (s >= n) {
+          standardarpeggios["stage"+n].forEach(arp => {
+            let o = {
+              pattern: arp,
+              locations: "fmb",
+              points: 1,
+              description: "(standard arpeggio)",
+              category: "Queensy arpeggio[s]",
+              transpose: true
+            };
+            set.rules.push(o);
+          });
+        }
+      }
     }
-    if (s > 7) {
-      let o = {
-        pattern: arpeggios.standard,
-        locations: "fb",
-        points: 1,
-        description: "(standard arpeggio)",
-        category: "Queensy arpeggio[s]",
-        transpose: true
-      };
-      set.rules.push(o);
-    }
+    
     
     
     //tittumsy stuff
@@ -1264,11 +1286,11 @@ function buildinitialrules() {
         break;
       case 7:
         tlimit = 1;
+        break;
       case 8: case 9:
         tlimit = 3;
     }
     for (let i = 0; i < tlimit; i++) {
-      let actstage = s%2 === 1 ? s+1 : s;
       let tt = tittums.Tittums[i];
       let tstage = tt.length;
       let max = actstage - (tstage-actstage);
@@ -1294,7 +1316,7 @@ function buildinitialrules() {
     });
     
     tittumsysegments.forEach(o => {
-      o.locations = "fb";
+      o.locations = "fmb";
       o.points = 2;
       o.category = "Tittumsy smaller version[s]";
       o.transpose = true;
@@ -1752,8 +1774,9 @@ function transposenumbers(row, from, to) {
 
 const hagdykerows = ["34125", "341256", "1256347", "12563478", "125634789", "1256349078", "1256349078E", "1256349078ET", "1256349078ETA", "1256349078ABET", "1256349078ABETC", "1256349078ABETCD"];
 //Hagdyke, Priory, Jacks
-//Rollercoaster (not done yet)
+//Rollercoaster
 function buildstepwhole(stage) {
+  let odd = stage%2 === 1;
   let rows = {};
   
   let pairs = [];
@@ -1767,6 +1790,7 @@ function buildstepwhole(stage) {
   });
   rows["Rounds cross"] = roundscross.join("");
   rows["Hagdyke"] = hagdykerows[stage-5];
+  
   
   let inside = [];
   for (let i = 1; i < stage-1; i+=2) {
@@ -1787,6 +1811,28 @@ function buildstepwhole(stage) {
   arr.forEach(p => backcross.push(p));
   if (stage%2 === 1) backcross.push("1");
   rows["Backrounds cross"] = backcross.join("");
+  let jacks = ["1"];
+  jacks.push(...inside);
+  if (!odd) jacks.push(places[stage-1]);
+  rows["Jacks"] = jacks.join("");
+  
+  if (stage > 6) {
+    let rollercoaster = [];
+    let actstage = odd ? stage+1 : stage;
+    if (!odd) rollercoaster.push(places[stage-1]);
+    for (let i = actstage-4; i > -1; i-=3) {
+      rollercoaster.unshift(places.slice(i,i+3).split("").reverse().join(""));
+    }
+    let leftover = (actstage-1)%3;
+    let rollervar;
+    if (leftover) {
+      if (leftover === 2) rollervar = "12"+rollercoaster.join("");
+      let start = leftover === 1 ? "1" : "21";
+      rollercoaster.unshift(start);
+    }
+    rows["Rollercoaster"] = rollercoaster.join("");
+    if (rollervar) rows["Rollercoaster variation"] = rollervar;
+  }
   
   
   return rows;
