@@ -1248,16 +1248,16 @@ function buildinitialrules() {
         };
         set.rules.push(q, k);
       }
-      /* [check]
+      
       let qends = buildqueensyends(s);
       if (s != actstage) {
         let oddends = buildoddqueensy(s);
         qends.push(...oddends);
       }
       set.rules.push(...qends);
-      */
+      
 
-      ///* {check}
+      
       //standard arpeggios
       for (let n = 8; n <= Math.min(actstage, 12); n+=2) {
         if (s != actstage) {
@@ -1684,7 +1684,7 @@ function applycross(row) {
   return a.join("");
 }
 
-/* [check]
+
 //p is string, should start with 1 - if the pattern will be transposed
 //build transpositions of p that don't overlap with p
 //e.g. "135",8 => ["135","246"],["135","468"]
@@ -1710,9 +1710,9 @@ function buildseesawbases(p, stage) {
   
   return pairs;
 }
-*/
 
-/* [check]
+
+
 //given two segments (strings)
 //create 8 versions: a & b can each be reversed and order can be ab or ba
 function buildseesaws(a,b) {
@@ -1723,9 +1723,9 @@ function buildseesaws(a,b) {
   combos.push(b+a, b+reva, revb+a, revb+reva);
   return combos;
 }
-*/
 
-/* [check]
+
+
 //stage 7+ I think
 //this is going to cause some rows with two runs to get more points
 function buildsteppatterns(n) {
@@ -1744,7 +1744,7 @@ function buildsteppatterns(n) {
   });
   return patterns;
 }
-*/
+
 
 //actually does kings + queens + princes + princesses
 function buildqueens(stage) {
@@ -1774,7 +1774,7 @@ function buildqueens(stage) {
   return rows;
 }
 
-/* [check]
+
 //for odd stages, 7+
 //queensy smaller versions on the back, assuming tenor
 function buildoddqueensy(n) {
@@ -1797,9 +1797,9 @@ function buildoddqueensy(n) {
   }
   return res;
 }
-*/
 
-/* [check]
+
+
 //shorter arpeggios allowed at the back
 //stage 7+
 function buildqueensyends(n) {
@@ -1833,7 +1833,7 @@ function buildqueensyends(n) {
   
   return res;
 }
-*/
+
 
 
 function buildtittums(stage) {
