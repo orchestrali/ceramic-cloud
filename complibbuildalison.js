@@ -1158,8 +1158,7 @@ function buildinitialrules() {
       };
       set.rules.push(o);
     }
-    //need to do the step-based endings...
-    
+    //step-based endings...
     if (s > 6) {
       let stependings = buildstepends(actstage);
       for (let key in stependings) {
@@ -1172,13 +1171,25 @@ function buildinitialrules() {
           let o = {
             pattern: p,
             locations: "fmb",
-            points: key.startsWith("Two") ? 2 : 1,
+            points: key.startsWith("Two") ? 2 : 1, //might change this with all the step patterns added?
             description: "("+key+")",
             category: "Step-based pattern[s]"
           };
           set.rules.push(o);
         });
       }
+      let stepsegments = buildsteppatterns(s);
+      stepsegments.forEach(p => {
+        let o = {
+          pattern: p,
+          locations: "fmb",
+          points: 1,
+          description: p.length === 4 ? "(Step pairs)" : "(Two three-bell runs)",
+          category: "Step-based pattern[s]",
+          transpose: true
+        };
+        set.rules.push(o);
+      });
     }
     
     //queensy stuff
@@ -1229,6 +1240,14 @@ function buildinitialrules() {
         };
         set.rules.push(q, k);
       }
+      let qends = buildqueensyends(s);
+      if (s != actstage) {
+        let oddends = buildoddqueensy(s);
+        qends.push(...oddends);
+      }
+      set.rules.push(...qends);
+
+      //standard arpeggios
       for (let n = 8; n <= Math.min(actstage, 12); n+=2) {
         if (s != actstage) {
           standardarpeggios["stage"+n].forEach(arp => {
@@ -1275,7 +1294,7 @@ function buildinitialrules() {
       set.rules.push(o);
     }
     
-    
+    //need to do tittums octaves
     
     //other sizes of tittums
     let tittumsysegments = [];
@@ -1342,6 +1361,8 @@ function buildinitialrules() {
         set.rules.push(o);
       });
     }
+
+    //finished adding rules
     
     schemerules.push(set);
     
@@ -1651,6 +1672,62 @@ function applycross(row) {
   return a.join("");
 }
 
+//p is string, should start with 1 - if the pattern will be transposed
+//build transpositions of p that don't overlap with p
+//e.g. "135",8 => ["135","246"],["135","468"]
+function buildseesawbases(p, stage) {
+  let pairs = [];
+  let a = p.split("");
+  let ii = a.map(c => places.indexOf(c));
+  let start = places.split("").findIndex(c => !p.includes(c));
+  let last;
+  do {
+    let second = [];
+    ii.forEach(i => {
+      second.push(places[start+i]);
+    });
+    last = places.indexOf(second[second.length-1]);
+    if (second.every(e => !a.includes(e))) {
+      pairs.push([p, second.join("")]);
+    }
+    do {
+      start++;
+    } while (start < stage && ii.includes(start));
+  } while (last < stage-1);
+  
+  return pairs;
+}
+
+//given two segments (strings)
+//create 8 versions: a & b can each be reversed and order can be ab or ba
+function buildseesaws(a,b) {
+  let combos = [];
+  let reva = a.split("").reverse().join("");
+  let revb = b.split("").reverse().join("");
+  combos.push(a+b, a+revb, reva+b, reva+revb);
+  combos.push(b+a, b+reva, revb+a, revb+reva);
+  return combos;
+}
+
+//stage 7+ I think
+//this is going to cause some rows with two runs to get more points
+function buildsteppatterns(n) {
+  let backrounds = reverserow(places);
+  let patterns = [];
+  ["12","123"].forEach(s => {
+    let bases = buildseesawbases(s, n);
+    bases.forEach(a => {
+      let combos = buildseesaws(a[0],a[1]);
+      combos.forEach(p => {
+        if (!places.includes(p) && !backrounds.includes(p)) {
+          patterns.push(p);
+        }
+      });
+    });
+  });
+  return patterns;
+}
+
 //actually does kings + queens + princes + princesses
 function buildqueens(stage) {
   let kings = [];
@@ -1677,6 +1754,63 @@ function buildqueens(stage) {
     rows.Princesses = rowstring(queens);
   }
   return rows;
+}
+
+//for odd stages, 7+
+//queensy smaller versions on the back, assuming tenor
+function buildoddqueensy(n) {
+  let actstage = n%2 === 1 ? n+1 : n;
+  let res = [];
+  let x = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+  for (let s = 6; s < actstage; s+=2) {
+    let rows = buildqueens(s);
+    for (let key in rows) {
+      let p = x.slice(0,actstage-s) + transposenumbers(rows[key],s,actstage).slice(0,-1);
+      let o = {
+        pattern: p,
+        locations: "fmb",
+        points: 1,
+        description: "("+key+" on "+s+")",
+        category: "Queensy smaller version[s]"
+      };
+      res.push(o);
+    }
+  }
+  return res;
+}
+
+//shorter arpeggios allowed at the back
+//stage 7+
+function buildqueensyends(n) {
+  let actstage = n%2 === 1 ? n+1 : n;
+  let res = [];
+  let x = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+  let minor = buildqueens(6);
+  let src = transposenumbers(minor.Queens, 6, actstage);
+  let arr = [];
+  arr.push(x.slice(0,actstage-4)+src.slice(-4)); //7468 on 8
+  arr.push(x.slice(0,actstage-3)+src.slice(-3)); //468, 680, etc.
+  if (n < actstage && n > 6) {
+    arr = arr.map(s => s.slice(0,-1));
+    let a = [];
+    for (let i = n-2; i > n-7; i-=2) {
+      a.unshift(places[i]);
+    }
+    arr.push(x.slice(0,n-3) + a.join(""));
+  }
+  
+  arr.forEach((p,i) => {
+    let o = {
+      pattern: p,
+      locations: "fmb",
+      points: 1,
+      description: i === 0 ? "(from Queens on six)" : "(from Queens)",
+      category: "Queensy arpeggio[s]"
+    };
+    res.push(o);
+  });
+  
+  return res;
 }
 
 
