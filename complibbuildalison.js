@@ -1252,7 +1252,7 @@ function buildinitialrules() {
       set.rules.push(...qends);
       */
 
-      /* [check]
+      ///* {check}
       //standard arpeggios
       for (let n = 8; n <= Math.min(actstage, 12); n+=2) {
         if (s != actstage) {
@@ -1283,7 +1283,7 @@ function buildinitialrules() {
           });
         }
       }
-      */
+      
     }
     
     
