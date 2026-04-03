@@ -773,12 +773,14 @@ function categorysummarize() {
     let rows = gettablerows(stage);
     //sort the table rows here? and apply sequence numbers?
     //no that won't work, because building the csv fetches the table rows again!
+    /* [check]
     if (stage < 13) {
       let ref = reformat(rows, stage);
       let sinfo = countrows(ref.map(o => o.Mask));
       res.totalrows = sinfo.total;
       res.sharedquantity = sinfo.sharedrows.length;
     }
+    */
     
     let cats = [];
     
@@ -801,6 +803,8 @@ function categorysummarize() {
           }
         });
         //eventually figure out how to count bell rows in the category
+        // [check]
+        /*
         if (stage < 13) {
           let arr = reformat(catrows, stage);
           let info = countrows(arr.map(o => o.Mask));
@@ -809,6 +813,7 @@ function categorysummarize() {
           cat.uniquerows = info.total;
           cat.sharedquantity = info.sharedrows.length;
         }
+        */
         cats.push(cat);
       }
     });
