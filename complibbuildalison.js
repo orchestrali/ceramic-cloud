@@ -1178,6 +1178,7 @@ function buildinitialrules() {
           set.rules.push(o);
         });
       }
+      /*
       let stepsegments = buildsteppatterns(s);
       stepsegments.forEach(p => {
         let o = {
@@ -1190,6 +1191,7 @@ function buildinitialrules() {
         };
         set.rules.push(o);
       });
+      */
     }
     
     //queensy stuff
