@@ -16,7 +16,8 @@ var categorystats = [];
 
 $(function() {
   buildinitialtables();
-  buildinitialrules();
+  console.log("why aren't things happening");
+  //buildinitialrules();
 
   $("#downloadcsv").on("click", downloadfile);
   $("#categorytable").on("change", ".cposition", movecategory);
@@ -1678,6 +1679,7 @@ function applycross(row) {
   return a.join("");
 }
 
+/* [check]
 //p is string, should start with 1 - if the pattern will be transposed
 //build transpositions of p that don't overlap with p
 //e.g. "135",8 => ["135","246"],["135","468"]
@@ -1703,7 +1705,9 @@ function buildseesawbases(p, stage) {
   
   return pairs;
 }
+*/
 
+/* [check]
 //given two segments (strings)
 //create 8 versions: a & b can each be reversed and order can be ab or ba
 function buildseesaws(a,b) {
@@ -1714,6 +1718,7 @@ function buildseesaws(a,b) {
   combos.push(b+a, b+reva, revb+a, revb+reva);
   return combos;
 }
+*/
 
 /* [check]
 //stage 7+ I think
