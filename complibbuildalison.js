@@ -10,7 +10,15 @@ var categorystages = {};
 var categorystats = [];
 
 
-
+/*
+  NOTES
+  - I'm not sure about keeping the 680s, above triples. They mean that 468 on Caters will get 2 points! Maybe I need to just add a few more specific x68s.
+  - the "count" column in the comp report looks weird, because I've mixed segments and whole rows (with x) in the same category. I tried to fix that but it might still be off
+  - should add more whole rows that are combos of queens, tittums, etc. on front and back?
+  - 32147658 and other 8-bell rows
+  - arpeggio combos that aren't queens or kings
+  - octaves!!!!!!
+*/
 
 
 
@@ -1184,7 +1192,7 @@ function buildinitialrules() {
           set.rules.push(o);
         });
       }
-      /* [check]
+      
       let stepsegments = buildsteppatterns(s);
       stepsegments.forEach(p => {
         let o = {
@@ -1192,12 +1200,12 @@ function buildinitialrules() {
           locations: "fmb",
           points: 1,
           description: p.length === 4 ? "(Step pairs)" : "(Two three-bell runs)",
-          category: "Step-based pattern[s]",
+          category: "Step-based segment[s]",
           transpose: true
         };
         set.rules.push(o);
       });
-      */
+      
     }
     
     //queensy stuff
@@ -1790,7 +1798,7 @@ function buildoddqueensy(n) {
         locations: "fmb",
         points: 1,
         description: "("+key+" on "+s+")",
-        category: "Queensy smaller version[s]"
+        category: "Queensy pattern[s]"
       };
       res.push(o);
     }
@@ -1826,7 +1834,7 @@ function buildqueensyends(n) {
       locations: "fmb",
       points: 1,
       description: i === 0 ? "(from Queens on six)" : "(from Queens)",
-      category: "Queensy arpeggio[s]"
+      category: "Queensy pattern[s]"
     };
     res.push(o);
   });
