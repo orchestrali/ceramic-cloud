@@ -64,7 +64,7 @@ function patternkeydown() {
 }
 
 function stageclick(e) {
-  console.log(e.currentTarget);
+  //console.log(e.currentTarget);
   $(e.currentTarget).next().toggle();
 }
 
@@ -222,7 +222,14 @@ function addschemerule() {
     let tablerows = convertrule(o, stage);
     tablerows.forEach(tr => {
       let html = buildtablerow(tr, stage);
-      $("#stage"+stage+" tbody").append(html);
+      let ti = categorynames.indexOf(o.category)+1;
+      if (ti === 0) {
+        //add a new table...[edit]
+        console.log("new category");
+      } else {
+        $("#stage"+stage+" table:nth-of-type("+ti+") tbody").append(html);
+      }
+      
     });
     //table no longer sorted
     ["sorttable_sorted","sorttable_sorted_reverse"].forEach(c => {
@@ -730,6 +737,7 @@ function viewrawrules() {
 
 function gettablerows(stage) {
   let oo = [];
+  //[edit]
   let num = $("#stage"+stage+" tbody tr").length;
   for (let i = 1; i <= num; i++) {
     let tr = $("#stage"+stage+" tbody tr:nth-child("+i+")");
