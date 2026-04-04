@@ -20,9 +20,6 @@
   color: navy;
 }
 
-.stagecat + table {
-  display: none;
-}
 
 div.button {
   margin: 10px;
