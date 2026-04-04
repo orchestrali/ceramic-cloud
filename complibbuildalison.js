@@ -28,7 +28,7 @@ var categorystats = [];
 
 $(function() {
   //buildinitialtables();
-  $(".tcontainer table").hide();
+  //$(".tcontainer table").hide();
   console.log("build rules, no table bodies");
   buildinitialrules();
 
