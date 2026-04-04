@@ -32,7 +32,8 @@ $(function() {
   buildinitialrules();
 
   $(".stagescheme p").on("click", stageclick);
-  $("table").on("click", ".remove", removerowclick);
+  $(".stagecat").on("click", stageclick);
+  $("table").on("click", ".remove", removerowclick); //[edit]
   $(".clearrows").on("click", removestagerules);
 
   $("#viewrules").on("click", viewrawrules);
@@ -64,6 +65,7 @@ function patternkeydown() {
 function stageclick(e) {
   $(e.currentTarget).next().toggle();
 }
+
 
 function removerowclick(e) {
   let tr = $(e.currentTarget).parent("tr");
