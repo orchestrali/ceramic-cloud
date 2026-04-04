@@ -18,6 +18,8 @@ var categorystats = [];
   - 32147658 and other 8-bell rows
   - arpeggio combos that aren't queens or kings
   - octaves!!!!!!
+  - 2 points for 6-bell step pattern thingies?
+  - limited selection of 4-bell step combos on major?
 */
 
 
@@ -1192,18 +1194,20 @@ function buildinitialrules() {
           set.rules.push(o);
         });
       }
-      
-      let stepsegments = buildsteppatterns(s);
-      stepsegments.forEach(p => {
-        let o = {
-          pattern: p,
-          locations: "fmb",
-          points: 1,
-          description: p.length === 4 ? "(Step pairs)" : "(Two three-bell runs)",
-          category: "Step-based segment[s]",
-          transpose: true
-        };
-        set.rules.push(o);
+
+      let stepcolls = [buildthreebellcombos(s), buildthreepairs(s)];
+      stepcolls.forEach((arr,i) => {
+        arr.forEach(p => {
+          let o = {
+            pattern: p,
+            locations: "fmb",
+            points: 2,
+            description: i === 1 ? "(Step pairs)" : "(Two three-bell runs)",
+            category: "Step-based segment[s]",
+            transpose: true
+          };
+          set.rules.push(o);
+        });
       });
       
     }
@@ -1751,6 +1755,75 @@ function buildsteppatterns(n) {
     });
   });
   return patterns;
+}
+
+//consecutive three-bell runs
+function buildthreebellcombos(n) {
+  let backrounds = reverserow(places);
+  let patterns = [];
+  let bases = buildseesawbases("123", n);
+  bases.forEach(a => {
+    let combos = buildseesaws(a[0],a[1]);
+    combos.forEach(p => {
+      if (!places.includes(p) && !backrounds.includes(p)) {
+        patterns.push(p);
+      }
+    });
+  });
+  return patterns;
+}
+
+//build six-bell segments made of three steps (but no runs)
+//all include 12, intended for transposition
+//n is stage
+function buildthreepairs(n) {
+  let signcombos = [[1,1,1],[1,1,-1],[1,-1,1],[-1,1,1],[-1,-1,1],[-1,1,-1],[1,-1,-1],[-1,-1,-1]];
+  let combos = [];
+  for (let second = 2; second < n-3; second++) {
+    for (let third = second+2; third < n-1; third++) {
+      let combo = ["12", places.slice(second,second+2), places.slice(third,third+2)];
+      combos.push(combo);
+    }
+  }
+  let next = [];
+  combos.forEach(trio => {
+    signcombos.forEach(sc => {
+      let arr = [];
+      for (let i = 0; i < 3; i++) {
+        let one = sc[i];
+        if (one === 1) {
+          arr.push(trio[i]);
+        } else {
+          let swap = trio[i][1]+trio[i][0];
+          arr.push(swap);
+        }
+      }
+      next.push(arr);
+    });
+  });
+  let all = [];
+  next.forEach(trio => {
+    let ext = buildextent(trio);
+    ext.forEach(a => {
+      let str = a.join("");
+      all.push(str);
+    });
+  });
+  return all.filter(hasnoruns);
+}
+
+//check if a row or segment has a run of 4 or more bells
+//if so return false
+//row is string
+function hasnoruns(row) {
+  let diffs = [];
+  for (let i = 1; i < row.length; i++) {
+    let d = places.indexOf(row[i])-places.indexOf(row[i-1]);
+    diffs.push(d);
+  }
+  let dstr = diffs.join("");
+  let run = dstr.includes("111") || dstr.includes("-1-1-1");
+  return !run;
 }
 
 
