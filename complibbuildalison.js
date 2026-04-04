@@ -26,8 +26,8 @@ var categorystats = [];
 
 $(function() {
   buildinitialtables();
-  console.log("what is happening");
-  buildinitialrules();
+  console.log("no rules");
+  //buildinitialrules();
 
   $("#downloadcsv").on("click", downloadfile);
   $("#categorytable").on("change", ".cposition", movecategory);
