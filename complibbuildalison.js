@@ -64,6 +64,7 @@ function patternkeydown() {
 }
 
 function stageclick(e) {
+  console.log(e.currentTarget);
   $(e.currentTarget).next().toggle();
 }
 
