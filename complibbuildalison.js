@@ -28,6 +28,7 @@ var categorystats = [];
 
 $(function() {
   //buildinitialtables();
+  $(".tcontainer table").hide();
   console.log("build rules, no table bodies");
   buildinitialrules();
 
@@ -1173,7 +1174,7 @@ function buildinitialrules() {
     strs.filter(p => p.length < s-2).forEach(p => {
       let o = {
         pattern: p,
-        locations: "fmb",
+        locations: p.length === 4 ? "fmb" : "fb",
         points: 1,
         description: "("+p.length+"-bell run[s])",
         transpose: true
