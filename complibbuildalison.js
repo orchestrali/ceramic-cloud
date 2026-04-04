@@ -25,9 +25,13 @@ var categorystats = [];
 
 
 $(function() {
-  buildinitialtables();
-  console.log("no rules");
-  //buildinitialrules();
+  //buildinitialtables();
+  console.log("tables already built, rules through Royal");
+  buildinitialrules();
+
+  $(".stagescheme p").on("click", stageclick);
+  $("table").on("click", ".remove", removerowclick);
+  $(".clearrows").on("click", removestagerules);
 
   $("#downloadcsv").on("click", downloadfile);
   $("#categorytable").on("change", ".cposition", movecategory);
@@ -1115,7 +1119,7 @@ function buildinitialrules() {
   let xx = "xxxxxxxxxxxxxxxxxxxxxxxxxxx";
   //console.log(standardarpeggios);
   
-  for (let s = 5; s <= 16; s++) {
+  for (let s = 5; s <= 10; s++) {
     let actstage = s%2 === 1 ? s+1 : s;
     let set = {
       stage: s,
