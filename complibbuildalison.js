@@ -4,9 +4,9 @@ const stagenames = ["Doubles","Minor","Triples","Major","Caters","Royal", "Cinqu
 var url = "https://api.complib.org/";
 const tableheads = ["Mask", "Description", "Category", "Type", "Stroke", "Possible", "Score", "ScoreFront", "ScoreInternal", "ScoreBack"];
 var schemerules = [];
-var categorynames = [];
-//var categorynames = ["Run-based whole row[s]", "Long run[s]", "Short run[s]", "Step-based whole row[s]", "Step-based pattern[s]", "Queensy whole row[s]", "Queensy smaller version[s]", "Queensy arpeggio[s]", "Tittumsy whole row[s]", "Tittumsy smaller version[s]", "Tittumsy pattern[s]"];
-var categorystages = {};
+//var categorynames = [];
+var categorynames = ["Run-based whole row[s]", "Long run[s]", "Short run[s]", "Step-based whole row[s]", "Step-based segment[s]", "Step-based pattern[s]", "Queensy whole row[s]", "Queensy smaller version[s]", "Queensy arpeggio[s]", "Queensy pattern[s]", "Tittumsy whole row[s]", "Tittumsy smaller version[s]", "Tittumsy pattern[s]"];
+var categorystages = {"Run-based whole row[s]":[5,6,7,8,9,10],"Step-based whole row[s]":[5,6,7,8,9,10],"Queensy whole row[s]":[5,6,7,8,9,10],"Tittumsy whole row[s]":[5,6,7,8,9,10],"Tittumsy smaller version[s]":[6,7,8,9,10],"Long run[s]":[7,8,9,10],"Step-based pattern[s]":[7,8,9,10],"Step-based segment[s]":[7,8,9,10],"Queensy smaller version[s]":[7,8,9,10],"Queensy arpeggio[s]":[7,8,9,10],"Queensy pattern[s]":[7,8,9,10],"Tittumsy pattern[s]":[7,8,9,10],"Short run[s]":[8,9,10]};
 var categorystats = [];
 
 
@@ -20,6 +20,7 @@ var categorystats = [];
   - octaves!!!!!!
   - 2 points for 6-bell step pattern thingies?
   - limited selection of 4-bell step combos on major?
+
 */
 
 
