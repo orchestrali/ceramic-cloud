@@ -27,7 +27,7 @@ var categorystats = [];
 
 $(function() {
   //buildinitialtables();
-  console.log("tables already built, rules through Royal, no summarizing");
+  console.log("build rules, no table bodies");
   buildinitialrules();
 
   $(".stagescheme p").on("click", stageclick);
@@ -1135,7 +1135,7 @@ function buildinitialrules() {
   let xx = "xxxxxxxxxxxxxxxxxxxxxxxxxxx";
   //console.log(standardarpeggios);
   
-  for (let s = 5; s <= 10; s++) {
+  for (let s = 5; s <= 16; s++) {
     let actstage = s%2 === 1 ? s+1 : s;
     let set = {
       stage: s,
@@ -1415,7 +1415,22 @@ function buildinitialrules() {
   }
 
   $("#viewrules").show();
-  buildinitialtablebodies();
+  //buildinitialtablebodies();
+}
+
+function countrowsfromrules() {
+  schemerules.forEach(obj => {
+    let count = 0;
+    obj.rules.forEach(rule => {
+      if (rule.transpose) {
+        let tt = transposepattern(rule.pattern, obj.stage);
+        count += tt.length;
+      } else {
+        count++;
+      }
+    });
+    console.log("stage "+obj.stage+": "+count+" table rows");
+  });
 }
 
 function buildinitialtables() {
