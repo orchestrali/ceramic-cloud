@@ -28,11 +28,11 @@ var categorystats = [];
 
 $(function() {
   //buildinitialtables();
-  //$(".tcontainer table").hide();
+  $(".tcontainer table").hide();
   console.log("build rules, no table bodies");
   buildinitialrules();
 
-  $(".stagescheme p").on("click", stageclick);
+  $(".stagescheme > p").on("click", stageclick);
   $(".stagecat").on("click", stageclick);
   $("table").on("click", ".remove", removerowclick); //[edit]
   $(".clearrows").on("click", removestagerules);
