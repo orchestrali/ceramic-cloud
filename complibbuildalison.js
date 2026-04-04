@@ -33,6 +33,8 @@ $(function() {
   $("table").on("click", ".remove", removerowclick);
   $(".clearrows").on("click", removestagerules);
 
+  $("#viewrules").on("click", viewrawrules);
+
   $("#downloadcsv").on("click", downloadfile);
   $("#categorytable").on("change", ".cposition", movecategory);
 
@@ -697,6 +699,19 @@ function downloadfile() {
   a.download = "my-complib-tests.csv";
   a.click();
   
+  URL.revokeObjectURL(a.href);
+}
+
+
+function viewrawrules() {
+  let file = JSON.stringify(schemerules, null, 2);
+
+  const a = document.createElement('a');
+  const blob = new Blob([file], {type: "text/plain"});
+  a.href = URL.createObjectURL(blob);
+  a.target = "_blank";
+  a.click();
+
   URL.revokeObjectURL(a.href);
 }
 
@@ -1398,6 +1413,7 @@ function buildinitialrules() {
     
   }
 
+  $("#viewrules").show();
   buildinitialtablebodies();
 }
 
