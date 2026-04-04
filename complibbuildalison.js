@@ -27,7 +27,7 @@ var categorystats = [];
 
 $(function() {
   //buildinitialtables();
-  console.log("tables already built, rules through Royal");
+  console.log("tables already built, rules through Royal, no summarizing");
   buildinitialrules();
 
   $(".stagescheme p").on("click", stageclick);
@@ -1452,7 +1452,7 @@ function buildinitialtablebodies() {
     buildschemetable(s);
   }
   $("#downloadcsv").show();
-  categorysummarize();
+  //categorysummarize();
 }
 
 function buildschemetable(stage) {
