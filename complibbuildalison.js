@@ -23,7 +23,8 @@ var categorystats = [];
 
 */
 
-
+// ******* WARNING don't try to convert any rules to table rows until you've changed the process!!!! ********
+// there are now 13 tables per stage, one for each category!!!
 
 $(function() {
   //buildinitialtables();
