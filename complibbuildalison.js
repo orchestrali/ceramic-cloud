@@ -35,6 +35,7 @@ $(function() {
   $(".stagescheme > p").on("click", stageclick);
   $(".stagecat").on("click", stageclick);
   $("table").on("click", ".remove", removerowclick); //[edit]
+  $(".convertrules").on("click", convertclick);
   $(".clearrows").on("click", removestagerules);
 
   $("#viewrules").on("click", viewrawrules);
@@ -66,6 +67,14 @@ function patternkeydown() {
 function stageclick(e) {
   //console.log(e.currentTarget);
   $(e.currentTarget).next().toggle();
+}
+
+
+function convertclick(e) {
+  let id = e.currentTarget.id;
+  let stage = Number(id.slice(7));
+  buildschemetable(stage);
+  $(e.currentTarget).remove();
 }
 
 
@@ -1495,10 +1504,12 @@ function buildschemetable(stage) {
       let rows = convertrule(r, stage);
       tablerows.push(...rows);
     });
-    let id = "#stage"+stage+" tbody";
+    
     tablerows.forEach((r,i) => {
+      let ti = categorynames.indexOf(r.Category)+1;
       let row = buildtablerow(r, stage, i+100);
-      $(id).append(row);
+      $("#stage"+stage+" table:nth-of-type("+ti+") tbody").append(row);
+      
     });
     //$("#stage"+stage+" table").addClass("sortable");
   }
