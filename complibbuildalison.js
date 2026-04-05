@@ -748,20 +748,23 @@ function viewrawrules() {
 function gettablerows(stage) {
   let oo = [];
   //[edit]
-  let num = $("#stage"+stage+" tbody tr").length;
-  for (let i = 1; i <= num; i++) {
-    let tr = $("#stage"+stage+" tbody tr:nth-child("+i+")");
-    let c = tr.attr("class");
-    let obj = {};
-    //seq: (i+99).toString()
-    if (c) obj.group = c.slice(11);
-    for (let j = 0; j < tableheads.length; j++) {
-      obj[tableheads[j]] = tr.children("td:nth-child("+(j+1)+")").text();
+  for (let cat = 1; cat <= categorynames.length; cat++) {
+    let table = $("#stage"+stage+" table:nth-of-type("+cat+")");
+    let num = table.find("tbody tr").length;
+    for (let i = 1; i <= num; i++) {
+      let tr = table.find("tbody tr:nth-child("+i+")");
+      let c = tr.attr("class");
+      let obj = {};
+      //seq: (i+99).toString()
+      if (c) obj.group = c.slice(11);
+      for (let j = 0; j < tableheads.length; j++) {
+        obj[tableheads[j]] = tr.children("td:nth-child("+(j+1)+")").text();
+      }
+      oo.push(obj);
     }
-    oo.push(obj);
-  };
+  }
   //if building csv, should sort objects by category then mask, and assign sequence numbers after
-  oo.sort(tablerowsort);
+  //oo.sort(tablerowsort);
   for (let i = 0; i < oo.length; i++) {
     oo[i].seq = (i+100).toString();
   }
@@ -1324,7 +1327,7 @@ function buildinitialrules() {
               locations: "fmb",
               points: 1,
               description: "(standard arpeggio ending)",
-              category: "Queensy arpeggio[s]"
+              category: "Queensy pattern[s]"
             };
             set.rules.push(o);
           });
@@ -1513,6 +1516,9 @@ function buildschemetable(stage) {
       
     });
     //$("#stage"+stage+" table").addClass("sortable");
+    //[edit] testing
+    let oo = gettablerows(stage);
+    console.log("table rows total: "+oo.length);
   }
 }
 
