@@ -73,6 +73,7 @@ function stageclick(e) {
 function convertclick(e) {
   let id = e.currentTarget.id;
   let stage = Number(id.slice(7));
+  console.log("converting? "+stage);
   buildschemetable(stage);
   $(e.currentTarget).remove();
 }
@@ -1496,7 +1497,7 @@ function buildschemetable(stage) {
   let list = schemerules.find(o => o.stage === stage);
   if (list) {
     let rules = list.rules;
-    
+    console.log(rules.length + " rules for this stage");
     
     let tablerows = [];
     
@@ -1506,7 +1507,7 @@ function buildschemetable(stage) {
     });
     
     tablerows.forEach((r,i) => {
-      let ti = categorynames.indexOf(r.Category)+1;
+      let ti = categorynames.indexOf(r.category)+1;
       let row = buildtablerow(r, stage, i+100);
       $("#stage"+stage+" table:nth-of-type("+ti+") tbody").append(row);
       
