@@ -8,7 +8,7 @@ var schemerules = [];
 var categorynames = ["Run-based whole row[s]", "Long run[s]", "Short run[s]", "Step-based whole row[s]", "Step-based segment[s]", "Step-based pattern[s]", "Queensy whole row[s]", "Queensy smaller version[s]", "Queensy arpeggio[s]", "Queensy pattern[s]", "Tittumsy whole row[s]", "Tittumsy smaller version[s]", "Tittumsy pattern[s]"];
 var categorystages = {"Run-based whole row[s]":[5,6,7,8,9,10],"Step-based whole row[s]":[5,6,7,8,9,10],"Queensy whole row[s]":[5,6,7,8,9,10],"Tittumsy whole row[s]":[5,6,7,8,9,10],"Tittumsy smaller version[s]":[6,7,8,9,10],"Long run[s]":[7,8,9,10],"Step-based pattern[s]":[7,8,9,10],"Step-based segment[s]":[7,8,9,10],"Queensy smaller version[s]":[7,8,9,10],"Queensy arpeggio[s]":[7,8,9,10],"Queensy pattern[s]":[7,8,9,10],"Tittumsy pattern[s]":[7,8,9,10],"Short run[s]":[8,9,10]};
 var categorystats = [];
-
+var tablerowlist = [];
 
 /*
   NOTES
@@ -745,6 +745,7 @@ function viewrawrules() {
 
 // **** processing scheme rows ****
 
+//resulting object has all the tableheads, plus group (maybe), and seq
 function gettablerows(stage) {
   let oo = [];
   //[edit]
@@ -1125,7 +1126,9 @@ function checkcategory(name, stage, include) {
       categorystages[name].push(stage);
     }
   } else {
-    let oo = gettablerows(stage).map(o => o.Category);
+    let stagerules = schemerules.find(o => o.stage === stage);
+    let oo = stagerules ? stagerules.rules.map(o => o.category) : [];
+      //gettablerows(stage).map(o => o.Category);
     if (!oo.includes(name)) {
       let arr = categorystages[name];
       let i = arr.indexOf(stage);
