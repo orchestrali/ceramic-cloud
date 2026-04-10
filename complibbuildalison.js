@@ -532,7 +532,8 @@ function displaycompnewversion(rows, stage) {
           //now I need to check if the match is the correct location for getting points
           //unlike with the old system, all these objects should have points...
           //though they could have zero points
-          let m = {o: obj, pp: mpp, loc: findlocation(mpp, stage), add: obj.points > 0 && testlocation(mpp, obj.locations, stage)};
+          let m = {o: obj, pp: mpp, add: obj.points > 0 && (p.includes("x") || testlocation(mpp, obj.locations, stage))};
+          m.loc = p.includes("x") ? "whole" : findlocation(mpp, stage);
           matches.push(m);
         }
       }
