@@ -618,7 +618,7 @@ function displaycompnewversion(rows, stage) {
       totalpoints += points;
     }
     //brackets for plurals
-    let cattext = handleplural(cat);
+    let cattext = cat ? handleplural(cat) : "";
     //rn, row, pp, wpp, points, cat
     let rowobj = {
       rn: i-1,
