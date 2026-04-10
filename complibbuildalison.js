@@ -1,4 +1,4 @@
-const places = "1234567890ETABCD";
+const places = "1234567890ETABCDFGHJKLMNPQRSUVWYZ"; //extra long because of a thing with wraps
 const stagenames = ["Doubles","Minor","Triples","Major","Caters","Royal", "Cinques","Maximus","Sextuples","Fourteen","Septuples","Sixteen"];
 //complib api url for getting methods & compositions
 var url = "https://api.complib.org/";
@@ -69,7 +69,7 @@ function stageclick(e) {
   $(e.currentTarget).next().toggle();
 }
 
-
+//convert preloaded rules for a stage into table rows and build the table bodies
 function convertclick(e) {
   let id = e.currentTarget.id;
   let stage = Number(id.slice(7));
@@ -216,7 +216,7 @@ function addschemerule() {
       o.category = ocat;
       //category is added to categorynames in convertrule
     }
-    ["front","middle","back"].forEach(w => {
+    ["front","middle","back","wrap"].forEach(w => {
       if ($("#"+w).is(":checked")) {
         o.locations += w[0];
       }
@@ -258,6 +258,7 @@ function addschemerule() {
 
 //convert one of my "rules" to complib spreadsheet rows
 function convertrule(r, stage) {
+  let middleset = [];
   let tablerows = [];
   if (!categorynames.includes(r.category)) {
     addcategory(r.category, stage);
@@ -293,12 +294,33 @@ function convertrule(r, stage) {
         for (let key in o) {
           if (key != "pattern") tr[key] = o[key];
         }
-        tablerows.push(tr);
+        middleset.push(tr);
       });
     });
   } else {
-    tablerows.push(...set);
+    middleset.push(...set);
   }
+  
+  //separate wraps
+  if (r.locations.includes("w") && r.locations.length > 1) {
+    middleset.forEach(o => {
+      let wrap = {};
+      let row = {};
+      for (let key in o) {
+        if (key === "locations") {
+          wrap[key] = "w";
+          row[key] = o[key].split("").filter(l => l != "w").join("");
+        } else {
+          wrap[key] = o[key];
+          row[key] = o[key];
+        }
+      }
+      tablerows.push(wrap, row);
+    });
+  } else {
+    tablerows = middleset;
+  }
+  
   return tablerows;
 }
 
@@ -316,13 +338,22 @@ function buildtablerow(r, stage, num) {
   */
   cols.push(r.category || "");
   //type
-  cols.push(p.length === stage ? "Row" : "Mask");
+  cols.push(r.locations === "w" ? "Wrap" : p.length === stage ? "Row" : "Mask");
   //stroke
   cols.push(r.stroke || "Any");
   //possible
   let possible;
-  if (p.length === stage) {
-    let x = p.split("").filter(c => c === "x");
+  let x = p.split("").filter(c => c === "x");
+  if (r.locations === "w") {
+    //wraps
+    //this calculates number of possibilities for the row in which the wrap terminates. Not quite the same as the total possibilities???
+    possible = 0;
+    let factor = x.length === 0 ? 1 : factorial(x.length);
+    for (let i = 1; i < p.length; i++) {
+      let others = stage-i;
+      possible += factor * factorial(others);
+    }
+  } else if (p.length === stage) {
     possible = x.length === 0 ? 1 : factorial(x.length);
   } else {
     let others = stage-p.length;
@@ -389,6 +420,55 @@ function testrow(row, pattern) {
   return [];
 }
 
+//"rows" is the two rows combined in one string
+function testtworows(rows, pattern, stage) {
+  let start = stage-pattern.length+1;
+  let pp = [];
+  let i = start;
+  do {
+    let segment = rows.slice(i, i+pattern.length);
+    pp = testrow(segment, pattern);
+    i++;
+  } while (i < stage && pp.length === 0);
+  i--;
+  pp = pp.map(p => p+i);
+  return pp;
+}
+
+//rn, row, pp, wpp, points, cat
+//wraps take precedence for some reason
+function buildcomptablerow2(obj) {
+  let tr = `<tr><td>${obj.rn}</td><td class="row">`;
+  let span;
+  let row = obj.row;
+  let wpp = obj.wpp;
+  let pp = obj.pp;
+  for (let i = 1; i <= row.length; i++) {
+    if (wpp.includes(i)) {
+      if (span === "green") {
+        tr += `</span>`;
+        span = false;
+      }
+      if (!span) tr += `<span class="wrap">`;
+      span = "wrap";
+    } else if (pp.includes(i)) {
+      if (span === "wrap") {
+        tr += `</span>`;
+        span = false;
+      }
+      if (!span) tr += `<span class="green">`;
+      span = "green";
+    } else {
+      if (span) tr += `</span>`;
+      span = false;
+    }
+    tr += row[i-1];
+  }
+  if (span) tr += `</span>`;
+
+  tr += `</td><td>${obj.points}</td><td>${pp.length}</td><td>${obj.cat}</td></tr>`;
+  return tr;
+}
 
 function buildcomptablerow(rn, row, pp, points, cat) {
   let tr = `<tr><td>${rn}</td><td class="row">`;
