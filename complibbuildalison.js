@@ -8,7 +8,12 @@ var schemerules = [];
 var categorynames = ["Run-based whole row[s]", "Long run[s]", "Short run[s]", "Step-based whole row[s]", "Step-based segment[s]", "Step-based pattern[s]", "Queensy whole row[s]", "Queensy smaller version[s]", "Queensy arpeggio[s]", "Queensy pattern[s]", "Tittumsy whole row[s]", "Tittumsy smaller version[s]", "Tittumsy pattern[s]"];
 var categorystages = {"Run-based whole row[s]":[5,6,7,8,9,10],"Step-based whole row[s]":[5,6,7,8,9,10],"Queensy whole row[s]":[5,6,7,8,9,10],"Tittumsy whole row[s]":[5,6,7,8,9,10],"Tittumsy smaller version[s]":[6,7,8,9,10],"Long run[s]":[7,8,9,10],"Step-based pattern[s]":[7,8,9,10],"Step-based segment[s]":[7,8,9,10],"Queensy smaller version[s]":[7,8,9,10],"Queensy arpeggio[s]":[7,8,9,10],"Queensy pattern[s]":[7,8,9,10],"Tittumsy pattern[s]":[7,8,9,10],"Short run[s]":[8,9,10]};
 var categorystats = [];
-var tablerowlist = [];
+
+//holders for "table rows" in my new version
+var currentstagepatterns = [];
+var stagepatternobj = {};
+var currentstagewraps = [];
+var currentstage;
 
 /*
   NOTES
@@ -489,6 +494,188 @@ function buildcomptablerow(rn, row, pp, points, cat) {
   return tr;
 }
 
+//rows from complib
+//cope with wraps AND new source of test patterns
+function displaycompnewversion(rows, stage) {
+  temporaryconvertrules(stage);
+  var strokes = {Handstroke: 0, Backstroke: 1};
+  let count = 0;
+  let totalpoints = 0;
+  let report = {
+    Category: {},
+    Description: {}
+  };
+  //I guess this is a version where each row can only contribute once to one category
+  let catpoints = {};
+  let comprows = [];
+  for (let i = 2; i < rows.length; i++) {
+    let row = rows[i][0];
+    let pp = [];
+    let wpp = [];
+    let points = 0;
+    //some rows can match multiple categories; collect them all
+    let cats = [];
+    let cat;
+    let matches = [];
+    //stroke of composition row: 0 for handstroke, 1 for backstroke
+    let rowstroke = i%2;
+
+    //collect single row matches
+    currentstagepatterns.forEach(p => {
+      let mpp = testrow(row, p);
+      if (mpp.length) {
+        let obj = stagepatternobj[p];
+        
+        //stroke at which pattern gets points
+        let pstroke = obj.stroke === "Handstroke" ? 0 : obj.stroke === "Backstroke" ? 1 : i%2;
+        if (pstroke === rowstroke) {
+          //now I need to check if the match is the correct location for getting points
+          //unlike with the old system, all these objects should have points...
+          //though they could have zero points
+          let m = {o: obj, pp: mpp, loc: findlocation(mpp, stage), add: obj.points > 0 && testlocation(mpp, obj.locations, stage)};
+          matches.push(m);
+        }
+      }
+    });
+
+    //collect wrap matches
+    currentstagewraps.filter(o => !o.stroke || strokes[o.stroke] === rowstroke).forEach(obj => {
+      let combo = rows[i-1][0]+row;
+      let wp = testtworows(combo, obj.pattern, stage);
+      if (wp.length) {
+        matches.push({o: obj, pp: wp, wrap: true, loc: "whole", add: obj.points > 0});
+      }
+    });
+
+    matches.forEach(o => {
+      let add = o.add;
+      let mpp = [];
+        
+      if (o.wrap) {
+        let prev = i > 2 ? comprows[comprows.length-1] : {wpp: []};
+        if (!prev.wpp) prev.wpp = [];
+        o.pp.forEach(n => {
+          if (n <= stage) {
+            if (add && !prev.wpp.includes(n)) prev.wpp.push(n);
+          } else {
+            let b = n-stage;
+            if (add && !wpp.includes(b)) wpp.push(b);
+            mpp.push(b);
+          }
+        });
+      } else {
+        mpp = o.pp;
+        if (add) {
+          mpp.forEach(n => {
+            if (!pp.includes(n)) pp.push(n);
+          });
+        }
+      }
+      
+      if (add) {
+        cats.push({cat: o.o.Category, numplaces: mpp.length});
+        points += o.o.points;
+      }
+      //then update report
+      ["Category","Description"].forEach(w => {
+        let obj = report[w][o.o[w]];
+        if (obj) {
+          obj.Score += o.o.points;
+          obj.Count++;
+          if (o.loc != "whole") obj[o.loc]++;
+        } else {
+          obj = {
+            Score: o.o.points,
+            Count: 1
+          };
+          if (o.loc != "whole") {
+            obj.parts = true;
+            ["Front","Internal","Back"].forEach(loc => obj[loc] = 0);
+            obj[o.loc]++;
+          }
+          if (w === "Category") obj.descripts = [o.o.Description];
+          report[w][o.o[w]] = obj;
+        }
+      });
+      let catdesc = report.Category[o.o.Category].descripts;
+      if (!catdesc.includes(o.o.Description)) {
+        catdesc.push(o.o.Description);
+      }
+    });
+    //end of matches
+    if (points) {
+      if (cats.length) {
+        cats.sort((a,b) => b.numplaces-a.numplaces);
+        cat = cats[0].cat;
+        if (catpoints[cat]) {
+          catpoints[cat] += points;
+        } else {
+          catpoints[cat] = points;
+        }
+      }
+      pp.sort((a,b) => a-b);
+      count++;
+      totalpoints += points;
+    }
+    //brackets for plurals
+    let cattext = handleplural(cat);
+    //rn, row, pp, wpp, points, cat
+    let rowobj = {
+      rn: i-1,
+      row: row,
+      pp: pp,
+      wpp: wpp,
+      points: points,
+      cat: cattext
+    };
+    comprows.push(rowobj);
+    //end of row
+
+  }
+
+  //table no longer sorted
+  ["sorttable_sorted","sorttable_sorted_reverse"].forEach(c => {
+    $("#comptable th."+c).removeClass(c);
+  });
+
+  comprows.forEach(o => {
+    //add the comprow to the table
+    let tr = buildcomptablerow2(o);
+    $("#comptable tbody").append(tr);
+  });
+
+  buildcompreport(report);
+  let totaltext = `${count} rows with points, ${totalpoints} points in total`;
+  $("#totals").text(totaltext);
+  $("#compdisplay").show();
+}
+
+function testlocation(pp, locs, stage) {
+  if (pp.length === stage) {
+    return true;
+  }
+  if (pp.includes(1) && locs.includes("f")) {
+    return true;
+  } else if (pp.includes(stage) && locs.includes("b")) {
+    return true;
+  }
+  return locs.includes("m");
+}
+
+function findlocation(pp, stage) {
+  if (pp.length === stage) {
+    return "whole";
+  }
+  if (pp.includes(1)) {
+    return "Front";
+  }
+  if (pp.includes(stage)) {
+    return "Back";
+  }
+  return "Internal";
+}
+
+//old version...
 //rows of a method or composition, obtained from complib
 function displaycomp(rows, stage) {
   let patterns = buildstagepatterns2(stage);
@@ -700,7 +887,7 @@ function getcomplib(id, type, access) {
       let stage = results.stage;
       let rows = results.rows;
       if (rows[rows.length-3][1] === "That's all at handstroke") rows.pop();
-      displaycomp(rows, stage);
+      displaycompnewversion(rows, stage);
     } else {
       //something is wrong?
       console.log(results);
@@ -824,6 +1011,48 @@ function viewrawrules() {
 
 
 // **** processing scheme rows ****
+
+//get stage patterns by converting rules, not from html table rows
+function temporaryconvertrules(stage) {
+  currentstage = stage;
+  currentstagepatterns = [];
+  stagepatternobj = {};
+  let stageobj = schemerules.find(o => o.stage === stage);
+  if (stageobj && stageobj.rules) {
+    let rules = stageobj.rules;
+    rules.forEach(r => {
+      let tr = convertrule(r, stage);
+      tr.forEach(o => {
+        let obj = {Description: o.pattern}; //this might need updating???
+        //I don't know what kind of updating I was thinking of. Altering some keys?
+        if (o.pattern.length < stage || o.pattern.includes("x")) obj.Description += "[s]";
+        for (let key in o) {
+          switch (key) {
+            case "category":
+              obj.Category = o[key];
+              break;
+            case "description":
+              obj.Description += " "+o[key];
+              break;
+            default:
+              if (!["transpose"].includes(key)) {
+                obj[key] = o[key];
+              }
+          }
+        }
+        //need to separate wraps here
+        if (o.locations === "w") {
+          currentstagewraps.push(obj);
+        } else {
+          currentstagepatterns.push(o.pattern);
+
+          stagepatternobj[o.pattern] = obj;
+        }
+      });
+    });
+  }
+}
+
 
 //resulting object has all the tableheads, plus group (maybe), and seq
 function gettablerows(stage) {
