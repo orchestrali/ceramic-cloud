@@ -594,6 +594,7 @@ function displaycompwraps(rows, stage) {
     //some rows can match multiple categories; collect them all
     let cats = [];
     patterns.forEach(obj => {
+      let add = obj.points > 0;
       //stroke of composition row: 0 for handstroke, 1 for backstroke
       let rowstroke = i%2;
       //stroke at which pattern gets points
@@ -604,15 +605,15 @@ function displaycompwraps(rows, stage) {
         if (obj.Type === "Wrap") {
           let combo = rows[i-1][0]+row;
           let wp = testtworows(combo, obj.Mask, stage);
-          if (wp.length && obj.points) {
-            let prev = comprows[comprows.length-1];
+          if (wp.length) {
+            let prev = i > 2 ? comprows[comprows.length-1] : {wpp: []};
             if (!prev.wpp) prev.wpp = [];
             wp.forEach(n => {
               if (n <= stage) {
-                if (!prev.wpp.includes(n)) prev.wpp.push(n);
+                if (add && !prev.wpp.includes(n)) prev.wpp.push(n);
               } else {
                 let b = n-stage;
-                if (!wpp.includes(b)) wpp.push(b);
+                if (add && !wpp.includes(b)) wpp.push(b);
                 pl.push(b);
               }
             });
