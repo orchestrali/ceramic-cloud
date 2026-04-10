@@ -580,12 +580,12 @@ function displaycompnewversion(rows, stage) {
       ["Category","Description"].forEach(w => {
         let obj = report[w][o.o[w]];
         if (obj) {
-          obj.Score += o.o.points;
+          if (add) obj.Score += o.o.points;
           obj.Count++;
           if (o.loc != "whole") obj[o.loc]++;
         } else {
           obj = {
-            Score: o.o.points,
+            Score: add ? o.o.points : 0,
             Count: 1
           };
           if (o.loc != "whole") {
