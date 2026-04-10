@@ -1056,6 +1056,7 @@ function temporaryconvertrules(stage) {
 
 //resulting object has all the tableheads, plus group (maybe), and seq
 function gettablerows(stage) {
+  console.log("getting table rows for some reason");
   let oo = [];
   //[edit]
   for (let cat = 1; cat <= categorynames.length; cat++) {
@@ -1829,8 +1830,7 @@ function buildschemetable(stage) {
     });
     //$("#stage"+stage+" table").addClass("sortable");
     //[edit] testing
-    let oo = gettablerows(stage);
-    console.log("table rows total: "+oo.length);
+    console.log("table rows total: "+$("#stage"+stage+" tbody tr").length);
   }
 }
 
