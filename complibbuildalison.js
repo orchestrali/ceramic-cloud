@@ -446,7 +446,7 @@ function testtworows(rows, pattern, stage) {
   return pp;
 }
 
-//rn, row, pp, wpp, points, cat
+//rn, row, pp, wpp, points, cat, list
 //wraps take precedence for some reason
 function buildcomptablerow2(obj) {
   let tr = `<tr><td>${obj.rn}</td><td class="row">`;
@@ -477,7 +477,7 @@ function buildcomptablerow2(obj) {
   }
   if (span) tr += `</span>`;
 
-  tr += `</td><td>${obj.points}</td><td>${pp.length}</td><td>${obj.cat}</td></tr>`;
+  tr += `</td><td>${obj.points}</td><td>${pp.length}</td><td>${obj.cat}</td><td>${obj.list.join(", ")}</td></tr>`;
   return tr;
 }
 
@@ -523,6 +523,7 @@ function displaycompnewversion(rows, stage) {
     let cats = [];
     let cat;
     let matches = [];
+    let list = [];
     //stroke of composition row: 0 for handstroke, 1 for backstroke
     let rowstroke = i%2;
 
@@ -580,6 +581,7 @@ function displaycompnewversion(rows, stage) {
       }
       
       if (add) {
+        list.push(o.o.pattern);
         cats.push({cat: o.o.Category, numplaces: mpp.length});
         points += o.o.points;
       }
@@ -626,14 +628,15 @@ function displaycompnewversion(rows, stage) {
     }
     //brackets for plurals
     let cattext = cat ? handleplural(cat) : "";
-    //rn, row, pp, wpp, points, cat
+    //rn, row, pp, wpp, points, cat, list
     let rowobj = {
       rn: i-1,
       row: row,
       pp: pp,
       wpp: wpp,
       points: points,
-      cat: cattext
+      cat: cattext,
+      list: list
     };
     comprows.push(rowobj);
     //end of row
@@ -1832,7 +1835,7 @@ function buildinitialrules() {
     });
 
     //currently adds odd lengths
-    tittumsagain.exploded.push(tittumsy["Exploded Tittums"]);
+    if (s > 5) tittumsagain.exploded.push(tittumsy["Exploded Tittums"]);
 
     if (s > 6) {
       let arr = buildtittumsends(actstage);
@@ -2344,7 +2347,7 @@ function buildthreepairs(n) {
       all.push(str);
     });
   });
-  return all.filter(hasnoruns);
+  return all.filter(isnotrun);
 }
 
 //check if a row or segment has a run of 4 or more bells
@@ -2359,6 +2362,15 @@ function hasnoruns(row) {
   let dstr = diffs.join("");
   let run = dstr.includes("111") || dstr.includes("-1-1-1");
   return !run;
+}
+
+function isnotrun(row) {
+  let diffs = [];
+  for (let i = 1; i < row.length; i++) {
+    let d = places.indexOf(row[i])-places.indexOf(row[i-1]);
+    diffs.push(d);
+  }
+  return diffs.some(n => n != diffs[0]);
 }
 
 
