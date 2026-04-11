@@ -1045,6 +1045,7 @@ function temporaryconvertrules(stage) {
         if (o.locations === "w") {
           currentstagewraps.push(obj);
         } else {
+          if (currentstagepatterns.includes(o.pattern)) console.log("duplicate??? "+o.pattern);
           currentstagepatterns.push(o.pattern);
 
           stagepatternobj[o.pattern] = obj;
