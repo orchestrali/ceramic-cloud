@@ -1099,8 +1099,8 @@ function convertrulesforcsv(stage) {
         Sequence: ref,
         Mask: p,
         Description: p, //add to this below
-        Type: ro.locations === "w" ? "Wrap" : p.length === stage ? "Row" : "Mask";
-        Stroke: ro.stroke || "Any"; 
+        Type: ro.locations === "w" ? "Wrap" : p.length === stage ? "Row" : "Mask",
+        Stroke: ro.stroke || "Any" 
       };
       ref++;
       //calculate possible
