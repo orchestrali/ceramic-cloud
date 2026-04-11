@@ -177,6 +177,11 @@ function addschemeclick() {
   let set = [p];
   if (p.includes("(")) set = handlepatterns(p);
   let parr = p.split("");
+  let plength = parr.filter(c => !"()".includes(c)).length;
+  if (plength < stage && pattern.includes("x")) {
+    //do I need to prevent this?
+    //what do I do with x-patterns being added to multiple stages???? not allow it, or add extra x to the front??
+  }
   if (parr.some(c => !chars.includes(c)) || set.length === 0) {
     //invalid pattern
     $("#addinginfo").text("pattern not valid");
@@ -199,6 +204,11 @@ function addschemeclick() {
     let o = buildruleobj(pattern);
 
     stages.forEach(s => {
+      if (plength === s && !["w","fmb","fmbw"].includes(o.locations)) {
+        //just in case I'm using the presence of all locations somewhere...
+        let w = o.locations.includes("w") ? "w" : "";
+        o.locations = "fmb" + w;
+      }
       let ruleset = schemerules.find(obj => obj.stage === s);
       ruleset.rules.push(o);
 
