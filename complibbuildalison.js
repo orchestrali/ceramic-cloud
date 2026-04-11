@@ -951,7 +951,7 @@ function buildcsv() {
       
       let subtotalranges = [];
       for (let i = 0; i < stuff.catfirsts.length; i++) {
-        let str = stuff.catfirsts[i].toString() + "–";
+        let str = stuff.catfirsts[i].toString() + "-";
         let num = i === stuff.catfirsts.length-1 ? stuff.stagerows.length+100 : stuff.catfirsts[i+1];
         num--;
         str += num.toString();
