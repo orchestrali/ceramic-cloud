@@ -1861,6 +1861,7 @@ function buildinitialrules() {
 
   schemestages = schemerules.map(o => o.stage);
   $("#viewrules").show();
+  $("#downloadcsv").show();
   //buildinitialtablebodies();
 }
 
