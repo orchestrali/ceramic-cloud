@@ -2,11 +2,17 @@ const places = "1234567890ETABCDFGHJKLMNPQRSUVWYZ"; //extra long because of a th
 const stagenames = ["Doubles","Minor","Triples","Major","Caters","Royal", "Cinques","Maximus","Sextuples","Fourteen","Septuples","Sixteen"];
 //complib api url for getting methods & compositions
 var url = "https://api.complib.org/";
+//for my html tables
 const tableheads = ["Mask", "Description", "Category", "Type", "Stroke", "Possible", "Score", "ScoreFront", "ScoreInternal", "ScoreBack"];
+//for the csv
+var headers = ["Id", "SchemeId", "Stage", "Sequence", "Mask", "Description", "Summarise", "Type", "Stroke", "Possible", "Minimum", "Maximum", "Factor", "Score", "ScoreFront", "ScoreInternal", "ScoreBack"];
+//main feature of this website
 var schemerules = [];
 //var categorynames = [];
 var categorynames = ["Run-based whole row[s]", "Long run[s]", "Short run[s]", "Step-based whole row[s]", "Step-based segment[s]", "Step-based pattern[s]", "Queensy whole row[s]", "Queensy smaller version[s]", "Queensy arpeggio[s]", "Queensy pattern[s]", "Tittumsy whole row[s]", "Tittumsy smaller version[s]", "Tittumsy pattern[s]"];
 var categorystages = {"Run-based whole row[s]":[5,6,7,8,9,10],"Step-based whole row[s]":[5,6,7,8,9,10],"Queensy whole row[s]":[5,6,7,8,9,10],"Tittumsy whole row[s]":[5,6,7,8,9,10],"Tittumsy smaller version[s]":[6,7,8,9,10],"Long run[s]":[7,8,9,10],"Step-based pattern[s]":[7,8,9,10],"Step-based segment[s]":[7,8,9,10],"Queensy smaller version[s]":[7,8,9,10],"Queensy arpeggio[s]":[7,8,9,10],"Queensy pattern[s]":[7,8,9,10],"Tittumsy pattern[s]":[7,8,9,10],"Short run[s]":[8,9,10]};
+var schemestages = []; //schemerules.map(o => o.stage);
+//holder for stuff
 var categorystats = [];
 
 //holders for "table rows" in my new version
@@ -923,59 +929,57 @@ function getcomplib(id, type, access) {
 
 // **** downloading csv version ****
 
+// DIFFERENT from complibbuild.js version!!!
 function buildcsv() {
-  //probably rebuild summaries first??
-  categorysummarize();
-  //actually should probably do those tasks here to avoid repeatedly getting the table rows
-  
-  let header = ["Id", "SchemeId", "Stage", "Sequence", "Mask", "Description", "Summarise", "Type", "Stroke", "Possible", "Minimum", "Maximum", "Factor", "Score", "ScoreFront", "ScoreInternal", "ScoreBack"].join(",");
-  
+  schemestages = schemerules.filter(o => o.rules.length).map(o => o.stage);
+
+  let header = headers.join(",");
+
   let texts = {
     odd: ``,
     even: `
 `
   };
-  let ids = {odd: 1001, even: 1}
-  
+
   for (let stage = 5; stage <= 16; stage++) {
-    let odd = stage % 2 === 1;
-    let idkey = odd ? "odd" : "even";
-    let catobj = categorystats.find(o => o.stage === stage);
-    if (catobj) {
-      catobj.categories.forEach((o,i) => {
-        let list = o.seqids.map(n => Number(n));
-        let lstring = '"'+o.seqids[0];
-        let current = [];
-        
-        for (let j = 1; j < list.length; j++) {
-          if (list[j]-list[j-1] === 1) {
-            current.push(j);
-          } else {
-            if (current.length) lstring += "-" + o.seqids[j-1];
-            lstring += "," + o.seqids[j];
-            current = [];
-          }
-        }
-        if (current.length) lstring += "-" + o.seqids[current[current.length-1]];
-        lstring += '"';
-        //'"'+ o.seqids.join(",") +'"'
-        //ids[idkey]
-        //leaving Id column blank; can just be automatically numbered in the spreadsheet
-        let row = ["", "", stage, i+1, lstring, o.name, "0", "Subtotal", "Any", "0","0","0","0","0","0","0","0"];
+    if (schemestages.includes(stage)) {
+      //do stuff
+      let odd = stage%2 === 1;
+      let idkey = odd ? "odd" : "even";
+
+      let stuff = convertrulesforcsv(stage);
+      
+      let subtotalranges = [];
+      for (let i = 0; i < stuff.catfirsts.length; i++) {
+        let str = stuff.catfirsts[i].toString() + "–";
+        let num = i === stuff.catfirsts.length-1 ? stuff.stagerows.length+100 : stuff.catfirsts[i+1];
+        num--;
+        str += num.toString();
+        subtotalranges.push(str);
+      }
+
+      stuff.stagecats.forEach((cat,i) => {
+        let row = ["","",stage,i+1,subtotalranges[i],cat,"0","Subtotal", "Any", "0","0","0","0","0","0","0","0"];
         texts[idkey] += row.join(",") + `
 `;
-        ids[idkey]++;
+      });
+
+      let same = {
+        Id: "",
+        SchemeId: "",
+        Stage: stage,
+        Summarise: "0",
+        Minimum: "0",
+        Factor: "1"
+      };
+      stuff.stagerows.forEach(r => {
+        let row = headers.map(head => same[head] || r[head]);
+        texts[idkey] += row.join(",") + `
+`;
       });
     }
-    
-    let rows = gettablerows(stage);
-    rows.forEach((r,i) => {
-      let row = ["", "", stage, r.seq, r.Mask, r.Description, "0", r.Type, r.Stroke, r.Possible, "0", "", "1", r.Score, r.ScoreFront, r.ScoreInternal, r.ScoreBack];
-      texts[idkey] += row.join(",") + `
-`;
-      ids[idkey]++;
-    });
   }
+
   let full = header + texts.even + texts.odd;
   return full;
 }
@@ -1053,6 +1057,106 @@ function temporaryconvertrules(stage) {
       });
     });
   }
+}
+
+//only run if schemestages includes stage
+function convertrulesforcsv(stage) {
+  let index = {};
+  let sobj = schemerules.find(o => o.stage === stage);
+  let rules = sobj.rules;
+  rules.forEach((r,i) => {
+    //assuming the only way to have duplicates is wraps???
+    let key = r.locations === "w" ? "w" : "";
+    key += r.pattern.replace(/[\(\)]/g, "");
+    index[key] = i;
+  });
+  //now put rule patterns in order
+  //I think this will only work because I'm not actually using parentheses
+  let patterns = [];
+  let stagecatarr = [];
+  categorynames.forEach(cat => {
+    let catpatterns = rules.filter(o => o.category === cat).map(o => (o.locations === "w" ? "w" : "") + o.pattern.replace(/[\(\)]/g, ""));
+    if (catpatterns.length) stagecatarr.push(cat);
+    catpatterns.sort(normalrowsortNew);
+    patterns.push(...catpatterns);
+  });
+  //now actually convert the rules
+  let stagerows = [];
+  let catfirsts = [100];
+  let ref = 100;
+  let currentcat = stagecatarr[0];
+  patterns.forEach(p => {
+    let i = index[p];
+    let r = rules[i];
+    if (r.category != currentcat) {
+      catfirsts.push(ref);
+      currentcat = r.category;
+    }
+    let rows = convertrule(r, stage);
+    rows.forEach(ro => {
+      let p = ro.pattern;
+      let o = {
+        Sequence: ref,
+        Mask: p,
+        Description: p, //add to this below
+        Type: ro.locations === "w" ? "Wrap" : p.length === stage ? "Row" : "Mask";
+        Stroke: ro.stroke || "Any"; 
+      };
+      ref++;
+      //calculate possible
+      let possible = 0;
+      let x = p.split("").filter(c => c === "x");
+
+      if (ro.locations === "w") {
+        //wraps
+        //this calculates number of possibilities for the row in which the wrap terminates. Not quite the same as the total possibilities???
+        // can wraps have x?????
+        let factor = x.length === 0 ? 1 : factorial(x.length);
+        for (let i = 1; i < p.length; i++) {
+          let others = stage-i;
+          possible += factor * factorial(others);
+        }
+      } else if (p.length === stage) {
+        possible = x.length === 0 ? 1 : factorial(x.length);
+      } else {
+        let others = stage-p.length;
+        if (ro.locations.includes("f")) {
+          possible += factorial(others);
+        }
+        if (ro.locations.includes("b")) {
+          possible += factorial(others);
+        }
+        if (ro.locations.includes("m")) {
+          let f = others-1;
+          possible += factorial(others)*f;
+        }
+      }
+      //end possible calculations
+      o.Possible = possible;
+      if (possible > 1) o.Description += "[s]";
+      if (ro.description) o.Description += " "+ro.description;
+      o.Maximum = possible * ro.points;
+      //scores
+      let scores = [];
+      let pts = ro.points.toString();
+      if (ro.locations.length === 3 || p.length === stage) {
+        scores.push(pts, "0", "0", "0");
+      } else {
+        scores.push(0);
+        ["f", "m", "b"].forEach(c => {
+          scores.push(ro.locations.includes(c) ? pts : "0");
+        });
+      }
+      for (let j = 0; j < 4; j++) {
+        let key = tableheads[j+6];
+        o[key] = scores[j];
+      }
+
+      stagerows.push(o);
+    });
+  });
+
+  return {stagerows: stagerows, catfirsts: catfirsts, stagecats: stagecatarr};
 }
 
 
@@ -1755,10 +1859,12 @@ function buildinitialrules() {
     
   }
 
+  schemestages = schemerules.map(o => o.stage);
   $("#viewrules").show();
   //buildinitialtablebodies();
 }
 
+//count table or csv rows, not bell rows
 function countrowsfromrules() {
   schemerules.forEach(obj => {
     let count = 0;
@@ -1906,6 +2012,53 @@ function bellrowsort(a, b) {
   let aa = parseInt(strs[a], base);
   let bb = parseInt(strs[b], base);
   return aa-bb;
+}
+
+// The problem is I only want to use this *within* sets of rows, where the sets are already sorted relative to each other
+//earlier not-x before later
+//transpose to include 1 and sort
+//sort the actual rows
+function normalrowsortNew(a,b) {
+  //first compare number of x's
+  let ax = countx(a);
+  let dx = ax - countx(b);
+  if (dx != 0) {
+    return dx;
+  }
+  //deal with wraps
+  let aw = a.startsWith("w");
+  let bw = b.startsWith("w");
+  if (aw) a = a.slice(1);
+  if (bw) b = b.slice(1);
+
+  //next compare length
+  //reverse order from original version of this function!!
+  let dl = b.length-a.length;
+  if (dl != 0) {
+    return dl;
+  }
+
+  //next, one wrap and one not
+  if (aw && !bw) return 1;
+  if (!aw && bw) return -1;
+  
+  //if they both have x
+  if (ax) {
+    let di = a.split("").findIndex(c => c != "x")-b.split("").findIndex(c => c != "x");
+    if (di != 0) {
+      return di;
+    }
+    a = a.replace(/x/g, "");
+    b = b.replace(/x/g, "");
+  }
+  //next normal forms
+  let aa = normalizerow(a);
+  let bb = normalizerow(b);
+  let dn = bellrowsort(aa, bb);
+  if (dn != 0) {
+    return dn;
+  }
+  return bellrowsort(a,b);
 }
 
 function normalrowsort(a,b) {
