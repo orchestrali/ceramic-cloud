@@ -647,6 +647,7 @@ function displaycompnewversion(rows, stage) {
   ["sorttable_sorted","sorttable_sorted_reverse"].forEach(c => {
     $("#comptable th."+c).removeClass(c);
   });
+  $("#sorttable_sortfwdind,#sorttable_sortrevind").remove(); //good thing there's only one sortable table???
 
   comprows.forEach(o => {
     //add the comprow to the table
